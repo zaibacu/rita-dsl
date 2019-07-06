@@ -3,9 +3,6 @@ import ply.lex as lex
 from rita import macros
 
 
-
-
-
 class RitaLexer(object):
     tokens = [
         'MACRO',

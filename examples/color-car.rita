@@ -1,0 +1,1 @@
+PATTERN{IN_LIST{"red", "green", "blue", "white", "black"}, WORD{"car"}} -> MARK{"COLORED_CAR"}

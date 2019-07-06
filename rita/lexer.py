@@ -30,8 +30,7 @@ class RitaLexer(object):
         t.lexer.lineno += len(t.value)
 
     def t_KEYWORD(self, t):
-        r'\w+'
-        ### t.value = getattr(macros, t.value)   
+        r'(\w|[_])+'
         return t
     
     def t_error(self, t):

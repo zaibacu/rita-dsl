@@ -1,9 +1,12 @@
+import logging
 import ply.yacc as yacc
 
 from functools import partial
 
 from rita.lexer import RitaLexer
 from rita import macros
+
+logger = logging.getLogger(__name__)
 
 def stub(*args, **kwargs):
     return None
@@ -12,7 +15,7 @@ def get_macro(name):
     try:
         return getattr(macros, name)
     except:
-        print('{0} macro not found'.format(name))
+        logger.error('{0} macro not found'.format(name))
         return stub
     
 
@@ -26,20 +29,30 @@ class RitaParser(object):
         ('left', 'KEYWORD')
     )
 
+    def p_document(self, p):
+        ' DOCUMENT : MACRO_CHAIN '
+        logger.debug('Building initial document {}'.format(p[1]))
+        p[0] = [p[1]]
+
+    def p_document_list(self, p):
+        ' DOCUMENT : DOCUMENT MACRO_CHAIN '
+        logger.debug('Extending document {}'.format(p[2]))
+        p[0] = p[1] + [p[2]]
+
     def p_macro_chain(self, p):
-        ' MACRO : MACRO ARROW MACRO '
-        print('Have {0} -> {1}'.format(p[1], p[3]))
+        ' MACRO_CHAIN : MACRO ARROW MACRO '
+        logger.debug('Have {0} -> {1}'.format(p[1], p[3]))
         p[0] = partial(p[3], p[1])
 
     def p_macro_wo_args(self, p):
         ' MACRO : KEYWORD '
-        print('Parsing macro (w/o args): {}'.format(p[1]))
+        logger.debug('Parsing macro (w/o args): {}'.format(p[1]))
         fn = get_macro(p[1])
         p[0] = fn
 
     def p_macro_w_args(self, p):
         ' MACRO : KEYWORD LBRACKET ARGS RBRACKET '
-        print('Parsing macro: {0}, args: {1}'.format(p[1], p[3]))
+        logger.debug('Parsing macro: {0}, args: {1}'.format(p[1], p[3]))
         fn = get_macro(p[1])
         p[0] = partial(fn, *p[3])
 
@@ -60,7 +73,7 @@ class RitaParser(object):
         p[0] = p[1]
 
     def p_error(self, p):
-        print("Syntax error at '{}'".format(p.value))
+        logger.error("Syntax error at '{}'".format(p.value))
 
     def build(self, **kwargs):
         self.lexer = RitaLexer().build(**kwargs)

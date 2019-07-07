@@ -1,6 +1,9 @@
+import logging
 import ply.lex as lex
 
 from rita import macros
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -34,7 +37,7 @@ class RitaLexer(object):
         return t
     
     def t_error(self, t):
-        print('Invalid Token: {}'.format(t.value[0]))
+        logger.error('Invalid Token: {}'.format(t.value[0]))
         t.lexer.skip( 1 )
 
     def build(self, **kwargs):

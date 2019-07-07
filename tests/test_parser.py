@@ -17,19 +17,11 @@ def test_parser_any_macro_wo_args_w_type():
     assert result != None
 
 
-def test_parser_any_macro_w_args_wo_type():
-    p = RitaParser()
-    p.build()
-
-    result = p.test('ANY{"arg1", "arg2", "arg3"}')
-
-    assert result != None
-
 def test_parser_any_macro_w_args_w_type():
     p = RitaParser()
     p.build()
 
-    result = p.test('ANY{"arg1"} -> MARK{"PlaceHolder"}')
+    result = p.test('PATTERN{WORD{"arg1"}} -> MARK{"PlaceHolder"}')
 
     assert result != None
 
@@ -41,4 +33,4 @@ def test_parser_nested_macro():
     assert result != None
 
     print(result)
-    print(result())
+    print(result([]))

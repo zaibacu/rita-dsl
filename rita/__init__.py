@@ -7,6 +7,9 @@ def compile(fname):
         raw = f.read()
 
     root = parser.test(raw)
-    return root()
+    result = []
+    for doc in root:
+        result.append(doc())
+    return result
 
     

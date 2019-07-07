@@ -8,16 +8,11 @@ def ANY(context):
     return context
 
 
-def MARK(type_, obj, context=None):
-    if context is None:
-        context = []
-
-    context.append({
+def MARK(type_, obj):
+    return {
         'label': type_,
-        'data': resolve_value(obj, context)
-    })
-
-    return context
+        'data': resolve_value(obj, {})
+    }
 
 
 def IN_LIST(*args, context):

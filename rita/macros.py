@@ -4,7 +4,7 @@ def resolve_value(obj, context):
     return obj(context=context)
 
 def ANY(context):
-    context.append({'regex': r'.*'})
+    context.append(('regex', r'.*',))
     return context
 
 
@@ -20,7 +20,7 @@ def IN_LIST(*args, context):
     new_context = []
     for arg in args:
         variants.append(resolve_value(arg, new_context))
-    context.append({'any_of':  variants})
+    context.append(('any_of',  variants,))
     return context
 
 
@@ -32,5 +32,5 @@ def PATTERN(*args, context=None):
 
 
 def WORD(literal, context):
-    context.append({'value': literal})
+    context.append(('value', literal,))
     return context

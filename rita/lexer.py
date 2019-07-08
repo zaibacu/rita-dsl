@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 class RitaLexer(object):
     tokens = [
         'KEYWORD',
+        'LITERAL',
         'LBRACKET',
         'RBRACKET',
-        'QUOTE',
         'ARROW',
         'COMMA',
     ]
@@ -22,7 +22,6 @@ class RitaLexer(object):
     t_ignore = ' \t'
     t_ignore_COMMENT = r'\#.*'
     t_ARROW = '->'
-    t_QUOTE = '"'
     t_LBRACKET = '{'
     t_RBRACKET = '}'
     t_COMMA = ','
@@ -34,6 +33,10 @@ class RitaLexer(object):
 
     def t_KEYWORD(self, t):
         r'(\w|[_])+'
+        return t
+
+    def t_LITERAL(self, t):
+        r'".+?"'
         return t
     
     def t_error(self, t):

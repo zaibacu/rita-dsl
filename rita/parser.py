@@ -24,9 +24,8 @@ class RitaParser(object):
     precedence = (
         ('nonassoc', 'ARROW'),
         ('nonassoc', 'COMMA'),
-        ('left', 'QUOTE'),
         ('left', 'RBRACKET', 'LBRACKET'),
-        ('left', 'KEYWORD')
+        ('left', 'KEYWORD', 'LITERAL')
     )
 
     def p_document(self, p):
@@ -65,8 +64,8 @@ class RitaParser(object):
         p[0] = [p[1]]
 
     def p_arg(self, p):
-        ' ARG : QUOTE KEYWORD QUOTE '
-        p[0] = p[2]
+        ' ARG : LITERAL '
+        p[0] = p[1]
 
     def p_arg_from_macro(self, p):
         ' ARG : MACRO '

@@ -1,6 +1,6 @@
 def resolve_value(obj, context):
     if isinstance(obj, str):
-        return obj
+        return obj.strip('"')
     return obj(context=context)
 
 def ANY(context, op=None):
@@ -10,7 +10,7 @@ def ANY(context, op=None):
 
 def MARK(type_, obj, op=None):
     return {
-        'label': type_,
+        'label': resolve_value(type_, {}),
         'data': resolve_value(obj, {})
     }
 

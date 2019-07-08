@@ -69,10 +69,10 @@ def NUM(*args, context, op=None):
         return context.append(('regex', '\\d+', op))
 
 def POS(name, context, op=None):
-    return context.append(('pos', name, op))
+    return context.append(('pos', resolve_value(name, {}), op))
 
 def LEMMA(name, context, op=None):
-    return context.append(('lemma', name, op))
+    return context.append(('lemma', resolve_value(name, {}), op))
 
 def ENTITY(name, context, op=None):
-    return context.append(('entity', name, op))
+    return context.append(('entity', resolve_value(name, {}), op))

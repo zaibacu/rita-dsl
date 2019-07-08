@@ -1,27 +1,41 @@
-'''
-[{'data': [{'any_of': ['red', 'green', 'blue', 'white', 'black']}, {'value': 'car'}], 'label': 'COLORED_CAR'}, {'data': [{'any_of': ['BMW', 'Audi', 'VW', 'Toyota', 'Mazda']}, {'regex': '.*'}], 'label': 'CAR_MODEL'}]
-
-'''
+from functools import partial
 
 
-ACTIONS = {
-    'any_of': lambda x: {'TEXT': {'REGEX': '({})'.format('|'.join(x))}},
-    'value': lambda x: {'LOWER': x},
-    'regex': lambda x: {'TEXT': {'REGEX': x}},
+def any_of_parse(lst, op=None):
+    d = {"TEXT": {"REGEX": r"({})".format("|".join(lst))}}
+    if op:
+        d["OP"] = op
+    return d
+
+
+def regex_parse(r, op=None):
+    d = {"TEXT": {"REGEX": r}}
+
+    if op:
+        d["OP"] = op
+    return d
+
+
+def generic_parse(tag, value, op=None):
+    d = {}
+    d[tag] = value
+    if op:
+        d["OP"] = op
+    return d
+
+
+PARSERS = {
+    "any_of": any_of_parse,
+    "value": partial(generic_parse, "ORTH"),
+    "regex": regex_parse,
+    "entity": partial(generic_parse, "ENT_TYPE"),
+    "lemma": partial(generic_parse, "LEMMA"),
+    "pos": partial(generic_parse, "POS"),
 }
 
 
-def context_to_patterns(context):
-    patterns = []
-
-    def build_pattern(c):
-        data = c['data']
-        pattern = {}
-        pattern['label'] = c['label']
-        pattern['pattern'] = [ACTIONS[t](d) for t, d in c['data']]
-        return pattern
-
-    for c in context:
-        patterns.append(build_pattern(c))
-
-    return patterns
+def rules_to_patterns(rule):
+    return {
+        "label": rule["label"],
+        "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
+    }

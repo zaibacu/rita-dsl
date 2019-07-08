@@ -3,33 +3,31 @@ import spacy
 import rita
 
 from spacy.pipeline import EntityRuler
-from rita.translate import context_to_patterns
-
 
 def test_color_car():
-    result = rita.compile('examples/color-car.rita')
-    print(result)
-    assert len(result) == 2
-
-    patterns = context_to_patterns(result)
+    patterns = rita.compile("examples/color-car.rita")
     print(patterns)
+    assert len(patterns) == 3
 
-    # Inject into actual Spacy
-    nlp = spacy.load('en')
+    # Build Spacy
+    nlp = spacy.load("en")
     ruler = EntityRuler(nlp, overwrite_ents=True)
     ruler.add_patterns(patterns)
-    
+
     nlp.add_pipe(ruler)
 
-    # Parse text with spacy
+    # Load example
 
-    text = '''
-    I saw a red car passing by. It was BMW X6.
-    '''
+    text = """
+    Johny Silver was driving a red car. It was BMW X6 Mclass. Johny likes driving it very much.
+    """
+
     doc = nlp(text)
-    ents = [(e.text, e.label_,) for e in doc.ents]
-    print(ents)
-    assert ents[0] == ('red car', 'CAR_COLOR')
-    assert ents[1] == ('BMW X6', 'CAR_MODEL')    
 
-    
+    entities = [(e.text, e.label_) for e in doc.ents]
+    print(entities)
+
+    assert entities[0] == ("Johny Silver", "PERSON")  # Normal NER
+    assert entities[1] == ("red car", "CAR_COLOR")  # Our first rule
+    assert entities[2] == ("BMW X6 Mclass", "CAR_MODEL")  # Our second rule
+    assert entities[3] == ("Johny likes driving", "LIKED_ACTION")  # Our third rule

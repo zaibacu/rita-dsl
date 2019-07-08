@@ -5,3 +5,4 @@ def test_color_car():
     result = rita.compile('examples/color-car.rita')
     print(result)
     assert len(result) == 2
+    assert False

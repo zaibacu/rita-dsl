@@ -1,3 +1,4 @@
+from rita.translate import rules_to_patterns
 from rita.parser import RitaParser
 
 def compile(fname):
@@ -9,7 +10,8 @@ def compile(fname):
     root = parser.test(raw)
     result = []
     for doc in root:
-        result.append(doc())
+        result.append(rules_to_patterns(doc()))
+
     return result
 
     

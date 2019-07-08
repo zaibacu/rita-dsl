@@ -19,6 +19,11 @@ def ANY(context, op=None):
     return context
 
 
+def PUNCT(context, op=None):
+    context.append(('punct', None, op))
+    return context
+
+
 def MARK(type_, obj, op=None):
     return {
         'label': resolve_value(type_, {}),
@@ -62,3 +67,12 @@ def NUM(*args, context, op=None):
         return context
     elif len(args) == 0:
         return context.append(('regex', '\\d+', op))
+
+def POS(name, context, op=None):
+    return context.append(('pos', name, op))
+
+def LEMMA(name, context, op=None):
+    return context.append(('lemma', name, op))
+
+def ENTITY(name, context, op=None):
+    return context.append(('entity', name, op))

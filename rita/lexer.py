@@ -15,6 +15,9 @@ class RitaLexer(object):
         'RBRACKET',
         'ARROW',
         'COMMA',
+        'MODIF_QMARK',
+        'MODIF_STAR',
+        'MODIF_PLUS',
     ]
 
     literals = ['{', '}', '"', ',']
@@ -25,6 +28,9 @@ class RitaLexer(object):
     t_LBRACKET = '{'
     t_RBRACKET = '}'
     t_COMMA = ','
+    t_MODIF_QMARK = r'\?'
+    t_MODIF_STAR = r'\*'
+    t_MODIF_PLUS = r'\+'
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):

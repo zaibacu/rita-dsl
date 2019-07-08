@@ -1,11 +1,20 @@
 def any_of_parse(lst, op=None):
-    return {'TEXT': {'REGEX': r'({})'.format('|'.join(lst))}}
+    if op:
+        return {'TEXT': {'REGEX': r'({0})'.format('|'.join(lst))}, 'OP': op}
+    else:
+        return {'TEXT': {'REGEX': r'({})'.format('|'.join(lst))}}
 
 def value_parse(v, op=None):
-    return {'ORTH': v}
+    if op:
+        return {'ORTH': v, 'OP': op}
+    else:
+        return {'ORTH': v}
 
 def regex_parse(r, op=None):
-    return {'TEXT': {'REGEX': r}}
+    if op:
+        return {'TEXT': {'REGEX': r}, 'OP': op}
+    else:
+        return {'TEXT': {'REGEX': r}}
 
 
 PARSERS = {

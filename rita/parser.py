@@ -25,7 +25,8 @@ class RitaParser(object):
         ('nonassoc', 'ARROW'),
         ('nonassoc', 'COMMA'),
         ('left', 'RBRACKET', 'LBRACKET'),
-        ('left', 'KEYWORD', 'LITERAL')
+        ('left', 'KEYWORD', 'LITERAL'),
+        ('right', 'MODIF_QMARK', 'MODIF_STAR', 'MODIF_PLUS'),
     )
 
     def p_document(self, p):
@@ -42,6 +43,13 @@ class RitaParser(object):
         ' MACRO_CHAIN : MACRO ARROW MACRO '
         logger.debug('Have {0} -> {1}'.format(p[1], p[3]))
         p[0] = partial(p[3], p[1])
+
+    def p_macro_w_modif(self, p):
+        ' MACRO : MACRO MODIF_PLUS '
+        logger.debug('Adding modifier to Macro {}'.format(p[1]))
+        fn = p[1]
+        p[0] = partial(fn, op=p[2])
+        
 
     def p_macro_wo_args(self, p):
         ' MACRO : KEYWORD '

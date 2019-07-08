@@ -32,7 +32,7 @@ def PATTERN(*args, context=None, op=None):
 
 def WORD(*args, context, op=None):
     if len(args) == 1:
-        literal = args[0]
+        literal = resolve_value(args[0], {})
         context.append(('value', literal, op))
         return context
     elif len(args) == 0:
@@ -40,7 +40,7 @@ def WORD(*args, context, op=None):
 
 def NUM(*args, context, op=None):
     if len(args) == 1:
-        literal = args[0]
+        literal = resolve_value(args[0], {})
         context.append(('value', literal, op))
         return context
     elif len(args) == 0:

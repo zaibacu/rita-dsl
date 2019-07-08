@@ -1,3 +1,14 @@
+from itertools import chain
+
+def flatten(lst):
+    def explode(v):
+        if callable(v):
+            return v()
+        else:
+            return v
+    new_lst = map(explode, lst)
+    return chain(*new_lst)
+
 def resolve_value(obj, context):
     if isinstance(obj, str):
         return obj.strip('"')
@@ -14,11 +25,17 @@ def MARK(type_, obj, op=None):
         'data': resolve_value(obj, {})
     }
 
+def LOAD(*args, context=None):
+    fpath = resolve_value(args[0], {})
+    with open(fpath, 'r') as f:
+        return list([l.strip()
+                     for l in f.readlines()])
+
 
 def IN_LIST(*args, context, op=None):
     variants = []
     new_context = []
-    for arg in args:
+    for arg in flatten(args):
         variants.append(resolve_value(arg, new_context))
     context.append(('any_of', variants, None))
     return context

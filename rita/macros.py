@@ -30,7 +30,10 @@ def PATTERN(*args, context=None):
         resolve_value(arg, new_ctx)
     return new_ctx
 
-
-def WORD(literal, context, op=None):
-    context.append(('value', literal, op))
-    return context
+def WORD(*args, context, op=None):
+    if len(args) == 1:
+        literal = args[0]
+        context.append(('value', literal, op))
+        return context
+    elif len(args) == 0:
+        return context.append(('regex', '\\w+', op))

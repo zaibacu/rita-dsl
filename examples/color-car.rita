@@ -2,4 +2,4 @@ PATTERN{IN_LIST{"red", "green", "blue", "white", "black"}, WORD{"car"}} -> MARK{
 
 PATTERN{IN_LIST{LOAD{"examples/cars.txt"}}, WORD+} -> MARK{"CAR_MODEL"}
 
-PATTERN{LEMMA{"like"}, WORD} -> MARK{"LIKED_ACTION"}
+PATTERN{ENTITY{"PERSON"}, LEMMA{"like"}, WORD} -> MARK{"LIKED_ACTION"}

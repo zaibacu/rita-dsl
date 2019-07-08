@@ -31,5 +31,4 @@ def test_color_car():
     assert entities[0] == ("Johny Silver", "PERSON")  # Normal NER
     assert entities[1] == ("red car", "CAR_COLOR")  # Our first rule
     assert entities[2] == ("BMW X6 Mclass", "CAR_MODEL")  # Our second rule
-    assert entities[3] == ("Johny", "PERSON")  # Normal NER again
-    assert entities[4] == ("likes driving", "LIKED_ACTION")  # Our third rule
+    assert entities[3] == ("Johny likes driving", "LIKED_ACTION")  # Our third rule

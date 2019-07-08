@@ -20,7 +20,7 @@ def test_color_car():
     # Load example
 
     text = '''
-    Johny Silver was driving a red car. It was BMW X6.
+    Johny Silver was driving a red car. It was BMW X6 M.
     '''
 
     doc = nlp(text)

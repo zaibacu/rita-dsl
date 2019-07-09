@@ -111,5 +111,5 @@ class RitaParser(object):
         self.lexer = RitaLexer().build(**kwargs)
         self.parser = yacc.yacc(module=self, errorlog=logger, **kwargs)
 
-    def test(self, data):
+    def parse(self, data):
         return self.parser.parse(data, lexer=self.lexer, debug=logger)

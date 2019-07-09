@@ -8,7 +8,7 @@ def compile(fname):
     with open(fname, "r") as f:
         raw = f.read()
 
-    root = parser.test(raw)
+    root = parser.parse(raw)
     result = [rules_to_patterns(doc())
               for doc in root
               if doc]

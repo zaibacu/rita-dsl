@@ -60,7 +60,7 @@ class RitaLexer(object):
         self.lexer = lex.lex(module=self, errorlog=logger, **kwargs)
         return self.lexer
 
-    def test(self, data):
+    def tokenize(self, data):
         self.lexer.input(data)
         while True:
             t = self.lexer.token()

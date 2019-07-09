@@ -13,6 +13,7 @@ def flatten(lst):
 
 
 def resolve_value(obj, context):
+    print("Resolving value: {0}, context: {1}".format(obj, context))
     if isinstance(obj, str):
         return obj
     return obj(context=context)
@@ -36,6 +37,12 @@ def LOAD(*args, context=None):
     fpath = resolve_value(args[0], {})
     with open(fpath, "r") as f:
         return list([l.strip() for l in f.readlines()])
+
+def ASSIGN(k, v, context, op=None):
+    if "vars" not in context:
+        context["vars"] = {}
+    context['vars'][k] = v
+    return context
 
 
 def IN_LIST(*args, context, op=None):

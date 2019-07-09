@@ -19,8 +19,6 @@ def var_wrapper(variable):
 
     return wrapper
 
-VARIABLES = {}
-
 
 class RitaParser(object):
     tokens = RitaLexer.tokens
@@ -93,17 +91,10 @@ class RitaParser(object):
         " ARG : MACRO "
         p[0] = p[1]
 
-    def p_variable_from_literal(self, p):
-        " VARIABLE : NAME ASSIGN LITERAL "
+    def p_variable(self, p):
+        " VARIABLE : NAME ASSIGN ARG "
         logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
-        VARIABLES[p[1]] = p[3]
-        p[0] = p[3]
-
-    def p_variable_from_macro(self, p):
-        " VARIABLE : NAME ASSIGN MACRO "
-        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
-        VARIABLES[p[1]] = p[3]
-        p[0] = p[3]
+        p[0] = partial(macros.ASSIGN, p[1], p[3])
 
     def p_arg_from_var(self, p):
         " ARG : VARIABLE "

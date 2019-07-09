@@ -1,4 +1,10 @@
+import logging
+
 from itertools import chain
+
+logger = logging.getLogger(__name__)
+
+VARIABLES = {}
 
 
 def flatten(lst):
@@ -13,8 +19,11 @@ def flatten(lst):
 
 
 def resolve_value(obj, context):
+    logger.debug("Resolving value: {0}, context: {1}".format(obj, context))
     if isinstance(obj, str):
-        return obj.strip('"')
+        return obj
+    elif isinstance(obj, list):
+        return context.append(*obj)
     return obj(context=context)
 
 
@@ -36,6 +45,12 @@ def LOAD(*args, context=None):
     fpath = resolve_value(args[0], {})
     with open(fpath, "r") as f:
         return list([l.strip() for l in f.readlines()])
+
+
+def ASSIGN(k, v, context=None, op=None):
+    logger.debug("Assigning: {0} -> {1}".format(k, v))
+    print("Assigning: {0} -> {1}".format(k, v))
+    VARIABLES[k] = resolve_value(v, [])
 
 
 def IN_LIST(*args, context, op=None):

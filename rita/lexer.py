@@ -10,6 +10,7 @@ class RitaLexer(object):
     tokens = [
         "KEYWORD",
         "LITERAL",
+        "NAME",
         "LBRACKET",
         "RBRACKET",
         "ARROW",
@@ -17,9 +18,10 @@ class RitaLexer(object):
         "MODIF_QMARK",
         "MODIF_STAR",
         "MODIF_PLUS",
+        "ASSIGN",
     ]
 
-    literals = ["{", "}", '"', ","]
+    literals = ["{", "}", '"', ",", "="]
 
     t_ignore = " \t"
     t_ignore_COMMENT = r"\#.*"
@@ -30,6 +32,7 @@ class RitaLexer(object):
     t_MODIF_QMARK = r"\?"
     t_MODIF_STAR = r"\*"
     t_MODIF_PLUS = r"\+"
+    t_ASSIGN = r"="
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):
@@ -37,11 +40,16 @@ class RitaLexer(object):
         t.lexer.lineno += len(t.value)
 
     def t_KEYWORD(self, t):
-        r"(\w|[_])+"
+        r"[A-Z_]{3,}"
         return t
 
     def t_LITERAL(self, t):
         r'".+?"'
+        t.value = t.value.strip("\"")
+        return t
+
+    def t_NAME(self, t):
+        r"\w+"
         return t
 
     def t_error(self, t):
@@ -49,7 +57,7 @@ class RitaLexer(object):
         t.lexer.skip(1)
 
     def build(self, **kwargs):
-        self.lexer = lex.lex(module=self, **kwargs)
+        self.lexer = lex.lex(module=self, errorlog=logger, **kwargs)
         return self.lexer
 
     def test(self, data):

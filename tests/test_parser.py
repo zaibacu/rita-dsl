@@ -25,3 +25,20 @@ def test_parser_nested_macro():
     assert len(results) == 1
     for result in results:
         print(result())
+
+def test_parser_assign_literal():
+    p = RitaParser()
+    p.build()
+
+    results = p.test('''
+    TEST = "Test"
+
+    PATTERN{WORD{TEST}} -> MARK{"TEST"}
+    ''')
+    assert len(results) == 1
+
+    rules = results[0]()
+
+    print(rules)
+    assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
+

@@ -12,8 +12,20 @@ logger = logging.getLogger(__name__)
 def stub(*args, **kwargs):
     return None
 
+def var_wrapper(variable):
+    def wrapper(*args, **kwargs):
+        print(VARIABLES)
+        return VARIABLES[variable]
+
+    return wrapper
+
+VARIABLES = {}
+
 
 def get_macro(name):
+    if name in VARIABLES:
+        return var_wrapper(VARIABLES[name])
+
     try:
         return getattr(macros, name)
     except:
@@ -26,10 +38,12 @@ class RitaParser(object):
     precedence = (
         ("nonassoc", "ARROW"),
         ("nonassoc", "COMMA"),
+        ("nonassoc", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET"),
         ("left", "KEYWORD", "LITERAL"),
         ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
+
 
     def p_document(self, p):
         " DOCUMENT : MACRO_CHAIN "
@@ -46,6 +60,12 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], p[1])
 
+    def p_variable(self, p):
+        " VARIABLE : KEYWORD ASSIGN ARG "
+        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
+        VARIABLES[p[1]] = p[3]
+        p[0] = p[3]
+
     def p_macro_w_modif(self, p):
         " MACRO : MACRO MODIF_PLUS "
         logger.debug("Adding modifier to Macro {}".format(p[1]))
@@ -54,15 +74,21 @@ class RitaParser(object):
 
     def p_macro_wo_args(self, p):
         " MACRO : KEYWORD "
-        logger.debug("Parsing macro (w/o args): {}".format(p[1]))
-        fn = get_macro(p[1])
-        p[0] = fn
+        try:
+            fn = getattr(macros, p[1])
+            logger.debug("Parsing macro (w/o args): {}".format(p[1]))
+            p[0] = fn
+        except:
+            p[0] = var_wrapper(p[1])
 
     def p_macro_w_args(self, p):
         " MACRO : KEYWORD LBRACKET ARGS RBRACKET "
-        logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
-        fn = get_macro(p[1])
-        p[0] = partial(fn, *p[3])
+        try:
+            fn = getattr(macros, p[1])
+            logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
+            p[0] = partial(fn, *p[3])
+        except:
+            p[0] = stub
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "
@@ -78,6 +104,10 @@ class RitaParser(object):
 
     def p_arg_from_macro(self, p):
         " ARG : MACRO "
+        p[0] = p[1]
+
+    def p_arg_from_var(self, p):
+        " ARG : VARIABLE "
         p[0] = p[1]
 
     def p_error(self, p):

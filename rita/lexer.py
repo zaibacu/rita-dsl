@@ -17,9 +17,10 @@ class RitaLexer(object):
         "MODIF_QMARK",
         "MODIF_STAR",
         "MODIF_PLUS",
+        "ASSIGN",
     ]
 
-    literals = ["{", "}", '"', ","]
+    literals = ["{", "}", '"', ",", "="]
 
     t_ignore = " \t"
     t_ignore_COMMENT = r"\#.*"
@@ -30,6 +31,7 @@ class RitaLexer(object):
     t_MODIF_QMARK = r"\?"
     t_MODIF_STAR = r"\*"
     t_MODIF_PLUS = r"\+"
+    t_ASSIGN = r"="
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):
@@ -42,6 +44,7 @@ class RitaLexer(object):
 
     def t_LITERAL(self, t):
         r'".+?"'
+        t.value = t.value.strip("\"")
         return t
 
     def t_error(self, t):

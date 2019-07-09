@@ -1,4 +1,10 @@
+import logging
+
 from itertools import chain
+
+logger = logging.getLogger(__name__)
+
+VARIABLES = {}
 
 
 def flatten(lst):
@@ -13,9 +19,11 @@ def flatten(lst):
 
 
 def resolve_value(obj, context):
-    print("Resolving value: {0}, context: {1}".format(obj, context))
+    logger.debug("Resolving value: {0}, context: {1}".format(obj, context))
     if isinstance(obj, str):
         return obj
+    elif isinstance(obj, list):
+        return context.append(*obj)
     return obj(context=context)
 
 
@@ -40,13 +48,9 @@ def LOAD(*args, context=None):
 
 
 def ASSIGN(k, v, context=None, op=None):
-    if context is None:
-        context = {}
-    if "vars" not in context:
-        context["vars"] = {}
-    vals = []
-    context["vars"][k] = resolve_value(v, vals)
-    return context
+    logger.debug("Assigning: {0} -> {1}".format(k, v))
+    print("Assigning: {0} -> {1}".format(k, v))
+    VARIABLES[k] = resolve_value(v, [])
 
 
 def IN_LIST(*args, context, op=None):
@@ -59,7 +63,6 @@ def IN_LIST(*args, context, op=None):
 
 
 def PATTERN(*args, context=None, op=None):
-    print(args)
     new_ctx = []
     for arg in args:
         resolve_value(arg, new_ctx)
@@ -67,7 +70,6 @@ def PATTERN(*args, context=None, op=None):
 
 
 def WORD(*args, context, op=None):
-    print(args)
     if len(args) == 1:
         literal = resolve_value(args[0], {})
         context.append(("value", literal, op))

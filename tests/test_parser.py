@@ -28,7 +28,7 @@ def test_parser_nested_macro():
 
 def test_parser_assign_literal_and_ignore_it():
     p = RitaParser()
-    p.build()
+    p.build(debug=True)
 
     results = p.test('''
     my_variable = "Test"
@@ -45,47 +45,42 @@ def test_parser_assign_literal_and_ignore_it():
 
 def test_parser_assign_literal_and_use_it():
     p = RitaParser()
-    p.build()
+    p.build(debug=True)
 
     results = p.test('''
     my_variable = "Test"
 
-    PATTERN{WORD{my_variable} -> MARK{"TEST"}
+    PATTERN{WORD{my_variable}} -> MARK{"TEST"}
     ''')
-    assert len(results) == 1
+    assert len(results) == 2
 
-    rules = results[0]()
+    rules = results[1]()
 
     print(rules)
-    assert {"label": "TEST", "data": [("value", "TEST", None)]} == rules
+    assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
 
 def test_parser_just_assign_macro():
     p = RitaParser()
-    p.build()
+    p.build(debug=True)
 
     results = p.test('''
     x = WORD{"Test"}
     ''')
     assert len(results) == 1
 
-    rules = results[0]()
-
-    print(rules)
-    assert {"vars": {"x": [("value", "Test", None)]}} == rules
-
 def test_parser_assign_macro_and_use_it():
     p = RitaParser()
-    p.build()
+    p.build(debug=True)
 
     results = p.test('''
     my_variable = WORD{"Test"}
 
-    PATTERN{my_variable -> MARK{"TEST"}
+    PATTERN{my_variable} -> MARK{"TEST"}
     ''')
-    assert len(results) == 1
+    assert len(results) == 2
 
-    rules = results[0]()
+    rules = results[1]()
 
     print(rules)
-    assert {"label": "TEST", "data": [("value", "TEST", None)]} == rules
+    assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
 

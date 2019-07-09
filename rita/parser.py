@@ -15,8 +15,8 @@ def stub(*args, **kwargs):
 
 def var_wrapper(variable):
     def wrapper(*args, **kwargs):
-        print(VARIABLES)
-        return VARIABLES[variable]
+        logger.debug("Variables: {}".format(macros.VARIABLES))
+        return macros.VARIABLES[variable]
 
     return wrapper
 
@@ -77,9 +77,12 @@ class RitaParser(object):
         p[0] = partial(fn, *p[3])
 
     def p_variable(self, p):
+        " VARIABLE_NAME : NAME "
+        p[0] = var_wrapper(p[1])
+
+    def p_variable_from_arg(self, p):
         " VARIABLE : NAME ASSIGN ARG "
-        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
-        p[0] = partial(macros.ASSIGN, p[1], p[3])
+        macros.ASSIGN(p[1], p[3])
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "
@@ -98,8 +101,8 @@ class RitaParser(object):
         p[0] = p[1]
 
     def p_arg_from_var(self, p):
-        " ARG : VARIABLE "
-        p[0] = p[1]
+        " ARG : VARIABLE_NAME "
+        p[0] = p[1](context={})
 
     def p_error(self, p):
         logger.error("Syntax error at '{}'".format(p.value))

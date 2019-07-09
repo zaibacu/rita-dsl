@@ -1,17 +1,17 @@
-import spacy
-
+import pytest
 import rita
 
-from spacy.pipeline import EntityRuler
 
 def test_color_car():
+    spacy = pytest.importorskip("spacy", minversion="2.1")
+    
     patterns = rita.compile("examples/color-car.rita")
     print(patterns)
     assert len(patterns) == 3
 
     # Build Spacy
     nlp = spacy.load("en")
-    ruler = EntityRuler(nlp, overwrite_ents=True)
+    ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
     ruler.add_patterns(patterns)
 
     nlp.add_pipe(ruler)

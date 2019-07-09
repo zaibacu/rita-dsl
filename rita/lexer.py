@@ -10,6 +10,7 @@ class RitaLexer(object):
     tokens = [
         "KEYWORD",
         "LITERAL",
+        "NAME",
         "LBRACKET",
         "RBRACKET",
         "ARROW",
@@ -39,12 +40,16 @@ class RitaLexer(object):
         t.lexer.lineno += len(t.value)
 
     def t_KEYWORD(self, t):
-        r"(\w|[_])+"
+        r"[A-Z_]{3,}"
         return t
 
     def t_LITERAL(self, t):
         r'".+?"'
         t.value = t.value.strip("\"")
+        return t
+
+    def t_NAME(self, t):
+        r"\w+"
         return t
 
     def t_error(self, t):

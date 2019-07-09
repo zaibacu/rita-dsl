@@ -22,25 +22,14 @@ def var_wrapper(variable):
 VARIABLES = {}
 
 
-def get_macro(name):
-    if name in VARIABLES:
-        return var_wrapper(VARIABLES[name])
-
-    try:
-        return getattr(macros, name)
-    except:
-        logger.error("{0} macro not found".format(name))
-        return stub
-
-
 class RitaParser(object):
     tokens = RitaLexer.tokens
     precedence = (
         ("nonassoc", "ARROW"),
         ("nonassoc", "COMMA"),
-        ("nonassoc", "ASSIGN"),
+        ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET"),
-        ("left", "KEYWORD", "LITERAL"),
+        ("left", "KEYWORD", "NAME", "LITERAL"),
         ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
 
@@ -60,14 +49,12 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], p[1])
 
-    def p_variable(self, p):
-        " VARIABLE : KEYWORD ASSIGN ARG "
-        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
-        VARIABLES[p[1]] = p[3]
-        p[0] = p[3]
-
     def p_macro_w_modif(self, p):
-        " MACRO : MACRO MODIF_PLUS "
+        """
+        MACRO : MACRO MODIF_PLUS
+              | MACRO MODIF_STAR
+              | MACRO MODIF_QMARK
+        """
         logger.debug("Adding modifier to Macro {}".format(p[1]))
         fn = p[1]
         p[0] = partial(fn, op=p[2])
@@ -79,7 +66,7 @@ class RitaParser(object):
             logger.debug("Parsing macro (w/o args): {}".format(p[1]))
             p[0] = fn
         except:
-            p[0] = var_wrapper(p[1])
+            logger.error("Macro: {} not found".format(p[1]))
 
     def p_macro_w_args(self, p):
         " MACRO : KEYWORD LBRACKET ARGS RBRACKET "
@@ -88,7 +75,7 @@ class RitaParser(object):
             logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
             p[0] = partial(fn, *p[3])
         except:
-            p[0] = stub
+            logger.error("Macro: {} not found".format(p[1]))
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "
@@ -106,6 +93,18 @@ class RitaParser(object):
         " ARG : MACRO "
         p[0] = p[1]
 
+    def p_variable_from_literal(self, p):
+        " VARIABLE : NAME ASSIGN LITERAL "
+        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
+        VARIABLES[p[1]] = p[3]
+        p[0] = p[3]
+
+    def p_variable_from_macro(self, p):
+        " VARIABLE : NAME ASSIGN MACRO "
+        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
+        VARIABLES[p[1]] = p[3]
+        p[0] = p[3]
+
     def p_arg_from_var(self, p):
         " ARG : VARIABLE "
         p[0] = p[1]
@@ -118,4 +117,4 @@ class RitaParser(object):
         self.parser = yacc.yacc(module=self, **kwargs)
 
     def test(self, data):
-        return self.parser.parse(data, lexer=self.lexer)
+        return self.parser.parse(data, lexer=self.lexer, debug=logger)

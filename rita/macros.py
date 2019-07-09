@@ -14,7 +14,7 @@ def flatten(lst):
 
 def resolve_value(obj, context):
     if isinstance(obj, str):
-        return obj.strip('"')
+        return obj
     return obj(context=context)
 
 
@@ -48,6 +48,7 @@ def IN_LIST(*args, context, op=None):
 
 
 def PATTERN(*args, context=None, op=None):
+    print(args)
     new_ctx = []
     for arg in args:
         resolve_value(arg, new_ctx)
@@ -55,6 +56,7 @@ def PATTERN(*args, context=None, op=None):
 
 
 def WORD(*args, context, op=None):
+    print(args)
     if len(args) == 1:
         literal = resolve_value(args[0], {})
         context.append(("value", literal, op))

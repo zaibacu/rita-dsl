@@ -41,10 +41,25 @@ def test_tokenize_assign_literal():
     l = RitaLexer()
     l.build()
 
-    tokens = list(l.test("TEST = \"Test\""))
+    tokens = list(l.test("Test = \"Test\""))
 
     assert len(tokens) == 3
 
-    assert tokens[0].type == "KEYWORD"
+    assert tokens[0].type == "NAME"
     assert tokens[1].type == "ASSIGN"
     assert tokens[2].type == "LITERAL"
+
+
+def test_tokenize_assign_macro():
+    l = RitaLexer()
+    l.build()
+
+    tokens = list(l.test("Test = WORD{\"Test\"}"))
+
+    assert len(tokens) == 6
+
+    assert tokens[0].type == "NAME"
+    assert tokens[1].type == "ASSIGN"
+    assert tokens[2].type == "KEYWORD"
+    assert tokens[4].type == "LITERAL"
+

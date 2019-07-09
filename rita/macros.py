@@ -49,7 +49,6 @@ def LOAD(*args, context=None):
 
 def ASSIGN(k, v, context=None, op=None):
     logger.debug("Assigning: {0} -> {1}".format(k, v))
-    print("Assigning: {0} -> {1}".format(k, v))
     VARIABLES[k] = resolve_value(v, [])
 
 

@@ -57,7 +57,7 @@ class RitaLexer(object):
         t.lexer.skip(1)
 
     def build(self, **kwargs):
-        self.lexer = lex.lex(module=self, **kwargs)
+        self.lexer = lex.lex(module=self, errorlog=logger, **kwargs)
         return self.lexer
 
     def test(self, data):

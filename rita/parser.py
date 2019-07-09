@@ -1,4 +1,5 @@
 import logging
+
 import ply.yacc as yacc
 
 from functools import partial
@@ -33,12 +34,18 @@ class RitaParser(object):
 
 
     def p_document(self, p):
-        " DOCUMENT : MACRO_CHAIN "
+        """
+        DOCUMENT : MACRO_CHAIN
+                 | VARIABLE
+        """
         logger.debug("Building initial document {}".format(p[1]))
         p[0] = [p[1]]
 
     def p_document_list(self, p):
-        " DOCUMENT : DOCUMENT MACRO_CHAIN "
+        """
+        DOCUMENT : DOCUMENT MACRO_CHAIN
+                 | DOCUMENT VARIABLE
+        """
         logger.debug("Extending document {}".format(p[2]))
         p[0] = p[1] + [p[2]]
 
@@ -59,21 +66,20 @@ class RitaParser(object):
 
     def p_macro_wo_args(self, p):
         " MACRO : KEYWORD "
-        try:
-            fn = getattr(macros, p[1])
-            logger.debug("Parsing macro (w/o args): {}".format(p[1]))
-            p[0] = fn
-        except:
-            logger.error("Macro: {} not found".format(p[1]))
+        fn = getattr(macros, p[1])
+        logger.debug("Parsing macro (w/o args): {}".format(p[1]))
+        p[0] = fn
 
     def p_macro_w_args(self, p):
         " MACRO : KEYWORD LBRACKET ARGS RBRACKET "
-        try:
-            fn = getattr(macros, p[1])
-            logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
-            p[0] = partial(fn, *p[3])
-        except:
-            logger.error("Macro: {} not found".format(p[1]))
+        logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
+        fn = getattr(macros, p[1])
+        p[0] = partial(fn, *p[3])
+
+    def p_variable(self, p):
+        " VARIABLE : NAME ASSIGN ARG "
+        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
+        p[0] = partial(macros.ASSIGN, p[1], p[3])
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "
@@ -91,11 +97,6 @@ class RitaParser(object):
         " ARG : MACRO "
         p[0] = p[1]
 
-    def p_variable(self, p):
-        " VARIABLE : NAME ASSIGN ARG "
-        logger.debug("Parsing variable: {0} = {1}".format(p[1], p[3]))
-        p[0] = partial(macros.ASSIGN, p[1], p[3])
-
     def p_arg_from_var(self, p):
         " ARG : VARIABLE "
         p[0] = p[1]
@@ -105,7 +106,7 @@ class RitaParser(object):
 
     def build(self, **kwargs):
         self.lexer = RitaLexer().build(**kwargs)
-        self.parser = yacc.yacc(module=self, **kwargs)
+        self.parser = yacc.yacc(module=self, errorlog=logger, **kwargs)
 
     def test(self, data):
         return self.parser.parse(data, lexer=self.lexer, debug=logger)

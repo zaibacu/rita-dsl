@@ -38,10 +38,14 @@ def LOAD(*args, context=None):
     with open(fpath, "r") as f:
         return list([l.strip() for l in f.readlines()])
 
-def ASSIGN(k, v, context, op=None):
+
+def ASSIGN(k, v, context=None, op=None):
+    if context is None:
+        context = {}
     if "vars" not in context:
         context["vars"] = {}
-    context['vars'][k] = v
+    vals = []
+    context["vars"][k] = resolve_value(v, vals)
     return context
 
 

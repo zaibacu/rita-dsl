@@ -23,13 +23,8 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements/main.txt
-    pip install -r requirements/test.txt
-  displayName: 'Install dependencies'
+- script: pip install tox
+  displayName: 'Install Tox'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    python -m pytest tests/
-  displayName: 'pytest'
+- script: tox -e py
+  displayName: 'Run Tox'

@@ -16,6 +16,14 @@ def regex_parse(r, op=None):
     return d
 
 
+def fuzzy_parse(r, op=None):
+    # TODO: build premutations
+    d = {"LOWER": {"REGEX": r}}
+    if op:
+        d["OP"] = op
+    return d
+
+
 def generic_parse(tag, value, op=None):
     d = {}
     d[tag] = value
@@ -32,6 +40,7 @@ PARSERS = {
     "lemma": partial(generic_parse, "LEMMA"),
     "pos": partial(generic_parse, "POS"),
     "punct": partial(generic_parse, "PUNCT"),
+    "fuzzy": fuzzy_parse,
 }
 
 

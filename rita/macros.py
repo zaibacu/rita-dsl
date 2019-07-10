@@ -101,3 +101,7 @@ def LEMMA(name, context, op=None):
 
 def ENTITY(name, context, op=None):
     return context.append(("entity", resolve_value(name, {}), op))
+
+
+def FUZZY(name, context, op=None):
+    return context.append(("fuzzy", resolve_value(name, {}), op))

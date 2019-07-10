@@ -33,3 +33,32 @@ CarModels = LOAD{"path/models.txt"}
 IN_LIST{CarModels} # Check if token is inside of list of car models we provided
 ```
 
+For our declarations to make any sense, we need to build an expression. More on that in next topic.
+
+## Expressions
+
+This language is built on expressions. 
+One expression means:
+
+a) Single rule defining entity
+
+b) Single variable declaration
+
+Rule expression ends with an arrow `->`, eg.:
+
+`WORD{"something"} -> MARK{"SOMETHING_LABEL"}`
+
+with MACRO `MARK` we're assigning a label to rule
+
+Variable declaration expression ends with equals sign `=`, eg.:
+```
+a = "Apple"
+```
+
+When building a rule, you may want to combine several rules into one, `PATTERN` MACRO can be used for that:
+
+```
+PATTERN{IN_LIST{"red", "green", "blue", "white", "black", "silver", "brown"}, WORD{"car"}} -> MARK{"CAR_COLOR"}
+```
+
+we're saying: `If any of these color words are present in text and is followed by word "car", we assume this part can be labeled as "CAR_COLOR"`

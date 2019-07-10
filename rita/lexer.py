@@ -13,6 +13,8 @@ class RitaLexer(object):
         "NAME",
         "LBRACKET",
         "RBRACKET",
+        "LPAREN",
+        "RPAREN",
         "ARROW",
         "COMMA",
         "MODIF_QMARK",
@@ -21,13 +23,15 @@ class RitaLexer(object):
         "ASSIGN",
     ]
 
-    literals = ["{", "}", '"', ",", "="]
+    literals = ["{", "}", "(", ")", '"', ",", "="]
 
     t_ignore = " \t"
     t_ignore_COMMENT = r"\#.*"
     t_ARROW = "->"
     t_LBRACKET = "{"
     t_RBRACKET = "}"
+    t_LPAREN = r"\("
+    t_RPAREN = r"\)"
     t_COMMA = ","
     t_MODIF_QMARK = r"\?"
     t_MODIF_STAR = r"\*"

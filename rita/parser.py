@@ -28,7 +28,7 @@ class RitaParser(object):
         ("nonassoc", "ARROW"),
         ("nonassoc", "COMMA"),
         ("left", "ASSIGN"),
-        ("left", "RBRACKET", "LBRACKET"),
+        ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
         ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
@@ -54,6 +54,11 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], p[1])
 
+    def p_macro_chain_from_array(self, p):
+        " MACRO_CHAIN : ARRAY ARROW MACRO "
+        logger.debug("Have {0} -> {1}".format(p[1], p[3]))
+        p[0] = partial(p[3], macros.PATTERN(*p[1]))
+
     def p_macro_w_modif(self, p):
         """
         MACRO : MACRO MODIF_PLUS
@@ -71,18 +76,32 @@ class RitaParser(object):
         p[0] = fn
 
     def p_macro_w_args(self, p):
-        " MACRO : KEYWORD LBRACKET ARGS RBRACKET "
+        " MACRO : KEYWORD LPAREN ARGS RPAREN "
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
         fn = getattr(macros, p[1])
         p[0] = partial(fn, *p[3])
+
+    def p_macro_from_array(self, p):
+        " MACRO : KEYWORD ARRAY "
+        logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[2]))
+        fn = getattr(macros, p[1])
+        print("Args: {0} and {1}".format(p[1], p[2]))
+        p[0] = partial(fn, *p[2])
+
+    def p_array(self, p):
+        " ARRAY : LBRACKET ARGS RBRACKET "
+        p[0] = p[2]
 
     def p_variable(self, p):
         " VARIABLE_NAME : NAME "
         p[0] = var_wrapper(p[1])
 
-    def p_variable_from_arg(self, p):
-        " VARIABLE : NAME ASSIGN ARG "
-        macros.ASSIGN(p[1], p[3])
+    def p_variable_from_args(self, p):
+        " VARIABLE : NAME ASSIGN ARGS "
+        if len(p[3]) == 1:
+            macros.ASSIGN(p[1], p[3][0])
+        else:
+            macros.ASSIGN(p[1], p[3])
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "
@@ -103,6 +122,10 @@ class RitaParser(object):
     def p_arg_from_var(self, p):
         " ARG : VARIABLE_NAME "
         p[0] = p[1](context={})
+
+    def p_arg_from_array(self, p):
+        " ARGS : ARRAY "
+        p[0] = p[1]
 
     def p_error(self, p):
         logger.error("Syntax error at '{}'".format(p.value))

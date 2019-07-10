@@ -5,7 +5,7 @@ def test_parser_any_macro_wo_args_w_type():
     p = RitaParser()
     p.build()
 
-    results = p.parse('ANY -> MARK{"PlaceHolder"}')
+    results = p.parse('ANY -> MARK("PlaceHolder")')
     assert len(results) == 1
 
 
@@ -13,7 +13,7 @@ def test_parser_any_macro_w_args_w_type():
     p = RitaParser()
     p.build()
 
-    results = p.parse('PATTERN{WORD{"arg1"}} -> MARK{"PlaceHolder"}')
+    results = p.parse('{WORD("arg1")} -> MARK("PlaceHolder")')
     assert len(results) == 1
 
 
@@ -21,7 +21,7 @@ def test_parser_nested_macro():
     p = RitaParser()
     p.build()
 
-    results = p.parse('PATTERN{ANY, WORD{"test"}} -> MARK{"Test"}')
+    results = p.parse('{ANY, WORD("test")} -> MARK("Test")')
     assert len(results) == 1
     for result in results:
         print(result())
@@ -35,7 +35,7 @@ def test_parser_assign_literal_and_ignore_it():
         """
     my_variable = "Test"
 
-    PATTERN{WORD{"something"}} -> MARK{"TEST"}
+    {WORD("something")} -> MARK("TEST")
     """
     )
     assert len(results) == 2
@@ -54,7 +54,7 @@ def test_parser_assign_literal_and_use_it():
         """
     my_variable = "Test"
 
-    PATTERN{WORD{my_variable}} -> MARK{"TEST"}
+    {WORD(my_variable)} -> MARK("TEST")
     """
     )
     assert len(results) == 2
@@ -71,7 +71,7 @@ def test_parser_just_assign_macro():
 
     results = p.parse(
         """
-    x = WORD{"Test"}
+    x = WORD("Test")
     """
     )
     assert len(results) == 1
@@ -83,9 +83,9 @@ def test_parser_assign_macro_and_use_it():
 
     results = p.parse(
         """
-    my_variable = WORD{"Test"}
+    my_variable = WORD("Test")
 
-    PATTERN{my_variable} -> MARK{"TEST"}
+    {my_variable} -> MARK("TEST")
     """
     )
     assert len(results) == 2

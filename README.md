@@ -14,13 +14,14 @@ You can start defining rules by creating file with extention `.rita`
 Bellow is complete example which can be used as a reference point
 
 ```
-cars = LOAD{"examples/cars.txt"}
+cars = LOAD("examples/cars.txt") # Load items from file
+colors = {"red", "green", "blue", "white", "black"} # Declare items inline
 
-PATTERN{IN_LIST{"red", "green", "blue", "white", "black"}, WORD{"car"}} -> MARK{"CAR_COLOR"}
+{IN_LIST(colors), WORD("car")} -> MARK("CAR_COLOR") # If first token is in list `colors` and second one is word `car`, label it
 
-PATTERN{IN_LIST{cars}, WORD+} -> MARK{"CAR_MODEL"}
+{IN_LIST(cars), WORD+} -> MARK("CAR_MODEL") # If first token is in list `cars` and follows by 1..N words, label it
 
-PATTERN{ENTITY{"PERSON"}, LEMMA{"like"}, WORD} -> MARK{"LIKED_ACTION"}
+{ENTITY("PERSON"), LEMMA("like"), WORD} -> MARK("LIKED_ACTION") # If first token is Person, followed by any word which has lemma `like`, label it
 ```
 
 Now you can compile these rules `rita -f <your-file>.rita output.jsonl`

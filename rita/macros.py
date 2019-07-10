@@ -26,7 +26,9 @@ def resolve_value(obj, context):
     if isinstance(obj, str):
         return obj
     elif isinstance(obj, list):
-        return context.append(*obj)
+        for item in obj:
+            context.append(item)
+        return context
     return obj(context=context)
 
 
@@ -41,7 +43,7 @@ def PUNCT(context, op=None):
 
 
 def MARK(type_, obj, op=None):
-    return {"label": resolve_value(type_, {}), "data": resolve_value(obj, {})}
+    return {"label": resolve_value(type_, []), "data": resolve_value(obj, [])}
 
 
 def LOAD(*args, context=None):
@@ -73,7 +75,7 @@ def PATTERN(*args, context=None, op=None):
 
 def WORD(*args, context, op=None):
     if len(args) == 1:
-        literal = resolve_value(args[0], {})
+        literal = resolve_value(args[0], [])
         context.append(("value", literal, op))
         return context
     elif len(args) == 0:

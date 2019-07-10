@@ -9,7 +9,5 @@ def compile(fname):
         raw = f.read()
 
     root = parser.parse(raw)
-    result = [rules_to_patterns(doc())
-              for doc in root
-              if doc]
+    result = [rules_to_patterns(doc()) for doc in root if doc]
     return result

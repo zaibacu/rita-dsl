@@ -16,5 +16,3 @@ def main():
     with open(args.out, "w") as f:
         for pattern in patterns:
             f.write(json.dumps(pattern) + "\n")
-
-    

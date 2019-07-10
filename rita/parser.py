@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 def stub(*args, **kwargs):
     return None
 
+
 def var_wrapper(variable):
     def wrapper(*args, **kwargs):
         logger.debug("Variables: {}".format(macros.VARIABLES))
@@ -31,7 +32,6 @@ class RitaParser(object):
         ("left", "KEYWORD", "NAME", "LITERAL"),
         ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
-
 
     def p_document(self, p):
         """

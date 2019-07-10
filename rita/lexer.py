@@ -45,7 +45,7 @@ class RitaLexer(object):
 
     def t_LITERAL(self, t):
         r'".+?"'
-        t.value = t.value.strip("\"")
+        t.value = t.value.strip('"')
         return t
 
     def t_NAME(self, t):

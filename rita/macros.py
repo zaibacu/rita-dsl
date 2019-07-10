@@ -10,7 +10,7 @@ VARIABLES = {}
 def flatten(lst):
     if len(lst) > 1:
         return lst
-    
+
     def explode(v):
         if callable(v):
             return v()

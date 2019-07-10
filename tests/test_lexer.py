@@ -18,7 +18,7 @@ def test_tokenize_any_macro_wo_args_w_type():
     l = RitaLexer()
     l.build()
 
-    tokens = list(l.tokenize("ANY -> MARK{\"Placeholder\"}"))
+    tokens = list(l.tokenize('ANY -> MARK{"Placeholder"}'))
     assert len(tokens) == 6
     t0 = tokens[0]
     assert t0.type == "KEYWORD"
@@ -41,7 +41,7 @@ def test_tokenize_assign_literal():
     l = RitaLexer()
     l.build()
 
-    tokens = list(l.tokenize("Test = \"Test\""))
+    tokens = list(l.tokenize('Test = "Test"'))
 
     assert len(tokens) == 3
 
@@ -54,7 +54,7 @@ def test_tokenize_assign_macro():
     l = RitaLexer()
     l.build()
 
-    tokens = list(l.tokenize("Test = WORD{\"Test\"}"))
+    tokens = list(l.tokenize('Test = WORD{"Test"}'))
 
     assert len(tokens) == 6
 
@@ -62,4 +62,3 @@ def test_tokenize_assign_macro():
     assert tokens[1].type == "ASSIGN"
     assert tokens[2].type == "KEYWORD"
     assert tokens[4].type == "LITERAL"
-

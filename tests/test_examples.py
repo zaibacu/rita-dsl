@@ -4,7 +4,7 @@ import rita
 
 def test_color_car():
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    
+
     patterns = rita.compile("examples/color-car.rita")
     print(patterns)
     assert len(patterns) == 3

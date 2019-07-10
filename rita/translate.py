@@ -31,6 +31,7 @@ PARSERS = {
     "entity": partial(generic_parse, "ENT_TYPE"),
     "lemma": partial(generic_parse, "LEMMA"),
     "pos": partial(generic_parse, "POS"),
+    "punct": partial(generic_parse, "PUNCT"),
 }
 
 

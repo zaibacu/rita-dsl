@@ -105,3 +105,6 @@ def ENTITY(name, context, op=None):
 
 def FUZZY(name, context, op=None):
     return context.append(("fuzzy", resolve_value(name, {}), op))
+
+def IMPORT(module, context=None, op=None):
+    pass

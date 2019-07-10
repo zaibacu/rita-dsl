@@ -14,6 +14,10 @@ def stub(*args, **kwargs):
     return None
 
 
+def load_macro(name):
+    return getattr(macros, name)
+
+
 def var_wrapper(variable):
     def wrapper(*args, **kwargs):
         logger.debug("Variables: {}".format(macros.VARIABLES))
@@ -71,20 +75,20 @@ class RitaParser(object):
 
     def p_macro_wo_args(self, p):
         " MACRO : KEYWORD "
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         logger.debug("Parsing macro (w/o args): {}".format(p[1]))
         p[0] = fn
 
     def p_macro_w_args(self, p):
         " MACRO : KEYWORD LPAREN ARGS RPAREN "
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         p[0] = partial(fn, *p[3])
 
     def p_macro_from_array(self, p):
         " MACRO : KEYWORD ARRAY "
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[2]))
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         print("Args: {0} and {1}".format(p[1], p[2]))
         p[0] = partial(fn, *p[2])
 

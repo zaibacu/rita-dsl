@@ -21,7 +21,7 @@ WORD* # Declare, that you'll have 0..N words
 WORD? # Declare, that you'll have 1 or no words
 ```
 
-* NOTE * All of the MACROS are spelled in capital letters
+**NOTE** All of the MACROS are spelled in capital letters
 
 And finally you have `VARIABLE`. First you must declare it and later you can use just by spelling it's name
 

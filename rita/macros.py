@@ -1,10 +1,12 @@
 import logging
 
 from itertools import chain
+from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
 VARIABLES = {}
+MODULES = []
 
 
 def flatten(lst):
@@ -103,8 +105,10 @@ def ENTITY(name, context, op=None):
     return context.append(("entity", resolve_value(name, {}), op))
 
 
-def FUZZY(name, context, op=None):
-    return context.append(("fuzzy", resolve_value(name, {}), op))
-
 def IMPORT(module, context=None, op=None):
-    pass
+    mod_name = resolve_value(module, {})
+    MODULES.append(import_module(mod_name))
+
+    
+def EXEC(obj, context=None, op=None):
+    resolve_value(obj, [])

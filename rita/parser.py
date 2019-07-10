@@ -2,6 +2,7 @@ import logging
 
 import ply.yacc as yacc
 
+from importlib import import_module
 from functools import partial
 
 from rita.lexer import RitaLexer
@@ -15,7 +16,23 @@ def stub(*args, **kwargs):
 
 
 def load_macro(name):
-    return getattr(macros, name)
+    try:
+        return getattr(macros, name)
+    except:
+        pass
+
+    def lazy_load(*args, **kwargs):
+        for mod in macros.MODULES:
+            try:
+                fn = getattr(mod, name)
+                return fn(*args, **kwargs)
+            except Exception as ex:
+                logger.error(ex)
+                continue
+
+        raise RuntimeError("MACRO {} not found".format(name))
+
+    return lazy_load
 
 
 def var_wrapper(variable):

@@ -4,8 +4,9 @@ This is a language, lossly based on language [Apache UIMA RUTA](https://uima.apa
 
 # Documentation
 
-[Syntax Guide](docs/syntax.md)
-[Macros](docs/macros.md)
+- [Syntax Guide](docs/syntax.md)
+
+- [Macros](docs/macros.md)
 
 # Quick Start
 You can start defining rules by creating file with extention `.rita`

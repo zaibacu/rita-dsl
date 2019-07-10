@@ -35,6 +35,7 @@ PARSERS = {
 
 
 def rules_to_patterns(rule):
+    print(rule)
     return {
         "label": rule["label"],
         "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],

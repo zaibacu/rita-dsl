@@ -10,8 +10,6 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python35:
-      python.version: '3.5'
     Python36:
       python.version: '3.6'
     Python37:
@@ -22,6 +20,12 @@ steps:
   inputs:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
+
+- script: pip install black
+  displayName: 'Install black'
+
+- script: black --check rita
+  displayName: 'Lint with Black'
 
 - script: pip install tox
   displayName: 'Install Tox'

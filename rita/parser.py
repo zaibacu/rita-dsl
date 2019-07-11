@@ -80,6 +80,10 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], macros.PATTERN(*p[1]))
 
+    def p_macro_chain_exec(self, p):
+        " MACRO_CHAIN : EXEC MACRO "
+        p[0] = partial(macros.EXEC, p[2])
+
     def p_macro_w_modif(self, p):
         """
         MACRO : MACRO MODIF_PLUS

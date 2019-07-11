@@ -111,4 +111,4 @@ def IMPORT(module, context=None, op=None):
 
     
 def EXEC(obj, context=None, op=None):
-    resolve_value(obj, [])
+    return resolve_value(obj, [])

@@ -1,0 +1,3 @@
+!IMPORT("rita.modules.fuzzy")
+
+FUZZY("squirrel") -> MARK("CRITTER")

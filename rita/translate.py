@@ -1,4 +1,8 @@
+import logging
+
 from functools import partial
+
+logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, op=None):
@@ -45,8 +49,9 @@ PARSERS = {
 
 
 def rules_to_patterns(rule):
-    print(rule)
-    return {
-        "label": rule["label"],
-        "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
-    }
+    if rule:
+        logger.info(rule)
+        yield {
+            "label": rule["label"],
+            "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
+        }

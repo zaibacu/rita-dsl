@@ -15,9 +15,10 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name="rita",
+    name="rita-dsl",
     version="0.1.0",
     long_description=desc,
+    long_description_content_type="text/markdown",
     description="DSL for building language rules",
     url="https://github.com/zaibacu/rita-dsl",
     author="Šarūnas Navickas",

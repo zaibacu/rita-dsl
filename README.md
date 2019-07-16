@@ -11,7 +11,9 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 - [Extending](docs/extend.md) - injecting custom macros to be used inside rule generation
 
 # Quick Start
-You can start defining rules by creating file with extention `.rita`
+Install it via `pip install rita-dsl`
+
+You can start defining rules by creating file with extention `*.rita`
 
 Bellow is complete example which can be used as a reference point
 

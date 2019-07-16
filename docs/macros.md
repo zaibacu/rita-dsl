@@ -18,3 +18,5 @@
 | LOAD    |`ARG`                 |`None`     |Load array from file. Each line = new element|
 | MARK    |`ARG`                 |`None`     |Mark given pattern as a label                |
 | ASSIGN  |`Literal`, `ARG`      |`None`     |Assign value to variable. **Covered by standard syntax, can be ignored**                     |
+| EXEC  |`ARG`                   |`None`     |Execute macro. **Covered by standard syntax, can be ignored**                     |
+| IMPORT  |`Literal`             |`None`     |Import custom module, allowing custom macros to be executed|

@@ -2,6 +2,7 @@ import logging
 
 import ply.yacc as yacc
 
+from importlib import import_module
 from functools import partial
 
 from rita.lexer import RitaLexer
@@ -12,6 +13,26 @@ logger = logging.getLogger(__name__)
 
 def stub(*args, **kwargs):
     return None
+
+
+def load_macro(name):
+    try:
+        return getattr(macros, name)
+    except:
+        pass
+
+    def lazy_load(*args, **kwargs):
+        for mod in macros.MODULES:
+            try:
+                fn = getattr(mod, name)
+                return fn(*args, **kwargs)
+            except Exception as ex:
+                logger.error(ex)
+                continue
+
+        raise RuntimeError("MACRO {} not found".format(name))
+
+    return lazy_load
 
 
 def var_wrapper(variable):
@@ -59,6 +80,10 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], macros.PATTERN(*p[1]))
 
+    def p_macro_chain_exec(self, p):
+        " MACRO_CHAIN : EXEC MACRO "
+        p[0] = partial(macros.EXEC, p[2])
+
     def p_macro_w_modif(self, p):
         """
         MACRO : MACRO MODIF_PLUS
@@ -71,20 +96,20 @@ class RitaParser(object):
 
     def p_macro_wo_args(self, p):
         " MACRO : KEYWORD "
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         logger.debug("Parsing macro (w/o args): {}".format(p[1]))
         p[0] = fn
 
     def p_macro_w_args(self, p):
         " MACRO : KEYWORD LPAREN ARGS RPAREN "
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[3]))
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         p[0] = partial(fn, *p[3])
 
     def p_macro_from_array(self, p):
         " MACRO : KEYWORD ARRAY "
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[2]))
-        fn = getattr(macros, p[1])
+        fn = load_macro(p[1])
         print("Args: {0} and {1}".format(p[1], p[2]))
         p[0] = partial(fn, *p[2])
 

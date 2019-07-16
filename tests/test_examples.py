@@ -31,3 +31,44 @@ def test_color_car():
     assert entities[1] == ("red car", "CAR_COLOR")  # Our first rule
     assert entities[2] == ("BMW X6 Mclass", "CAR_MODEL")  # Our second rule
     assert entities[3] == ("Johny likes driving", "LIKED_ACTION")  # Our third rule
+
+def test_fuzzy_matching():
+    spacy = pytest.importorskip("spacy", minversion="2.1")
+
+    patterns = rita.compile("examples/fuzzy-matching.rita")
+    print(patterns)
+    assert len(patterns) == 1
+
+    # Build Spacy
+    nlp = spacy.load("en")
+    ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
+    ruler.add_patterns(patterns)
+
+    nlp.add_pipe(ruler)
+
+    # Check if we're matching with capitalized word
+
+    t1 = """
+    Squirrel just walked outside
+    """
+
+    doc = nlp(t1)
+
+    entities = [(e.text, e.label_) for e in doc.ents]
+
+    assert len(entities) == 1
+    assert entities[0] == ("Squirrel", "CRITTER")
+
+    # Check if we're matching with all CAPS
+
+    t2 = """
+    there's a SQUIRREL
+    """
+
+    doc = nlp(t2)
+
+    entities = [(e.text, e.label_) for e in doc.ents]
+
+    assert len(entities) == 1
+    assert entities[0] == ("SQUIRREL", "CRITTER")
+    

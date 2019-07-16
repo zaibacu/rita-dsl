@@ -94,3 +94,39 @@ def test_parser_assign_macro_and_use_it():
 
     print(rules)
     assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
+
+
+def test_parser_import_module():
+    p = RitaParser()
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+    IMPORT("rita.modules.fuzzy") -> EXEC
+
+    FUZZY("test") -> MARK("FUZZY_MATCH")
+    """
+    )
+
+    assert len(results) == 2
+    results[0]()
+    rules = results[1]()
+    print(rules)
+
+
+def test_parser_import_module_shortcut():
+    p = RitaParser()
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+    !IMPORT("rita.modules.fuzzy")
+
+    FUZZY("test") -> MARK("FUZZY_MATCH")
+    """
+    )
+
+    assert len(results) == 2
+    results[0]()
+    rules = results[1]()
+    print(rules)

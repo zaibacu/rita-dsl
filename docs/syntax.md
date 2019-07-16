@@ -10,15 +10,30 @@ You have `LITERAL` which is any kind of string behind quotes, eg.:
 
 You have `MACRO` which is main backbone of everything.
 
-You can
-
+Using parenthesis, you can pass arguments to macro:
 ```
 LOAD("path/filename.txt") # Load a text file
+```
+
+if macro doesn't require any, you can simply call it
+
+```
 WORD # Declare, that you'll have any kind of word
-WORD("cat") # Declare, that you'll have exact word `cat`
+```
+
+Also, macro can have modifier (if it supports it)
+
+```
 WORD+ # Declare, that you'll have 1..N words
 WORD* # Declare, that you'll have 0..N words
 WORD? # Declare, that you'll have 1 or no words
+```
+
+More examples
+
+```
+WORD("cat") # Declare, that you'll have exact word `cat`
+
 {"red", "green", "blue"} # Declare array of words
 ```
 

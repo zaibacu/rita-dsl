@@ -8,6 +8,8 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 
 - [Macros](docs/macros.md)
 
+- [Extending](docs/extend.md) - injecting custom macros to be used inside rule generation
+
 # Quick Start
 You can start defining rules by creating file with extention `.rita`
 

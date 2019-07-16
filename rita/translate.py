@@ -22,7 +22,7 @@ def regex_parse(r, op=None):
 
 def fuzzy_parse(r, op=None):
     # TODO: build premutations
-    d = {"LOWER": {"REGEX": r}}
+    d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
     if op:
         d["OP"] = op
     return d

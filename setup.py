@@ -16,7 +16,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="rita-dsl",
-    version="0.1.0",
+    version="0.1.1",
     long_description=desc,
     long_description_content_type="text/markdown",
     description="DSL for building language rules",

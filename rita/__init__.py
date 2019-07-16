@@ -14,7 +14,5 @@ def compile(fname):
 
     root = parser.parse(raw)
     logger.debug(root)
-    result = [rule
-              for doc in root if doc
-              for rule in rules_to_patterns(doc())]
+    result = [rule for doc in root if doc for rule in rules_to_patterns(doc())]
     return result

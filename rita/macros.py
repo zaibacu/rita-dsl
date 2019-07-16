@@ -109,6 +109,6 @@ def IMPORT(module, context=None, op=None):
     mod_name = resolve_value(module, {})
     MODULES.append(import_module(mod_name))
 
-    
+
 def EXEC(obj, context=None, op=None):
     return resolve_value(obj, [])

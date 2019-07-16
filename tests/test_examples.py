@@ -32,6 +32,7 @@ def test_color_car():
     assert entities[2] == ("BMW X6 Mclass", "CAR_MODEL")  # Our second rule
     assert entities[3] == ("Johny likes driving", "LIKED_ACTION")  # Our third rule
 
+
 def test_fuzzy_matching():
     spacy = pytest.importorskip("spacy", minversion="2.1")
 
@@ -71,4 +72,3 @@ def test_fuzzy_matching():
 
     assert len(entities) == 1
     assert entities[0] == ("SQUIRREL", "CRITTER")
-    

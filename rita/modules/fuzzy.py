@@ -4,21 +4,13 @@ import string
 from rita.macros import resolve_value
 
 
-char_translation = dict([
-    (c * 2, "{0}{{1,2}}".format(c))
-    for c in string.ascii_lowercase
-])
+char_translation = dict(
+    [(c * 2, "{0}{{1,2}}".format(c)) for c in string.ascii_lowercase]
+)
 
-find_re = "|".join(["({0})".format(s)
-                   for (s, _) in char_translation.items()])
+find_re = "|".join(["({0})".format(s) for (s, _) in char_translation.items()])
 
-slang = {
-    "you": "u",
-    "for": "4",
-    "are": "r",
-    "you are": "ur",
-    "you're": "ur"
-}
+slang = {"you": "u", "for": "4", "are": "r", "you are": "ur", "you're": "ur"}
 
 
 def premutations(initial):

@@ -45,7 +45,7 @@ You can pass tree compilation function explicitly. This concrete function will b
 
 Here's a test covering this case
 
-```
+```python
 def test_standalone_simple():
     from rita.engine.translate_standalone import compile_tree
     patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_tree)

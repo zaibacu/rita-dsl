@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, op=None):
-    initial = r"({})".format("|".join(lst))
+    initial = r"({0})".format("|".join(lst))
     if op:
         return initial + op
 
@@ -39,6 +39,7 @@ def entity_parse(value, op=None):
         return person_parse(op)
     else:
         return not_supported(value)
+
 
 def punct_parse():
     return r"[.,!;?:]"
@@ -96,5 +97,4 @@ def compile_tree(root):
                 for p in rules_to_patterns(doc())]
 
     executor = RuleExecutor(patterns)
-    
     return executor

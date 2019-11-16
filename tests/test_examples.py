@@ -73,5 +73,15 @@ def test_fuzzy_matching():
     assert len(entities) == 1
     assert entities[0] == ("SQUIRREL", "CRITTER")
 
+
 def test_standalone_simple():
-    pass
+    from rita.engine.translate_standalone import compile_tree
+    patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_tree)
+    results = list(patterns.execute("Donald Trump was elected President in 2016 defeating Hilary Clinton."))
+    assert len(results) == 2
+    entities = list([(r["text"], r["label"]) for r in results])
+
+    assert entities[0] == ("Donald Trump was elected", "WON_ELECTION")
+    assert entities[1] == ("defeating Hilary Clinton", "LOST_ELECTION")
+
+    

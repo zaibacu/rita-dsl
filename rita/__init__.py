@@ -1,4 +1,5 @@
 import logging
+import types
 
 from rita import engine
 from rita.parser import RitaParser
@@ -15,7 +16,12 @@ def compile_string(raw, compile_fn=None):
         compile_tree = compile_fn
     else:
         compile_tree = engine.get_default()
-    return list(compile_tree(root))
+
+    result = compile_tree(root)
+    if isinstance(result, types.GeneratorType):
+        return list(result)
+    else:
+        return result
 
 
 def compile(fname, compile_fn=None):

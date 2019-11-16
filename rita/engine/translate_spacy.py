@@ -57,6 +57,7 @@ def rules_to_patterns(rule):
         }
 
 def compile_tree(root):
+    logger.info("Using spaCy rules implementation")
     for doc in root:
         if not doc:
             continue

@@ -89,6 +89,7 @@ class RuleExecutor(object):
 
 
 def compile_tree(root):
+    logger.info("Using standalone rule implementation")
     docs = [doc for doc in root if doc]
     patterns = [p
                 for doc in docs

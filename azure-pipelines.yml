@@ -21,12 +21,6 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: pip install black
-  displayName: 'Install black'
-
-- script: black --check --diff rita
-  displayName: 'Lint with Black'
-
 - script: pip install tox
   displayName: 'Install Tox'
 

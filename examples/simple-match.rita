@@ -1,0 +1,2 @@
+{ENTITY("PERSON")+, WORD("was"), WORD("elected")}->MARK("WON_ELECTION")
+{WORD("defeating"), ENTITY("PERSON")+}->MARK("LOST_ELECTION")

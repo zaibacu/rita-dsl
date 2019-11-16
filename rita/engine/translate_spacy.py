@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, op=None):
-    d = {"TEXT": {"REGEX": r"({})".format("|".join(lst))}}
+    d = {"TEXT": {"REGEX": r"({0})".format("|".join(lst))}}
     if op:
         d["OP"] = op
     return d
@@ -55,3 +55,13 @@ def rules_to_patterns(rule):
             "label": rule["label"],
             "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
         }
+
+
+def compile_tree(root):
+    logger.info("Using spaCy rules implementation")
+    for doc in root:
+        if not doc:
+            continue
+
+        for rule in rules_to_patterns(doc()):
+            yield rule

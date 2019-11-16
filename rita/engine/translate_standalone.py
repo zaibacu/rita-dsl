@@ -23,7 +23,10 @@ def regex_parse(r, op=None):
 
 
 def not_supported(key, *args, **kwargs):
-    raise RuntimeError("Rule {} is not supported in standalone mode".format(key))
+    raise RuntimeError(
+        "Rule '{0}' is not supported in standalone mode"
+        .format(key)
+    )
 
 
 def person_parse(op=None):
@@ -77,7 +80,7 @@ class RuleExecutor(object):
 
     def compile(self, label, rules):
         return re.compile(r"(?P<{0}>{1})".format(label, "\s".join(rules)))
-    
+
     def execute(self, text):
         for p in self.patterns:
             for match in p.finditer(text):

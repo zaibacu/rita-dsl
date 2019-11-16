@@ -14,6 +14,7 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 
 - [Extending](docs/extend.md) - injecting custom macros to be used inside rule generation
 
+
 # Quick Start
 Install it via `pip install rita-dsl`
 
@@ -34,7 +35,29 @@ colors = {"red", "green", "blue", "white", "black"} # Declare items inline
 
 Now you can compile these rules `rita -f <your-file>.rita output.jsonl`
 
-And load into spaCy:
+# Using compiled rules
+
+## Standalone Version
+
+While it is highly recommended to use it with spaCy as a base, there can be cases when pure python regex is the only option.
+
+You can pass tree compilation function explicitly. This concrete function will build regular expressions and create executor which accepts raw text and returns list of results.
+
+Here's a test covering this case
+
+```
+def test_standalone_simple():
+    from rita.engine.translate_standalone import compile_tree
+    patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_tree)
+    results = list(patterns.execute("Donald Trump was elected President in 2016 defeating Hilary Clinton."))
+    assert len(results) == 2
+    entities = list([(r["text"], r["label"]) for r in results])
+
+    assert entities[0] == ("Donald Trump was elected", "WON_ELECTION")
+    assert entities[1] == ("defeating Hilary Clinton", "LOST_ELECTION")
+```
+
+## spaCy backedn
 
 ```python
 import spacy

@@ -24,7 +24,7 @@ steps:
 - script: pip install black
   displayName: 'Install black'
 
-- script: black --check rita
+- script: black --check --diff rita
   displayName: 'Lint with Black'
 
 - script: pip install tox

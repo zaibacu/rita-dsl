@@ -55,3 +55,11 @@ def rules_to_patterns(rule):
             "label": rule["label"],
             "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
         }
+
+def compile_tree(root):
+    for doc in root:
+        if not doc:
+            continue
+
+        for rule in rules_to_patterns(doc()):
+            yield rule

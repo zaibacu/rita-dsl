@@ -19,7 +19,7 @@ def test_color_car():
     # Load example
 
     text = """
-    Johny Silver was driving a red car. It was BMW X6 Mclass. Johny likes driving it very much.
+    John Silver was driving a red car. It was BMW X6 Mclass. John likes driving it very much.
     """
 
     doc = nlp(text)
@@ -27,10 +27,10 @@ def test_color_car():
     entities = [(e.text, e.label_) for e in doc.ents]
     print(entities)
 
-    assert entities[0] == ("Johny Silver", "PERSON")  # Normal NER
+    assert entities[0] == ("John Silver", "PERSON")  # Normal NER
     assert entities[1] == ("red car", "CAR_COLOR")  # Our first rule
     assert entities[2] == ("BMW X6 Mclass", "CAR_MODEL")  # Our second rule
-    assert entities[3] == ("Johny likes driving", "LIKED_ACTION")  # Our third rule
+    assert entities[3] == ("John likes driving", "LIKED_ACTION")  # Our third rule
 
 
 def test_fuzzy_matching():

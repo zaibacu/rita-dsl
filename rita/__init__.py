@@ -1,6 +1,6 @@
 import logging
 
-from rita.translate import rules_to_patterns
+from rita import engine
 from rita.parser import RitaParser
 
 logger = logging.getLogger(__name__)
@@ -11,8 +11,8 @@ def compile_string(raw):
     parser.build()
     root = parser.parse(raw)
     logger.debug(root)
-    result = [rule for doc in root if doc for rule in rules_to_patterns(doc())]
-    return result
+    compile_tree = engine.get_default()
+    return list(compile_tree(root))
 
 
 def compile(fname):

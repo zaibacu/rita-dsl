@@ -72,3 +72,6 @@ def test_fuzzy_matching():
 
     assert len(entities) == 1
     assert entities[0] == ("SQUIRREL", "CRITTER")
+
+def test_standalone_simple():
+    pass

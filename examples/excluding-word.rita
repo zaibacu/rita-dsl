@@ -1,0 +1,1 @@
+{WORD("Weather"), WORD("is"), WORD("cold")!}->MARK("GOOD_WEATHER")

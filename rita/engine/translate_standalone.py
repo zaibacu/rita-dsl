@@ -5,21 +5,24 @@ from functools import partial
 
 logger = logging.getLogger(__name__)
 
+def apply_operator(syntax, op):
+    if not op:
+        return syntax
+
+    elif op == "!": # A bit complicated one
+        return ("((?!{})\w+)".format(syntax
+                            .rstrip(")")
+                            .lstrip("(")))
+    else:
+        return syntax + op
+
 
 def any_of_parse(lst, op=None):
-    initial = r"({0})".format("|".join(lst))
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r"({0})".format("|".join(lst)), op)
 
 
 def regex_parse(r, op=None):
-    initial = r
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r, op)
 
 
 def not_supported(key, *args, **kwargs):
@@ -30,11 +33,7 @@ def not_supported(key, *args, **kwargs):
 
 
 def person_parse(op=None):
-    initial = r"([A-Z]\w+\s?)"
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
 def entity_parse(value, op=None):
@@ -44,12 +43,25 @@ def entity_parse(value, op=None):
         return not_supported(value)
 
 
-def punct_parse():
-    return r"[.,!;?:]"
+def punct_parse(_, op=None):
+    return apply_operator(r"[.,!;?:]", op)
 
 
 def word_parse(value, op=None):
-    return r"({})".format(value)
+    if value:
+        initial = r"({})".format(value)
+    else:
+        initial = r"(\w+)"
+
+    return apply_operator(initial, op)
+
+def fuzzy_parse(r, op=None):
+    # TODO: build premutations
+    return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
+
+
+def whitespace_parse(_, op=None):
+    return r"\s"
 
 
 PARSERS = {
@@ -60,17 +72,27 @@ PARSERS = {
     "lemma": partial(not_supported, "LEMMA"),
     "pos": partial(not_supported, "POS"),
     "punct": punct_parse,
-    "fuzzy": partial(not_supported, "FUZZY"),
+    "fuzzy": fuzzy_parse,
+    "whitespace": whitespace_parse,
 }
 
 
-def rules_to_patterns(rule):
-    if rule:
-        logger.info(rule)
-        yield (
-            rule["label"],
-            [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
-        )
+def rules_to_patterns(label, data):
+    logger.debug("data: {}".format(data))
+    def gen():
+        """
+        Implicitly add spaces between rules
+        """
+        yield data[0]
+        for (t, d, op) in data[1:]:
+            if t != "punct":
+                yield ("whitespace", None, None) 
+            yield (t, d, op)
+    
+    return (
+        label,
+        [PARSERS[t](d, op) for (t, d, op) in gen()],
+    )
 
 
 class RuleExecutor(object):
@@ -79,7 +101,7 @@ class RuleExecutor(object):
                          for label, rules in patterns]
 
     def compile(self, label, rules):
-        return re.compile(r"(?P<{0}>{1})".format(label, "\s".join(rules)))
+        return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), re.IGNORECASE)
 
     def execute(self, text):
         for p in self.patterns:
@@ -92,12 +114,8 @@ class RuleExecutor(object):
                 }
 
 
-def compile_tree(root):
+def compile_rules(rules):
     logger.info("Using standalone rule implementation")
-    docs = [doc for doc in root if doc]
-    patterns = [p
-                for doc in docs
-                for p in rules_to_patterns(doc())]
-
+    patterns = [rules_to_patterns(*group) for group in rules]
     executor = RuleExecutor(patterns)
     return executor

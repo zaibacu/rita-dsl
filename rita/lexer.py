@@ -20,6 +20,7 @@ class RitaLexer(object):
         "MODIF_QMARK",
         "MODIF_STAR",
         "MODIF_PLUS",
+        "MODIF_EXCL",
         "ASSIGN",
         "EXEC",
     ]
@@ -37,8 +38,9 @@ class RitaLexer(object):
     t_MODIF_QMARK = r"\?"
     t_MODIF_STAR = r"\*"
     t_MODIF_PLUS = r"\+"
-    t_ASSIGN = r"="
     t_EXEC = r"!"
+    t_ASSIGN = r"="
+
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):

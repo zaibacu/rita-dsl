@@ -102,3 +102,17 @@ def test_dash_case(engine):
     ])
 
     assert entities.issuperset(expected)
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_exclude_word(engine):
+    parser = engine("examples/excluding-word.rita")
+
+    t1 = "Weather is awesome"
+    t2 = "Weather is cold"
+
+    r1 = parser(t1)
+    r2 = parser(t2)
+
+    assert r1[0] == ("Weather is awesome", "GOOD_WEATHER")
+    assert len(r2) == 0

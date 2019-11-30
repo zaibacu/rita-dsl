@@ -51,7 +51,7 @@ class RitaParser(object):
         ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
-        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
+        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS", "MODIF_EXCL"),
     )
 
     def p_document(self, p):
@@ -89,6 +89,7 @@ class RitaParser(object):
         MACRO : MACRO MODIF_PLUS
               | MACRO MODIF_STAR
               | MACRO MODIF_QMARK
+              | MACRO EXEC
         """
         logger.debug("Adding modifier to Macro {}".format(p[1]))
         fn = p[1]

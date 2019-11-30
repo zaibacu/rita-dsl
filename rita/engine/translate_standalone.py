@@ -5,21 +5,24 @@ from functools import partial
 
 logger = logging.getLogger(__name__)
 
+def apply_operator(syntax, op):
+    if not op:
+        return syntax
+
+    elif op == "!": # A bit complicated one
+        return ("((?!{})\w+)".format(syntax
+                            .rstrip(")")
+                            .lstrip("(")))
+    else:
+        return syntax + op
+
 
 def any_of_parse(lst, op=None):
-    initial = r"({0})".format("|".join(lst))
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r"({0})".format("|".join(lst)), op)
 
 
 def regex_parse(r, op=None):
-    initial = r
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r, op)
 
 
 def not_supported(key, *args, **kwargs):
@@ -30,11 +33,7 @@ def not_supported(key, *args, **kwargs):
 
 
 def person_parse(op=None):
-    initial = r"([A-Z]\w+\s?)"
-    if op:
-        return initial + op
-
-    return initial
+    return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
 def entity_parse(value, op=None):
@@ -45,18 +44,20 @@ def entity_parse(value, op=None):
 
 
 def punct_parse(_, op=None):
-    initial = r"[.,!;?:]"
-    if op:
-        return initial + op
-    return initial
+    return apply_operator(r"[.,!;?:]", op)
 
 
 def word_parse(value, op=None):
-    return r"({})".format(value)
+    if value:
+        initial = r"({})".format(value)
+    else:
+        initial = r"(\w+)"
+
+    return apply_operator(initial, op)
 
 def fuzzy_parse(r, op=None):
     # TODO: build premutations
-    return r"({0})[.,?;!]?".format("|".join(r))
+    return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
 
 
 def whitespace_parse(_, op=None):

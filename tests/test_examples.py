@@ -17,8 +17,8 @@ def spacy_engine(rules_path):
 
 
 def standalone_engine(rules_path):
-    from rita.engine.translate_standalone import compile_tree
-    patterns = rita.compile(rules_path, compile_fn=compile_tree)
+    from rita.engine.translate_standalone import compile_rules
+    patterns = rita.compile(rules_path, compile_fn=compile_rules)
     def parse(text):
         results = list(patterns.execute(text))
         return list([(r["text"], r["label"]) for r in results])
@@ -79,6 +79,23 @@ def test_election(engine):
     expected = set([
         ("Donald Trump was elected", "WON_ELECTION"),
         ("defeating Hilary Clinton", "LOST_ELECTION"),
+    ])
+
+    assert entities.issuperset(expected)
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_dash_case(engine):
+    parser = engine("examples/dress-match.rita")
+    text = """
+    Fitted, knee-length dress in soft velour
+    """
+
+    entities = set(parser(text))
+    print(entities)
+    expected = set([
+        ("Fitted, knee-length dress", "DRESS_TYPE"),
+        ("soft velour", "DRESS_FABRIC"),
     ])
 
     assert entities.issuperset(expected)

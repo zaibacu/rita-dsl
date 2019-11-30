@@ -48,20 +48,14 @@ PARSERS = {
 }
 
 
-def rules_to_patterns(rule):
-    if rule:
-        logger.info(rule)
-        yield {
-            "label": rule["label"],
-            "pattern": [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
-        }
+def rules_to_patterns(label, data):
+    return {
+        "label": label,
+        "pattern": [PARSERS[t](d, op) for (t, d, op) in data],
+    }
 
 
-def compile_tree(root):
+def compile_rules(rules):
     logger.info("Using spaCy rules implementation")
-    for doc in root:
-        if not doc:
-            continue
-
-        for rule in rules_to_patterns(doc()):
-            yield rule
+    return [rules_to_patterns(*group)
+            for group in rules]

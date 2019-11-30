@@ -68,13 +68,12 @@ PARSERS = {
 }
 
 
-def rules_to_patterns(rule):
-    if rule:
-        logger.info(rule)
-        yield (
-            rule["label"],
-            [PARSERS[t](d, op) for (t, d, op) in rule["data"]],
-        )
+def rules_to_patterns(label, data):
+    logger.info("data: {}".format(data))
+    return (
+        label,
+        [PARSERS[t](d, op) for (t, d, op) in data],
+    )
 
 
 class RuleExecutor(object):
@@ -96,12 +95,8 @@ class RuleExecutor(object):
                 }
 
 
-def compile_tree(root):
+def compile_rules(rules):
     logger.info("Using standalone rule implementation")
-    docs = [doc for doc in root if doc]
-    patterns = [p
-                for doc in docs
-                for p in rules_to_patterns(doc())]
-
+    patterns = [rules_to_patterns(*group) for group in rules]
     executor = RuleExecutor(patterns)
     return executor

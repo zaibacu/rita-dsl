@@ -41,14 +41,14 @@ Now you can compile these rules `rita -f <your-file>.rita output.jsonl`
 
 While it is highly recommended to use it with spaCy as a base, there can be cases when pure python regex is the only option.
 
-You can pass tree compilation function explicitly. This concrete function will build regular expressions and create executor which accepts raw text and returns list of results.
+You can pass rule compilation function explicitly. This concrete function will build regular expressions and create executor which accepts raw text and returns list of results.
 
 Here's a test covering this case
 
 ```python
 def test_standalone_simple():
-    from rita.engine.translate_standalone import compile_tree
-    patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_tree)
+    from rita.engine.translate_standalone import compile_rules
+    patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_rules)
     results = list(patterns.execute("Donald Trump was elected President in 2016 defeating Hilary Clinton."))
     assert len(results) == 2
     entities = list([(r["text"], r["label"]) for r in results])

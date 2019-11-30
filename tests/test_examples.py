@@ -18,9 +18,10 @@ def spacy_engine(rules_path):
 
 def standalone_engine(rules_path):
     from rita.engine.translate_standalone import compile_rules
-    patterns = rita.compile(rules_path, compile_fn=compile_rules)
+    parser = rita.compile(rules_path, compile_fn=compile_rules)
+    print(parser.patterns)
     def parse(text):
-        results = list(patterns.execute(text))
+        results = list(parser.execute(text))
         return list([(r["text"], r["label"]) for r in results])
     return parse
 
@@ -32,6 +33,7 @@ def test_color_car(engine):
     """
     parser = engine("examples/color-car.rita")
     entities = set(parser(text))
+    print(entities)
 
     expected = set([
         ("John Silver", "PERSON"),       # Normal NER
@@ -80,6 +82,7 @@ def test_election(engine):
         ("Donald Trump was elected", "WON_ELECTION"),
         ("defeating Hilary Clinton", "LOST_ELECTION"),
     ])
+    print(entities)
 
     assert entities.issuperset(expected)
 

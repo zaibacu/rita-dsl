@@ -3,6 +3,7 @@ import logging
 import rita
 
 from functools import reduce
+from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,25 @@ def add_implicit_punct(rules):
     We add them implicitly (unless this setting is turned off)
     """
     for group_label, pattern in rules:
-        print("Group: {0} Pattern: {1}".format(group_label, pattern))
+        def gen():
+            for p in pattern:
+                yield p
+                yield ("punct", None, "?")
+
+        if len(pattern) == 1:
+            yield (group_label, pattern)
+        else:
+            yield (group_label, list(gen())[:-1])
+
+
+def handle_multi_word(rules):
+    """
+    spaCy splits everything in tokens. Words with dash ends up in different tokens.
+    We don't want for user to even care about this, so we make this work implicitly
+    
+    WORD("Knee-length") => WORD("Knee"), WORD("-"), WORD("length")
+    """
+    for group_label, pattern in rules:
         yield (group_label, pattern)
 
 
@@ -36,7 +55,7 @@ def preprocess_rules(root):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy]
+    pipeline = [dummy, handle_multi_word]
 
     if conf.implicit_punct:
         logger.info("Adding implicit Punctuations")

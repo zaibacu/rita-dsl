@@ -44,8 +44,11 @@ def entity_parse(value, op=None):
         return not_supported(value)
 
 
-def punct_parse():
-    return r"[.,!;?:]"
+def punct_parse(_, op=None):
+    initial = r"[.,!;?:]"
+    if op:
+        return initial + op
+    return initial
 
 
 def word_parse(value, op=None):
@@ -54,6 +57,10 @@ def word_parse(value, op=None):
 def fuzzy_parse(r, op=None):
     # TODO: build premutations
     return r"({0})[.,?;!]?".format("|".join(r))
+
+
+def whitespace_parse(_, op=None):
+    return r"\s"
 
 
 PARSERS = {
@@ -65,14 +72,25 @@ PARSERS = {
     "pos": partial(not_supported, "POS"),
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
+    "whitespace": whitespace_parse,
 }
 
 
 def rules_to_patterns(label, data):
-    logger.info("data: {}".format(data))
+    logger.debug("data: {}".format(data))
+    def gen():
+        """
+        Implicitly add spaces between rules
+        """
+        yield data[0]
+        for (t, d, op) in data[1:]:
+            if t != "punct":
+                yield ("whitespace", None, None) 
+            yield (t, d, op)
+    
     return (
         label,
-        [PARSERS[t](d, op) for (t, d, op) in data],
+        [PARSERS[t](d, op) for (t, d, op) in gen()],
     )
 
 
@@ -82,7 +100,7 @@ class RuleExecutor(object):
                          for label, rules in patterns]
 
     def compile(self, label, rules):
-        return re.compile(r"(?P<{0}>{1})".format(label, "\s".join(rules)), re.IGNORECASE)
+        return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), re.IGNORECASE)
 
     def execute(self, text):
         for p in self.patterns:

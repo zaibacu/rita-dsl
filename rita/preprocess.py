@@ -12,17 +12,17 @@ def add_implicit_punct(rules):
     When writing rule, user usually doesn't care about some punct characters between words.
     We add them implicitly (unless this setting is turned off)
     """
-    return rules
+    for group_label, pattern in rules:
+        print("Group: {0} Pattern: {1}".format(group_label, pattern))
+        yield (group_label, pattern)
 
 
-def handle_multi_word(rules):
+def dummy(rules):
     """
-    spaCy splits everything in tokens. Words with dash ends up in different tokens.
-    We don't want for user to even care about this, so we make this work implicitly
-    
-    WORD("Knee-length") => WORD("Knee"), WORD("-"), WORD("length")
+    Placeholder which does nothing
     """
     return rules
+
 
 def rule_tuple(d):
     return (d["label"], d["data"])
@@ -36,7 +36,7 @@ def preprocess_rules(root):
              for doc in root
              if doc and doc()]
 
-    pipeline = [handle_multi_word]
+    pipeline = [dummy]
 
     if conf.implicit_punct:
         logger.info("Adding implicit Punctuations")

@@ -9,7 +9,7 @@ def any_of_parse(lst, op=None):
     d = {"TEXT": {"REGEX": r"({0})".format("|".join(lst))}}
     if op:
         d["OP"] = op
-    return d
+    yield d
 
 
 def regex_parse(r, op=None):
@@ -17,7 +17,7 @@ def regex_parse(r, op=None):
 
     if op:
         d["OP"] = op
-    return d
+    yield d
 
 
 def fuzzy_parse(r, op=None):
@@ -25,7 +25,7 @@ def fuzzy_parse(r, op=None):
     d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
     if op:
         d["OP"] = op
-    return d
+    yield d
 
 
 def generic_parse(tag, value, op=None):
@@ -33,7 +33,7 @@ def generic_parse(tag, value, op=None):
     d[tag] = value
     if op:
         d["OP"] = op
-    return d
+    yield d
 
 
 PARSERS = {
@@ -51,7 +51,9 @@ PARSERS = {
 def rules_to_patterns(label, data):
     return {
         "label": label,
-        "pattern": [PARSERS[t](d, op) for (t, d, op) in data],
+        "pattern": [p
+                    for (t, d, op) in data
+                    for p in PARSERS[t](d, op)],
     }
 
 

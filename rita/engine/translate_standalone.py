@@ -51,6 +51,10 @@ def punct_parse():
 def word_parse(value, op=None):
     return r"({})".format(value)
 
+def fuzzy_parse(r, op=None):
+    # TODO: build premutations
+    return r"({0})[.,?;!]?".format("|".join(r))
+
 
 PARSERS = {
     "any_of": any_of_parse,
@@ -60,7 +64,7 @@ PARSERS = {
     "lemma": partial(not_supported, "LEMMA"),
     "pos": partial(not_supported, "POS"),
     "punct": punct_parse,
-    "fuzzy": partial(not_supported, "FUZZY"),
+    "fuzzy": fuzzy_parse,
 }
 
 
@@ -79,7 +83,7 @@ class RuleExecutor(object):
                          for label, rules in patterns]
 
     def compile(self, label, rules):
-        return re.compile(r"(?P<{0}>{1})".format(label, "\s".join(rules)))
+        return re.compile(r"(?P<{0}>{1})".format(label, "\s".join(rules)), re.IGNORECASE)
 
     def execute(self, text):
         for p in self.patterns:

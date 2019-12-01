@@ -1,29 +1,15 @@
+import csv
 import pytest
 import rita
 
-
-def spacy_engine(rules_path):
-    spacy = pytest.importorskip("spacy", minversion="2.1")
-    patterns = rita.compile(rules_path)
-    nlp = spacy.load("en")
-    ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
-    ruler.add_patterns(patterns)
-    nlp.add_pipe(ruler)
-    
-    def parse(text):
-        doc = nlp(text)
-        return list([(e.text, e.label_) for e in doc.ents])
-    return parse
+from utils import spacy_engine, standalone_engine
 
 
-def standalone_engine(rules_path):
-    from rita.engine.translate_standalone import compile_rules
-    parser = rita.compile(rules_path, compile_fn=compile_rules)
-    print(parser.patterns)
-    def parse(text):
-        results = list(parser.execute(text))
-        return list([(r["text"], r["label"]) for r in results])
-    return parse
+@pytest.fixture(scope="session")
+def bench_text():
+    with open("benchmarks/reviews-subset.csv", "r") as f:
+        reader = csv.reader(f)
+        return list([row[1] for row in reader])
 
 
 @pytest.mark.parametrize('engine', [spacy_engine])
@@ -116,3 +102,20 @@ def test_exclude_word(engine):
 
     assert r1[0] == ("Weather is awesome", "GOOD_WEATHER")
     assert len(r2) == 0
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_benchmark(benchmark, engine, bench_text):
+    """
+    These tests will only run if parameters:
+    `--benchmark-enable` or
+    `--benchmark-only`
+    are added
+    """
+    parser = engine("examples/cheap-phones.rita")
+
+    def parse_rows(parser, rows):
+        for r in rows:
+            parser(r)
+
+    benchmark.pedantic(parse_rows, args=(parser, bench_text,), iterations=3, rounds=3)

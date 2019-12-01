@@ -1,0 +1,4 @@
+inexpensive = {"secondary", "inexpensive", "cheap"}
+
+{IN_LIST(inexpensive), WORD("cell")?, WORD("phone")}->MARK("CHEAP_PHONE")
+{WORD("good"), WORD("value")}->MARK("CHEAP_PHONE")

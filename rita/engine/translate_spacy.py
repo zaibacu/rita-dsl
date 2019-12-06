@@ -16,7 +16,7 @@ def any_of_parse(lst, op=None):
     simple = set(filter(is_simple, normalized))
     other = normalized - simple
     
-    base = {"LOWER": {"REGEX": r"({0})".format("|".join(simple))}}
+    base = {"LOWER": {"REGEX": r"({0})".format("|".join(sorted(simple)))}}
     if op:
         base["OP"] = op
 

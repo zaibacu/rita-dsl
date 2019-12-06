@@ -18,6 +18,15 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {"pattern": [{"ORTH": "Test"}], "label": "SOME_LABEL"}
 
+    def test_multiple_words(self):
+        rules = self.compiler('''
+        words = {"test1", "test2"}
+        IN_LIST(words)->MARK("MULTI_LABEL")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {"pattern": [{"LOWER": {"REGEX": "(test1|test2)"}}], "label": "MULTI_LABEL"}
+        
 
 class TestStandalone(object):
     def compiler(self, rules):
@@ -29,4 +38,13 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<SOME_LABEL>(Test))", re.IGNORECASE)
+
+    def test_multiple_words(self):
+        rules = self.compiler('''
+        words = {"test1", "test2"}
+        IN_LIST(words)->MARK("MULTI_LABEL")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(test1|test2))", re.IGNORECASE)
 

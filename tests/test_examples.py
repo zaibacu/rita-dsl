@@ -2,7 +2,7 @@ import csv
 import pytest
 import rita
 
-from utils import spacy_engine, standalone_engine
+from utils import spacy_engine, standalone_engine, load_rules
 
 
 @pytest.fixture(scope="session")
@@ -17,7 +17,7 @@ def test_color_car(engine):
     text = """
     John Silver was driving a red car. It was BMW X6 Mclass. John likes driving it very much.
     """
-    parser = engine("examples/color-car.rita")
+    parser = engine(load_rules("examples/color-car.rita"))
     entities = set(parser(text))
     print(entities)
 
@@ -33,7 +33,7 @@ def test_color_car(engine):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_fuzzy_matching(engine):
-    parser = engine("examples/fuzzy-matching.rita")
+    parser = engine(load_rules("examples/fuzzy-matching.rita"))
 
     # Check if we're matching with capitalized word
     t1 = """
@@ -58,7 +58,7 @@ def test_fuzzy_matching(engine):
     
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_election(engine):
-    parser = engine("examples/simple-match.rita")
+    parser = engine(load_rules("examples/simple-match.rita"))
     text = """
     Donald Trump was elected President in 2016 defeating Hilary Clinton.
     """
@@ -75,7 +75,7 @@ def test_election(engine):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_dash_case(engine):
-    parser = engine("examples/dress-match.rita")
+    parser = engine(load_rules("examples/dress-match.rita"))
     text = """
     Fitted, knee-length dress in soft velour
     """
@@ -92,7 +92,7 @@ def test_dash_case(engine):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_exclude_word(engine):
-    parser = engine("examples/excluding-word.rita")
+    parser = engine(load_rules("examples/excluding-word.rita"))
 
     t1 = "Weather is awesome"
     t2 = "Weather is cold"
@@ -112,7 +112,7 @@ def test_benchmark(benchmark, engine, bench_text):
     `--benchmark-only`
     are added
     """
-    parser = engine("examples/cheap-phones.rita")
+    parser = engine(load_rules("examples/cheap-phones.rita"))
 
     def parse_rows(parser, rows):
         for r in rows:

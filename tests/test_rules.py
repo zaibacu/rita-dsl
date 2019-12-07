@@ -7,6 +7,10 @@ from utils import spacy_engine, standalone_engine
 
 
 class TestSpacy(object):
+    @property
+    def punct(self):
+        return {'IS_PUNCT': True, 'OP': '?'}
+    
     def compiler(self, rules):
         spacy = pytest.importorskip("spacy", minversion="2.1")
         from rita.engine.translate_spacy import compile_rules
@@ -35,6 +39,17 @@ class TestSpacy(object):
         assert len(rules) == 2
         assert rules[0] == {"pattern": [{"ORTH": "test1"}], "label": "SPLIT_LABEL"}
         assert rules[1] == {"pattern": [{"ORTH": "test2"}], "label": "SPLIT_LABEL"}
+
+    def test_or_branch_multi(self):
+        rules = self.compiler('''
+        {WORD("test1")|WORD("test2"),WORD("test3")|WORD("test4")}->MARK("MULTI_SPLIT_LABEL")
+        ''')
+        print(rules)
+        assert len(rules) == 4
+        assert rules[0] == {"pattern": [{"ORTH": "test1"}, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[1] == {"pattern": [{"ORTH": "test2"}, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[2] == {"pattern": [{"ORTH": "test1"}, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[3] == {"pattern": [{"ORTH": "test2"}, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
         
 
 class TestStandalone(object):

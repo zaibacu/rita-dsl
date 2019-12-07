@@ -46,6 +46,9 @@ def branch_pattern(pattern):
     current = root
     for idx, p in enumerate(pattern):
         if p[0] == "either":
+            n = Node()
+            current.add_next(n)
+            current = n
             for e in p[1]:
                 values = e(context=[])
                 for v in values:
@@ -68,6 +71,7 @@ def handle_rule_branching(rules):
     for group_label, pattern in rules:
         if any([p == "either"
                 for (p, _, _) in pattern]):
+            print("Pattern with `either`: {}".format(pattern))
             for p in branch_pattern(pattern):
                 yield (group_label, p)
         else:

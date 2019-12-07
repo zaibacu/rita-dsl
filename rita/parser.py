@@ -52,11 +52,12 @@ class RitaParser(object):
     tokens = RitaLexer.tokens
     precedence = (
         ("nonassoc", "ARROW"),
+        ("nonassoc", "PIPE"),
         ("nonassoc", "COMMA"),
         ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
-        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS", "PIPE"),
+        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
 
     def p_document(self, p):

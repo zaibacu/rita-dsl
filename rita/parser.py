@@ -15,6 +15,10 @@ def stub(*args, **kwargs):
     return None
 
 
+def either(a, b):
+    return a
+
+
 def load_macro(name):
     try:
         return getattr(macros, name)
@@ -51,7 +55,7 @@ class RitaParser(object):
         ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
-        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS", "MODIF_EXCL"),
+        ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS", "PIPE"),
     )
 
     def p_document(self, p):
@@ -128,6 +132,10 @@ class RitaParser(object):
             macros.ASSIGN(p[1], p[3][0])
         else:
             macros.ASSIGN(p[1], p[3])
+
+    def p_either(self, p):
+        " ARG : ARG PIPE ARG "
+        p[0] = either(p[1], p[3])
 
     def p_arg_list(self, p):
         " ARGS : ARGS COMMA ARG "

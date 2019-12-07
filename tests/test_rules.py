@@ -29,7 +29,7 @@ class TestSpacy(object):
 
     def test_or_branch(self):
         rules = self.compiler('''
-        {WORD("test1")|WORD("test2")}->MARK("MULTI_LABEL")
+        {WORD("test1")|WORD("test2")}->MARK("SINGLE_LABEL")
         ''')
         print(rules)
         assert len(rules) == 2

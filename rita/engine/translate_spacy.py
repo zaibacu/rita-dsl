@@ -2,37 +2,16 @@ import logging
 
 from functools import partial
 
+from rita.utils import Node
+
 logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, op=None):
-    extra = []
-
-    def is_simple(w):
-        return not "-" in w
-
-    # Covers basic case when all words are normal
-    normalized = set(map(lambda x: x.lower(), lst))
-    simple = set(filter(is_simple, normalized))
-    other = normalized - simple
-    
-    base = {"LOWER": {"REGEX": r"({0})".format("|".join(sorted(simple)))}}
+    base = {"LOWER": {"REGEX": r"({0})".format("|".join(sorted(lst)))}}
     if op:
         base["OP"] = op
-
-    if len(other) > 0:
-        base["OP"] = "?"
     yield base
-
-    # Not very good solution
-    # This should be separate rules instead of single one with bunch of `?` operators
-
-    for item in other:
-        buff = item.split("-")
-        yield next(generic_parse("ORTH", buff[0], "?"))
-        for b in buff[1:]:
-            yield next(generic_parse("ORTH", "-", "?"))
-            yield next(generic_parse("ORTH", b, "?"))
 
 
 def regex_parse(r, op=None):
@@ -65,6 +44,17 @@ def punct_parse(_, op=None):
         d["OP"] = op
     yield d
 
+def phrase_parse(value, op=None):
+    """
+    TODO: Does not support operators
+    """
+    buff = value.split("-")
+    yield next(generic_parse("ORTH", buff[0], None))
+    for b in buff[1:]:
+        yield next(generic_parse("ORTH", "-", None))
+        yield next(generic_parse("ORTH", b, None))
+
+
 PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
@@ -74,6 +64,7 @@ PARSERS = {
     "pos": partial(generic_parse, "POS"),
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
+    "phrase": phrase_parse,
 }
 
 

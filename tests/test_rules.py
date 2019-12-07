@@ -63,6 +63,16 @@ class TestSpacy(object):
         assert rules[1] == {"pattern": [{"ORTH": "test2"}, self.punct, list_items, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
         assert rules[2] == {"pattern": [{"ORTH": "test1"}, self.punct, list_items, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
         assert rules[3] == {"pattern": [{"ORTH": "test2"}, self.punct, list_items, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
+
+    def test_branching_list(self):
+        rules = self.compiler('''
+        items={"test1", "test2", "test-3", "test4"}
+        {IN_LIST(items)}->MARK("SPLIT_LIST")
+        ''')
+        print(rules)
+        assert len(rules) == 2
+        assert rules[0] == {"label": "SPLIT_LIST", "pattern": [{"LOWER": {"REGEX": "(test1|test2|test4)"}}]}
+        assert rules[1] == {"label": "SPLIT_LIST", "pattern": [{"ORTH": "test"}, {"ORTH": "-"}, {"ORTH": "3"}]}
         
 
 class TestStandalone(object):
@@ -108,8 +118,6 @@ class TestStandalone(object):
         assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test3))", re.IGNORECASE)
         assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(test4))", re.IGNORECASE)
         assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test4))", re.IGNORECASE)
-        
-
 
     def test_or_branch_multi_w_single(self):
         rules = self.compiler('''
@@ -118,8 +126,18 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 4
-        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|two|three)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|two|three)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|two|three)[.,!;?:]?\s(test4))", re.IGNORECASE)
-        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|two|three)[.,!;?:]?\s(test4))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", re.IGNORECASE)
+        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", re.IGNORECASE)
+        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", re.IGNORECASE)
+        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", re.IGNORECASE)
+
+    def test_branching_list(self):
+        rules = self.compiler('''
+        items={"test1", "test2", "test-3", "test4"}
+        {IN_LIST(items)}->MARK("SPLIT_LIST")
+        ''')
+        print(rules)
+        assert len(rules) == 2
+        assert rules[0] == re.compile(r"(?P<SPLIT_LIST>(test1|test2|test4))", re.IGNORECASE)
+        assert rules[1] == re.compile(r"(?P<SPLIT_LIST>(test-3))", re.IGNORECASE)
 

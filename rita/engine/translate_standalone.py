@@ -18,7 +18,7 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, op=None):
-    return apply_operator(r"({0})".format("|".join(lst)), op)
+    return apply_operator(r"({0})".format("|".join(sorted(lst))), op)
 
 
 def regex_parse(r, op=None):
@@ -63,6 +63,9 @@ def fuzzy_parse(r, op=None):
 def whitespace_parse(_, op=None):
     return r"\s"
 
+def phrase_parse(value, op=None):
+    return apply_operator(r"({})".format(value), op)
+
 
 PARSERS = {
     "any_of": any_of_parse,
@@ -74,6 +77,7 @@ PARSERS = {
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
     "whitespace": whitespace_parse,
+    "phrase": phrase_parse,
 }
 
 

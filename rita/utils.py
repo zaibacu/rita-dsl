@@ -4,6 +4,11 @@ logger = logging.getLogger(__name__)
 
 
 class Node(object):
+    """
+    An utility structure. Has no meaning outside
+    Allows to specify single path showing how it branches
+    and by doing `unwrap` we get multiple lists for each possible variation
+    """
     def __init__(self, data=None):
         self.data = data
         self.children = []

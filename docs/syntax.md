@@ -27,6 +27,7 @@ Also, macro can have modifier (if it supports it)
 WORD+ # Declare, that you'll have 1..N words
 WORD* # Declare, that you'll have 0..N words
 WORD? # Declare, that you'll have 1 or no words
+WORD! # Declare, that you want to ignore this word
 ```
 
 More examples
@@ -78,3 +79,12 @@ When building a rule, you may want to combine several rules into one, you can us
 ```
 
 we're saying: `If any of these color words are present in text and is followed by word "car", we assume this part can be labeled as "CAR_COLOR"`
+
+## Logical variants
+
+You can say, that your rule expects either `word1`, or `word2`. Usually this can be achieved by writing two separate rules, but there's easier way: 
+```
+{WORD("word1")|WORD("word2")}
+```
+
+Pipe character (`|`) marks a logical `OR` meaning that either right or left side can be matched. It works only on surface level, if you want nested logic - write separate rules.

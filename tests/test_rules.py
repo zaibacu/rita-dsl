@@ -50,6 +50,19 @@ class TestSpacy(object):
         assert rules[1] == {"pattern": [{"ORTH": "test2"}, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
         assert rules[2] == {"pattern": [{"ORTH": "test1"}, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
         assert rules[3] == {"pattern": [{"ORTH": "test2"}, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
+
+    def test_or_branch_multi_w_single(self):
+        rules = self.compiler('''
+        numbers={"one", "two", "three"}
+        {WORD("test1")|WORD("test2"),IN_LIST(numbers),WORD("test3")|WORD("test4")}->MARK("MULTI_SPLIT_LABEL")
+        ''')
+        print(rules)
+        assert len(rules) == 4
+        list_items = {"LOWER": {"REGEX": "(one|three|two)"}}
+        assert rules[0] == {"pattern": [{"ORTH": "test1"}, self.punct, list_items, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[1] == {"pattern": [{"ORTH": "test2"}, self.punct, list_items, self.punct, {"ORTH": "test3"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[2] == {"pattern": [{"ORTH": "test1"}, self.punct, list_items, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
+        assert rules[3] == {"pattern": [{"ORTH": "test2"}, self.punct, list_items, self.punct, {"ORTH": "test4"}], "label": "MULTI_SPLIT_LABEL"}
         
 
 class TestStandalone(object):

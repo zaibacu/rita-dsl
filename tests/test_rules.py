@@ -26,6 +26,13 @@ class TestSpacy(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == {"pattern": [{"LOWER": {"REGEX": "(test1|test2)"}}], "label": "MULTI_LABEL"}
+
+    def test_or_branch(self):
+        rules = self.compiler('''
+        {WORD("test1")|WORD("test2")}->MARK("MULTI_LABEL")
+        ''')
+        print(rules)
+        assert len(rules) == 2
         
 
 class TestStandalone(object):

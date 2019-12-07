@@ -29,10 +29,12 @@ class TestSpacy(object):
 
     def test_or_branch(self):
         rules = self.compiler('''
-        {WORD("test1")|WORD("test2")}->MARK("SINGLE_LABEL")
+        {WORD("test1")|WORD("test2")}->MARK("SPLIT_LABEL")
         ''')
         print(rules)
         assert len(rules) == 2
+        assert rules[0] == {"pattern": [{"ORTH": "test1"}], "label": "SPLIT_LABEL"}
+        assert rules[1] == {"pattern": [{"ORTH": "test2"}], "label": "SPLIT_LABEL"}
         
 
 class TestStandalone(object):

@@ -5,6 +5,8 @@ import rita
 from functools import reduce
 from itertools import zip_longest
 
+from rita.utils import Node
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +38,82 @@ def handle_multi_word(rules):
         yield (group_label, pattern)
 
 
+def is_complex(arg):
+    splitters = ["-"]
+    return any([s in arg
+                for s in splitters])
+
+def has_complex(args):
+    """
+    Tells if any of arguments will be impacted by tokenizer
+    """
+    
+    return any([is_complex(a)
+                for a in args])
+
+
+def branch_pattern(pattern):
+    """
+    Creates multiple lists for each possible permutation
+    """
+    root = Node()
+    current = root
+    depth = 0
+    for idx, p in enumerate(pattern):
+        if p[0] == "either":
+            n = Node()
+            current.add_next(n)
+            current = n
+            current.depth = depth
+            for e in p[1]:
+                values = e(context=[])
+                for v in values:
+                    current.add_child(v)
+                depth += 1
+        elif p[0] == "any_of" and has_complex(p[1]):
+            _all = set(p[1])
+            _complex = set(filter(is_complex, _all))
+            simple = _all - _complex
+            n = Node()
+            current.add_next(n)
+            current = n
+            current.depth = depth
+            current.add_child(("any_of", simple, p[2]))
+            for c in sorted(_complex):
+                current.add_child(("phrase", c, p[2]))
+                depth += 1
+        else:
+            n = Node(p)
+            current.add_next(n)
+            current = n
+            current.depth = depth
+
+    for p in root.unwrap():
+        yield p
+
+
+def handle_rule_branching(rules):
+    """
+    If we have an OR statement, eg. `WORD(w1)|WORD(w2)`,
+    Generic approach is to clone rules and use w1 in one, w2 in other.
+    It may be an overkill, but some situations are not covered in simple approach
+    """ 
+    for group_label, pattern in rules:
+        # Covering WORD(w1)|WORD(w2) case
+        if any([p == "either"
+                for (p, _, _) in pattern]):
+            for p in branch_pattern(pattern):
+                yield (group_label, p)
+
+        # Covering case when there are complex items in list
+        elif any([p == "any_of" and has_complex(o)
+                  for (p, o, _) in pattern]):
+            for p in branch_pattern(pattern):
+                yield (group_label, p)
+        else:
+            yield (group_label, pattern)
+
+
 def dummy(rules):
     """
     Placeholder which does nothing
@@ -55,7 +133,7 @@ def preprocess_rules(root):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy, handle_multi_word]
+    pipeline = [dummy, handle_rule_branching, handle_multi_word]
 
     if conf.implicit_punct:
         logger.info("Adding implicit Punctuations")

@@ -1,4 +1,5 @@
 import logging
+import types
 
 from itertools import chain
 from importlib import import_module
@@ -25,12 +26,19 @@ def flatten(lst):
 
 def resolve_value(obj, context):
     logger.debug("Resolving value: {0}, context: {1}".format(obj, context))
+    
     if isinstance(obj, str):
         return obj
+    
     elif isinstance(obj, list):
         for item in obj:
             context.append(item)
         return context
+    
+    elif isinstance(obj, types.GeneratorType):
+        context.append(("either", list(obj), None))
+        return context
+    
     return obj(context=context)
 
 

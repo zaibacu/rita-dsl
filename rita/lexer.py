@@ -20,12 +20,12 @@ class RitaLexer(object):
         "MODIF_QMARK",
         "MODIF_STAR",
         "MODIF_PLUS",
-        "MODIF_EXCL",
         "ASSIGN",
         "EXEC",
+        "PIPE",
     ]
 
-    literals = ["{", "}", "(", ")", '"', ",", "=", "!"]
+    literals = ["{", "}", "(", ")", '"', ",", "=", "!", "|"]
 
     t_ignore = " \t"
     t_ignore_COMMENT = r"\#.*"
@@ -40,6 +40,7 @@ class RitaLexer(object):
     t_MODIF_PLUS = r"\+"
     t_EXEC = r"!"
     t_ASSIGN = r"="
+    t_PIPE = r"\|"
 
 
     # Define a rule so we can track line numbers

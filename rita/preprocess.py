@@ -71,7 +71,6 @@ def handle_rule_branching(rules):
     for group_label, pattern in rules:
         if any([p == "either"
                 for (p, _, _) in pattern]):
-            print("Pattern with `either`: {}".format(pattern))
             for p in branch_pattern(pattern):
                 yield (group_label, p)
         else:

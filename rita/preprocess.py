@@ -58,15 +58,18 @@ def branch_pattern(pattern):
     """
     root = Node()
     current = root
+    depth = 0
     for idx, p in enumerate(pattern):
         if p[0] == "either":
             n = Node()
             current.add_next(n)
             current = n
+            current.depth = depth
             for e in p[1]:
                 values = e(context=[])
                 for v in values:
                     current.add_child(v)
+                depth += 1
         elif p[0] == "any_of" and has_complex(p[1]):
             _all = set(p[1])
             _complex = set(filter(is_complex, _all))
@@ -74,13 +77,16 @@ def branch_pattern(pattern):
             n = Node()
             current.add_next(n)
             current = n
+            current.depth = depth
             current.add_child(("any_of", simple, p[2]))
-            for c in _complex:
+            for c in sorted(_complex):
                 current.add_child(("phrase", c, p[2]))
+                depth += 1
         else:
             n = Node(p)
             current.add_next(n)
             current = n
+            current.depth = depth
 
     for p in root.unwrap():
         yield p

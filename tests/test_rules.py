@@ -73,6 +73,17 @@ class TestSpacy(object):
         assert len(rules) == 2
         assert rules[0] == {"label": "SPLIT_LIST", "pattern": [{"LOWER": {"REGEX": "(test1|test2|test4)"}}]}
         assert rules[1] == {"label": "SPLIT_LIST", "pattern": [{"ORTH": "test"}, {"ORTH": "-"}, {"ORTH": "3"}]}
+
+    def test_double_branching_list(self):
+        rules = self.compiler('''
+        items={"test1", "test2", "test-3", "test4", "test-5"}
+        {IN_LIST(items)}->MARK("SPLIT_LIST")
+        ''')
+        print(rules)
+        assert len(rules) == 3
+        assert rules[0] == {"label": "SPLIT_LIST", "pattern": [{"LOWER": {"REGEX": "(test1|test2|test4)"}}]}
+        assert rules[1] == {"label": "SPLIT_LIST", "pattern": [{"ORTH": "test"}, {"ORTH": "-"}, {"ORTH": "3"}]}
+        assert rules[2] == {"label": "SPLIT_LIST", "pattern": [{"ORTH": "test"}, {"ORTH": "-"}, {"ORTH": "5"}]}
         
 
 class TestStandalone(object):

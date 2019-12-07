@@ -16,7 +16,8 @@ def stub(*args, **kwargs):
 
 
 def either(a, b):
-    return a
+    yield a
+    yield b
 
 
 def load_macro(name):

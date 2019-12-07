@@ -20,7 +20,6 @@ class RitaLexer(object):
         "MODIF_QMARK",
         "MODIF_STAR",
         "MODIF_PLUS",
-        "MODIF_EXCL",
         "ASSIGN",
         "EXEC",
     ]

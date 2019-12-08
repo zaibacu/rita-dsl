@@ -14,6 +14,8 @@ strategy:
       python.version: '3.6'
     Python37:
       python.version: '3.7'
+    Python38:
+      python.version: '3.8'
 
 steps:
 - task: UsePythonVersion@0
@@ -26,3 +28,9 @@ steps:
 
 - script: tox -e py
   displayName: 'Run Tox'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'

@@ -5,3 +5,6 @@ build-pkg:
 
 publish: build-pkg
 	 twine upload dist/*
+
+benchmark:
+	${PYTHON} -m pytest --benchmark-only tests/ --benchmark-autosave

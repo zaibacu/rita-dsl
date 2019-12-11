@@ -5,7 +5,8 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 [![Documentation Status](https://readthedocs.org/projects/rita-dsl/badge/?version=latest)](http://rita-dsl.readthedocs.io/?badge=latest)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/zaibacu/rita-dsl/graphs/commit-activity)
-[![PyPI download total](https://img.shields.io/pypi/dt/rita-dsl.svg)](https://pypi.python.org/pypi/rita-dsl/)
+[![PyPI version fury.io](https://badge.fury.io/py/rita-dsl.svg)](https://pypi.python.org/pypi/rita-dsl/)
+[![PyPI download month](https://img.shields.io/pypi/dm/rita-dsl.svg)](https://pypi.python.org/pypi/rita-dsl/)
 [![GitHub license](https://img.shields.io/github/license/zaibacu/rita-dsl.svg)](https://github.com/zaibacu/rita-dsl/blob/master/LICENSE)
 
 [Live Demo](https://rita-demo.herokuapp.com/)

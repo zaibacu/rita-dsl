@@ -9,4 +9,6 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 [![PyPI download month](https://img.shields.io/pypi/dm/rita-dsl.svg)](https://pypi.python.org/pypi/rita-dsl/)
 [![GitHub license](https://img.shields.io/github/license/zaibacu/rita-dsl.svg)](https://github.com/zaibacu/rita-dsl/blob/master/LICENSE)
 
+## Links
 [Live Demo](https://rita-demo.herokuapp.com/)
+[Documentation](http://rita-dsl.readthedocs.io/)

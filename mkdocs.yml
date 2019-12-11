@@ -1,0 +1,16 @@
+site_name: RITA DSL
+site_author: Šarūnas Navickas
+site_description: A DSL which allows to write rules for doing NLP
+repo_url: https://github.com/zaibacu/rita-dsl
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Syntax: syntax.md
+  - Macros: macros.md
+  - Extending: extend.md
+theme: readthedocs
+markdown_extensions:
+  - toc:
+      permalink: True
+plugins:
+  - search

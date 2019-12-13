@@ -21,7 +21,7 @@ def compile_string(raw, config, use_engine=None):
     else:
         compile_rules = config.default_engine
     rules = list(preprocess_rules(root, config))
-    result = compile_rules(rules)
+    result = compile_rules(rules, config)
     if isinstance(result, types.GeneratorType):
         return list(result)
     else:

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def any_of_parse(lst, op=None):
     normalized = sorted([item.lower()
                          for item in lst])
-    base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized)))}}
+    base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized))}}
     if op:
         base["OP"] = op
     yield base
@@ -79,7 +79,7 @@ def rules_to_patterns(label, data):
     }
 
 
-def compile_rules(rules):
+def compile_rules(rules, config):
     logger.info("Using spaCy rules implementation")
     return [rules_to_patterns(*group)
             for group in rules]

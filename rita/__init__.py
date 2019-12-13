@@ -2,7 +2,7 @@ import logging
 import types
 
 from rita import engine
-from rita.config import Config
+from rita.config import with_config
 from rita.parser import RitaParser
 from rita.preprocess import preprocess_rules
 
@@ -10,21 +10,17 @@ from rita.preprocess import preprocess_rules
 logger = logging.getLogger(__name__)
 
 
-def config():
-    return Config()
-
-
-def compile_string(raw, compile_fn=None):
+@with_config
+def compile_string(raw, config, use_engine=None):
     parser = RitaParser()
     parser.build()
     root = parser.parse(raw)
     logger.debug(root)
-    if compile_fn:
-        compile_rules = compile_fn
+    if use_engine:
+        compile_rules = config.get_engine(use_engine)
     else:
-        compile_rules = engine.get_default()
-
-    rules = list(preprocess_rules(root))
+        compile_rules = config.default_engine
+    rules = list(preprocess_rules(root, config))
     result = compile_rules(rules)
     if isinstance(result, types.GeneratorType):
         return list(result)

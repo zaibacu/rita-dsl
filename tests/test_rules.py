@@ -13,8 +13,7 @@ class TestSpacy(object):
     
     def compiler(self, rules):
         spacy = pytest.importorskip("spacy", minversion="2.1")
-        from rita.engine.translate_spacy import compile_rules
-        return rita.compile_string(rules, compile_fn=compile_rules)
+        return rita.compile_string(rules, use_engine="spacy")
         
     def test_single_word(self):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')
@@ -92,8 +91,7 @@ class TestStandalone(object):
         return re.compile(r"[.,!;?:]")
 
     def compiler(self, rules):
-        from rita.engine.translate_standalone import compile_rules
-        return rita.compile_string(rules, compile_fn=compile_rules).patterns
+        return rita.compile_string(rules, use_engine="standalone").patterns
     
     def test_single_word(self):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')

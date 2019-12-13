@@ -22,8 +22,7 @@ def spacy_engine(rules):
 
 
 def standalone_engine(rules):
-    from rita.engine.translate_standalone import compile_rules
-    parser = rita.compile_string(rules, compile_fn=compile_rules)
+    parser = rita.compile_string(rules, use_engine="standalone")
     print(parser.patterns)
     def parse(text):
         results = list(parser.execute(text))

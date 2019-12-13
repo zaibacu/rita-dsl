@@ -125,9 +125,8 @@ def rule_tuple(d):
     return (d["label"], d["data"])
 
 
-def preprocess_rules(root):
+def preprocess_rules(root, config):
     logger.info("Preprocessing rules")
-    conf = rita.config()
 
     rules = [rule_tuple(doc())
              for doc in root
@@ -135,7 +134,7 @@ def preprocess_rules(root):
 
     pipeline = [dummy, handle_rule_branching, handle_multi_word]
 
-    if conf.implicit_punct:
+    if config.implicit_punct:
         logger.info("Adding implicit Punctuations")
         pipeline.append(add_implicit_punct)
 

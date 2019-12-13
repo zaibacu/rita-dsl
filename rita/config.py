@@ -40,7 +40,7 @@ class Config(SingletonMixin):
 
 class SessionConfig(object):
     def __init__(self):
-        self._ignore_case = True
+        self._list_ignore_case = True
         self._implicit_punct = True
         self._root = Config()
     
@@ -49,7 +49,7 @@ class SessionConfig(object):
         """
         Ignore case while doing `IN_LIST` operation
         """
-        return self._ignore_case
+        return self._list_ignore_case
 
     @property
     def implicit_punct(self):

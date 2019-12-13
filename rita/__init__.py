@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @with_config
 def compile_string(raw, config, use_engine=None):
-    parser = RitaParser()
+    parser = RitaParser(config)
     parser.build()
     root = parser.parse(raw)
     logger.debug(root)

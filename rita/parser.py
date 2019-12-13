@@ -60,6 +60,9 @@ class RitaParser(object):
         ("right", "MODIF_QMARK", "MODIF_STAR", "MODIF_PLUS"),
     )
 
+    def __init__(self, config):
+        self.config = config
+
     def p_document(self, p):
         """
         DOCUMENT : MACRO_CHAIN

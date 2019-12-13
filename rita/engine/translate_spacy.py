@@ -8,7 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, op=None):
-    base = {"LOWER": {"REGEX": r"({0})".format("|".join(sorted(map(lambda x: x.lower(), lst))))}}
+    normalized = sorted([item.lower()
+                         for item in lst])
+    base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized)))}}
     if op:
         base["OP"] = op
     yield base

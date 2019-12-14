@@ -20,3 +20,4 @@
 | ASSIGN  |`Literal`, `ARG`      |`None`     |Assign value to variable. **Covered by standard syntax, can be ignored**                     |
 | EXEC  |`ARG`                   |`None`     |Execute macro. **Covered by standard syntax, can be ignored**                     |
 | IMPORT  |`Literal`             |`None`     |Import custom module, allowing custom macros to be executed|
+| CONFIG | `Literal`, `LITERAL`  |`None`     |Alows to modify config value                 |

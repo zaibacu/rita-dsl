@@ -99,6 +99,10 @@ class TestStandalone(object):
     def punct(self):
         return re.compile(r"[.,!;?:]")
 
+    @property
+    def flags(self):
+        return re.DOTALL | re.IGNORECASE
+
     def compiler(self, rules):
         return rita.compile_string(rules, use_engine="standalone").patterns
     
@@ -106,7 +110,7 @@ class TestStandalone(object):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SOME_LABEL>(Test))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<SOME_LABEL>(Test))", self.flags)
 
     def test_multiple_words(self):
         rules = self.compiler('''
@@ -115,7 +119,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(test1|test2))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(test1|test2))", self.flags)
 
     def test_simple_pattern(self):
         rules = self.compiler('''
@@ -123,7 +127,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SIMPLE_PATTERN>(test1)[.,!;?:]?\s(test2))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<SIMPLE_PATTERN>(test1)[.,!;?:]?\s(test2))", self.flags)
 
     def test_or_branch(self):
         rules = self.compiler('''
@@ -131,8 +135,8 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 2
-        assert rules[0] == re.compile(r"(?P<SPLIT_LABEL>(test1))", re.IGNORECASE)
-        assert rules[1] == re.compile(r"(?P<SPLIT_LABEL>(test2))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<SPLIT_LABEL>(test1))", self.flags)
+        assert rules[1] == re.compile(r"(?P<SPLIT_LABEL>(test2))", self.flags)
 
     def test_or_branch_multi(self):
         rules = self.compiler('''
@@ -140,10 +144,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 4
-        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(test4))", re.IGNORECASE)
-        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test4))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(test3))", self.flags)
+        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test3))", self.flags)
+        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(test4))", self.flags)
+        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(test4))", self.flags)
 
     def test_or_branch_multi_w_single(self):
         rules = self.compiler('''
@@ -152,10 +156,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 4
-        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", re.IGNORECASE)
-        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", re.IGNORECASE)
-        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", self.flags)
+        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test3))", self.flags)
+        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", self.flags)
+        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2)[.,!;?:]?\s(one|three|two)[.,!;?:]?\s(test4))", self.flags)
 
     def test_branching_list(self):
         rules = self.compiler('''
@@ -164,6 +168,6 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 2
-        assert rules[0] == re.compile(r"(?P<SPLIT_LIST>(test1|test2|test4))", re.IGNORECASE)
-        assert rules[1] == re.compile(r"(?P<SPLIT_LIST>(test-3))", re.IGNORECASE)
+        assert rules[0] == re.compile(r"(?P<SPLIT_LIST>(test1|test2|test4))", self.flags)
+        assert rules[1] == re.compile(r"(?P<SPLIT_LIST>(test-3))", self.flags)
 

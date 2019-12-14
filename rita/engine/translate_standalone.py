@@ -103,12 +103,17 @@ def rules_to_patterns(label, data):
 
 
 class RuleExecutor(object):
-    def __init__(self, patterns):
+    def __init__(self, patterns, config):
+        self.config = config
         self.patterns = [self.compile(label, rules)
                          for label, rules in patterns]
 
     def compile(self, label, rules):
-        return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), re.IGNORECASE)
+        flags = re.DOTALL
+        if self.config.ignore_case:
+            flags = flags | re.IGNORECASE
+            
+        return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), flags)
 
     def execute(self, text):
         for p in self.patterns:
@@ -124,5 +129,5 @@ class RuleExecutor(object):
 def compile_rules(rules, config):
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group) for group in rules]
-    executor = RuleExecutor(patterns)
+    executor = RuleExecutor(patterns, config)
     return executor

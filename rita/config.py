@@ -49,7 +49,10 @@ class SessionConfig(object):
         self._implicit_punct = True
         self._root = Config()
         self.modules = []
-        self.variables = {}
+        self.variables = {
+            "TRUE": 1,
+            "FALSE": 0
+        }
     
     @property
     def list_ignore_case(self):

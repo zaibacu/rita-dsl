@@ -16,5 +16,5 @@ First argument is config key, second value. `"1"`, `"Y"` and `"T"` results in `T
 
 | Setting            | Default              | Description                                                                |
 |--------------------|----------------------|----------------------------------------------------------------------------|
-| implicit_punct     |`F`                   |Automatically adds punctuation characters `,.!:\;` to the rules             |
+| implicit_punct     |`T`                   |Automatically adds punctuation characters `,.!:\;` to the rules             |
 | ignore_case        |`T`                   |All rules are case-insensitive                                              |

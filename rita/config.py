@@ -1,4 +1,5 @@
 import operator
+import logging
 from importlib import import_module
 
 try:
@@ -10,6 +11,9 @@ except ImportError:
 from rita.engine.translate_standalone import compile_rules as standalone_engine
 
 from rita.utils import SingletonMixin
+
+
+logger = logging.getLogger(__name__)
 
 
 class Config(SingletonMixin):
@@ -72,6 +76,7 @@ class SessionConfig(object):
         self._list_ignore_case = val
 
     def register_module(self, mod_name):
+        logger.debug("Importing module: {}".format(mod_name))
         self.modules.append(import_module(mod_name))
 
     def __getattr__(self, name):

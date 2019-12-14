@@ -25,6 +25,7 @@ def flatten(lst):
 
 def resolve_value(obj, config=None):
     context = []
+    print("Obj: {0}, Config: {1}".format(obj, config))
 
     logger.debug("Resolving value: {0}".format(obj))
     
@@ -79,15 +80,15 @@ def IN_LIST(*args, config, op=None):
 
 
 def PATTERN(*args, config, op=None):
-    new_ctx = []
+    context = []
     for arg in args:
         result = resolve_value(arg, config=config)
         if isinstance(result, list):
-            new_ctx += result
+            context += result
         else:
-            new_ctx.append(result)
+            context.append(result)
 
-    return new_ctx
+    return context
 
 
 def WORD(*args, config, op=None):
@@ -119,11 +120,9 @@ def ENTITY(name, config, op=None):
 
 
 def IMPORT(module, config, op=None):
-    print("Importing!")
     mod_name = resolve_value(module, config=config)
     config.register_module(mod_name)
 
 
 def EXEC(obj, config, op=None):
-    print("Exec: {}".format(obj))
     return resolve_value(obj, config=config)

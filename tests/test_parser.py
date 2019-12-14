@@ -1,3 +1,4 @@
+import logging
 import pytest
 
 from rita.parser import RitaParser
@@ -122,7 +123,8 @@ def test_parser_import_module(config):
     print(rules)
 
 
-def test_parser_import_module_shortcut(config):
+def test_parser_import_module_shortcut(config, caplog):
+    caplog.set_level(logging.INFO)
     p = RitaParser(config)
     p.build(debug=True)
 

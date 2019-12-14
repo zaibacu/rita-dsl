@@ -67,6 +67,7 @@ class RitaParser(object):
     def p_document(self, p):
         """
         DOCUMENT : MACRO_CHAIN
+                 | MACRO_EXEC
                  | VARIABLE
         """
         logger.debug("Building initial document {}".format(p[1]))
@@ -75,6 +76,7 @@ class RitaParser(object):
     def p_document_list(self, p):
         """
         DOCUMENT : DOCUMENT MACRO_CHAIN
+                 | DOCUMENT MACRO_EXEC
                  | DOCUMENT VARIABLE
         """
         logger.debug("Extending document {}".format(p[2]))
@@ -90,9 +92,9 @@ class RitaParser(object):
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
         p[0] = partial(p[3], macros.PATTERN(*p[1], config=self.config), config=self.config)
 
-    def p_macro_chain_exec(self, p):
-        " MACRO_CHAIN : EXEC MACRO "
-        print("Ececuting: {}".format(p[2]))
+    def p_macro_exec(self, p):
+        " MACRO_EXEC : EXEC MACRO "
+        logger.debug("Exec {0}".format(p[2]))
         p[0] = partial(macros.EXEC, p[2], config=self.config)
 
     def p_macro_w_modif(self, p):

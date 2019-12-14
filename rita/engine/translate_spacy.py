@@ -41,7 +41,7 @@ def fuzzy_parse(r, config, op=None):
 
 def generic_parse(tag, value, config, op=None):
     d = {}
-    if config.ignore_case:
+    if tag == "ORTH" and config.ignore_case:
         d["LOWER"] = value.lower()
     else:
         d[tag] = value        

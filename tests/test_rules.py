@@ -30,6 +30,15 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {"pattern": [{"LOWER": {"REGEX": "(test1|test2)"}}], "label": "MULTI_LABEL"}
 
+    def test_simple_pattern(self):
+        rules = self.compiler('''
+        {WORD("test1"), WORD("test2")}->MARK("SIMPLE_PATTERN")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {"pattern": [{"ORTH": "test1"}, self.punct, {"ORTH": "test2"}], "label": "SIMPLE_PATTERN"}
+        
+
     def test_or_branch(self):
         rules = self.compiler('''
         {WORD("test1")|WORD("test2")}->MARK("SPLIT_LABEL")
@@ -107,6 +116,14 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(test1|test2))", re.IGNORECASE)
+
+    def test_simple_pattern(self):
+        rules = self.compiler('''
+        {WORD("test1"), WORD("test2")}->MARK("SIMPLE_PATTERN")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<SIMPLE_PATTERN>(test1)[.,!;?:]?\s(test2))", re.IGNORECASE)
 
     def test_or_branch(self):
         rules = self.compiler('''

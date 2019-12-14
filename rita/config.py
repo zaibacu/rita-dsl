@@ -1,4 +1,5 @@
 import operator
+from importlib import import_module
 
 try:
     import spacy
@@ -43,6 +44,7 @@ class SessionConfig(object):
         self._list_ignore_case = True
         self._implicit_punct = True
         self._root = Config()
+        self.modules = []
     
     @property
     def list_ignore_case(self):
@@ -68,6 +70,9 @@ class SessionConfig(object):
     @list_ignore_case.setter
     def list_ignore_case(self, val):
         self._list_ignore_case = val
+
+    def register_module(self, mod_name):
+        self.modules.append(import_module(mod_name))
 
     def __getattr__(self, name):
         if name == "_root":

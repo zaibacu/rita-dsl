@@ -62,3 +62,12 @@ def test_tokenize_assign_macro():
     assert tokens[1].type == "ASSIGN"
     assert tokens[2].type == "KEYWORD"
     assert tokens[4].type == "LITERAL"
+
+def test_tokenize_exec_macro():
+    l = RitaLexer()
+    l.build()
+    tokens = list(l.tokenize('!IMPORT("module.test")'))
+    assert len(tokens) == 5
+    assert tokens[0].type == "EXEC"
+    assert tokens[1].type == "KEYWORD"
+    assert tokens[3].type == "LITERAL"

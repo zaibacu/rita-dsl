@@ -87,6 +87,9 @@ def rules_to_patterns(label, data):
         """
         Implicitly add spaces between rules
         """
+        if len(data) == 0:
+            return
+        
         yield data[0]
         for (t, d, op) in data[1:]:
             if t != "punct":

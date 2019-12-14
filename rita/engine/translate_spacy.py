@@ -71,6 +71,7 @@ PARSERS = {
 
 
 def rules_to_patterns(label, data):
+    print(data)
     return {
         "label": label,
         "pattern": [p

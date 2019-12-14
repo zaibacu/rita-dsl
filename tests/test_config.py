@@ -33,3 +33,8 @@ def test_default_values(cfg):
 
     cfg.implicit_punct = False
     assert not cfg.implicit_punct
+
+def test_register_module(cfg):
+    cfg.register_module("rita.modules.fuzzy")
+
+    assert len(cfg.modules) == 1

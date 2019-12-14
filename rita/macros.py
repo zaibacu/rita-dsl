@@ -2,7 +2,6 @@ import logging
 import types
 
 from itertools import chain
-from importlib import import_module
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +23,15 @@ def flatten(lst):
     return chain(*new_lst)
 
 
-def resolve_value(obj, context):
-    logger.debug("Resolving value: {0}, context: {1}".format(obj, context))
+def resolve_value(obj, config=None):
+    context = []
+
+    logger.debug("Resolving value: {0}".format(obj))
     
     if isinstance(obj, str):
+        return obj
+
+    elif isinstance(obj, tuple):
         return obj
     
     elif isinstance(obj, list):
@@ -36,87 +40,90 @@ def resolve_value(obj, context):
         return context
     
     elif isinstance(obj, types.GeneratorType):
-        context.append(("either", list(obj), None))
-        return context
-    
-    return obj(context=context)
+        return ("either", list(obj), None)
+
+    if config:
+        return obj(config=config)
+    else:
+        return obj()
 
 
-def ANY(context, op=None):
-    context.append(("regex", r".*", op))
-    return context
+def ANY(config, op=None):
+    return ("regex", r".*", op)
 
 
-def PUNCT(context, op=None):
-    context.append(("punct", None, op))
-    return context
+def PUNCT(config, op=None):
+    return ("punct", None, op)
 
 
-def MARK(type_, obj, op=None):
-    return {"label": resolve_value(type_, []), "data": resolve_value(obj, [])}
+def MARK(type_, obj, config, op=None):
+    return {"label": resolve_value(type_, config=config), "data": resolve_value(obj, config=config)}
 
 
-def LOAD(*args, context=None):
-    fpath = resolve_value(args[0], {})
+def LOAD(*args, config):
+    fpath = resolve_value(args[0], config=config)
     with open(fpath, "r") as f:
         return list([l.strip() for l in f.readlines()])
 
 
-def ASSIGN(k, v, context=None, op=None):
+def ASSIGN(k, v, config, op=None):
     logger.debug("Assigning: {0} -> {1}".format(k, v))
-    VARIABLES[k] = resolve_value(v, [])
+    VARIABLES[k] = resolve_value(v, config=config)
 
 
-def IN_LIST(*args, context, op=None):
+def IN_LIST(*args, config, op=None):
     variants = []
-    new_context = []
     for arg in flatten(args):
-        variants.append(resolve_value(arg, new_context))
-    context.append(("any_of", variants, None))
-    return context
+        variants.append(resolve_value(arg, config=config))
+    return ("any_of", variants, None)
 
 
-def PATTERN(*args, context=None, op=None):
+def PATTERN(*args, config, op=None):
     new_ctx = []
     for arg in args:
-        resolve_value(arg, new_ctx)
+        result = resolve_value(arg, config=config)
+        if isinstance(result, list):
+            new_ctx += result
+        else:
+            new_ctx.append(result)
+
     return new_ctx
 
 
-def WORD(*args, context, op=None):
+def WORD(*args, config, op=None):
     if len(args) == 1:
-        literal = resolve_value(args[0], [])
-        context.append(("value", literal, op))
-        return context
+        literal = resolve_value(args[0], config=config)
+        return ("value", literal, op)
     elif len(args) == 0:
-        return context.append(("regex", "\\w+", op))
+        return ("regex", "\\w+", op)
 
 
-def NUM(*args, context, op=None):
+def NUM(*args, config, op=None):
     if len(args) == 1:
-        literal = resolve_value(args[0], {})
-        context.append(("value", literal, op))
-        return context
+        literal = resolve_value(args[0], config=config)
+        return ("value", literal, op)
     elif len(args) == 0:
-        return context.append(("regex", "\\d+", op))
+        return ("regex", "\\d+", op)
 
 
-def POS(name, context, op=None):
-    return context.append(("pos", resolve_value(name, {}), op))
+def POS(name, config, op=None):
+    return ("pos", resolve_value(name, config=config), op)
 
 
-def LEMMA(name, context, op=None):
-    return context.append(("lemma", resolve_value(name, {}), op))
+def LEMMA(name, config, op=None):
+    return ("lemma", resolve_value(name, config=config), op)
 
 
-def ENTITY(name, context, op=None):
-    return context.append(("entity", resolve_value(name, {}), op))
+def ENTITY(name, config, op=None):
+    return ("entity", resolve_value(name, config=config), op)
 
 
-def IMPORT(module, context=None, op=None):
-    mod_name = resolve_value(module, {})
-    MODULES.append(import_module(mod_name))
+def IMPORT(module, config, op=None):
+    print("Importing!")
+    mod_name = resolve_value(module, config=config)
+    config.register_module(mod_name)
 
 
-def EXEC(obj, context=None, op=None):
-    return resolve_value(obj, [])
+def EXEC(obj, config, op=None):
+    print("Exec: {}".format(obj))
+    return resolve_value(obj, config=config)

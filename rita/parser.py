@@ -55,6 +55,7 @@ class RitaParser(object):
         ("nonassoc", "ARROW"),
         ("nonassoc", "PIPE"),
         ("nonassoc", "COMMA"),
+        ("nonassoc", "EXEC"),
         ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
@@ -95,7 +96,7 @@ class RitaParser(object):
     def p_macro_exec(self, p):
         " MACRO_EXEC : EXEC MACRO "
         logger.debug("Exec {0}".format(p[2]))
-        p[0] = partial(macros.EXEC, p[2], config=self.config)
+        p[0] = macros.EXEC(p[2], config=self.config)
 
     def p_macro_w_modif(self, p):
         """

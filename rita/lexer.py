@@ -38,7 +38,7 @@ class RitaLexer(object):
     t_MODIF_QMARK = r"\?"
     t_MODIF_STAR = r"\*"
     t_MODIF_PLUS = r"\+"
-    t_EXEC = r"\!"
+    t_EXEC = r"!"
     t_ASSIGN = r"="
     t_PIPE = r"\|"
 

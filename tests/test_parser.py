@@ -120,7 +120,6 @@ def test_parser_import_module(config):
     assert len(results) == 2
     results[0]()
     rules = results[1]()
-    print(rules)
 
 
 def test_parser_import_module_shortcut(config, caplog):
@@ -137,6 +136,4 @@ def test_parser_import_module_shortcut(config, caplog):
     )
 
     assert len(results) == 2
-    results[0]()
     rules = results[1]()
-    print(rules)

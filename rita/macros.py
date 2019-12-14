@@ -124,5 +124,6 @@ def IMPORT(module, config, op=None):
     config.register_module(mod_name)
 
 
-def EXEC(obj, config, op=None):
+def EXEC(obj, config):
+    print(obj)
     return resolve_value(obj, config=config)

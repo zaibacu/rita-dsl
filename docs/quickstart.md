@@ -85,8 +85,7 @@ Here's a test covering this case
 
 ```python
 def test_standalone_simple():
-    from rita.engine.translate_standalone import compile_rules
-    patterns = rita.compile("examples/simple-match.rita", compile_fn=compile_rules)
+    patterns = rita.compile("examples/simple-match.rita", use_engine="standalone")
     results = list(patterns.execute("Donald Trump was elected President in 2016 defeating Hilary Clinton."))
     assert len(results) == 2
     entities = list([(r["text"], r["label"]) for r in results])

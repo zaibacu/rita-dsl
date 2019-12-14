@@ -1,24 +1,33 @@
+import logging
+import pytest
+
 from rita.parser import RitaParser
+from rita.config import SessionConfig
 
 
-def test_parser_any_macro_wo_args_w_type():
-    p = RitaParser()
+@pytest.fixture
+def config():
+    return SessionConfig()
+
+
+def test_parser_any_macro_wo_args_w_type(config):
+    p = RitaParser(config)
     p.build()
 
     results = p.parse('ANY -> MARK("PlaceHolder")')
     assert len(results) == 1
 
 
-def test_parser_any_macro_w_args_w_type():
-    p = RitaParser()
+def test_parser_any_macro_w_args_w_type(config):
+    p = RitaParser(config)
     p.build()
 
     results = p.parse('{WORD("arg1")} -> MARK("PlaceHolder")')
     assert len(results) == 1
 
 
-def test_parser_nested_macro():
-    p = RitaParser()
+def test_parser_nested_macro(config):
+    p = RitaParser(config)
     p.build()
 
     results = p.parse('{ANY, WORD("test")} -> MARK("Test")')
@@ -27,8 +36,8 @@ def test_parser_nested_macro():
         print(result())
 
 
-def test_parser_assign_literal_and_ignore_it():
-    p = RitaParser()
+def test_parser_assign_literal_and_ignore_it(config):
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -46,8 +55,8 @@ def test_parser_assign_literal_and_ignore_it():
     assert {"label": "TEST", "data": [("value", "something", None)]} == rules
 
 
-def test_parser_assign_literal_and_use_it():
-    p = RitaParser()
+def test_parser_assign_literal_and_use_it(config):
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -65,8 +74,8 @@ def test_parser_assign_literal_and_use_it():
     assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
 
 
-def test_parser_just_assign_macro():
-    p = RitaParser()
+def test_parser_just_assign_macro(config):
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -76,9 +85,21 @@ def test_parser_just_assign_macro():
     )
     assert len(results) == 1
 
+def test_parser_assign_two_variables(config):
+    p = RitaParser(config)
+    p.build(debug=True)
 
-def test_parser_assign_macro_and_use_it():
-    p = RitaParser()
+    results = p.parse(
+        """
+    a = "A"
+    b = "B"
+    """
+    )
+    assert len(results) == 2
+
+
+def test_parser_assign_macro_and_use_it(config):
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -96,8 +117,8 @@ def test_parser_assign_macro_and_use_it():
     assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
 
 
-def test_parser_import_module():
-    p = RitaParser()
+def test_parser_import_module(config):
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -111,11 +132,11 @@ def test_parser_import_module():
     assert len(results) == 2
     results[0]()
     rules = results[1]()
-    print(rules)
 
 
-def test_parser_import_module_shortcut():
-    p = RitaParser()
+def test_parser_import_module_shortcut(config, caplog):
+    caplog.set_level(logging.INFO)
+    p = RitaParser(config)
     p.build(debug=True)
 
     results = p.parse(
@@ -127,6 +148,18 @@ def test_parser_import_module_shortcut():
     )
 
     assert len(results) == 2
-    results[0]()
     rules = results[1]()
-    print(rules)
+
+def test_parser_config(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+    !CONFIG("foo", "bar")
+    !CONFIG("testing", "1")
+    """
+    )
+
+    assert config.foo == "bar"
+    assert config.testing

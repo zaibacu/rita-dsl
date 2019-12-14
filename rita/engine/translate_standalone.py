@@ -87,6 +87,9 @@ def rules_to_patterns(label, data):
         """
         Implicitly add spaces between rules
         """
+        if len(data) == 0:
+            return
+        
         yield data[0]
         for (t, d, op) in data[1:]:
             if t != "punct":
@@ -118,7 +121,7 @@ class RuleExecutor(object):
                 }
 
 
-def compile_rules(rules):
+def compile_rules(rules, config):
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group) for group in rules]
     executor = RuleExecutor(patterns)

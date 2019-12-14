@@ -12,6 +12,7 @@ def spacy_engine(rules):
     patterns = rita.compile_string(rules)
     nlp = spacy.load("en")
     ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
+    print(patterns)
     ruler.add_patterns(patterns)
     nlp.add_pipe(ruler)
     
@@ -22,8 +23,7 @@ def spacy_engine(rules):
 
 
 def standalone_engine(rules):
-    from rita.engine.translate_standalone import compile_rules
-    parser = rita.compile_string(rules, compile_fn=compile_rules)
+    parser = rita.compile_string(rules, use_engine="standalone")
     print(parser.patterns)
     def parse(text):
         results = list(parser.execute(text))

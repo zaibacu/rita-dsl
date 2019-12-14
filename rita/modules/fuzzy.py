@@ -26,7 +26,6 @@ def premutations(initial):
         yield "\s{0}\s".format(slang[initial])
 
 
-def FUZZY(name, context, op=None):
-    initial = resolve_value(name, {})
-    context.append(("fuzzy", list(premutations(initial.lower())), op))
-    return context
+def FUZZY(name, config, op=None):
+    initial = resolve_value(name, config=config)
+    return ("fuzzy", list(premutations(initial.lower())), op)

@@ -10,7 +10,7 @@ from rita.utils import Node
 logger = logging.getLogger(__name__)
 
 
-def add_implicit_punct(rules):
+def add_implicit_punct(rules, config):
     """
     When writing rule, user usually doesn't care about some punct characters between words.
     We add them implicitly (unless this setting is turned off)
@@ -27,7 +27,7 @@ def add_implicit_punct(rules):
             yield (group_label, list(gen())[:-1])
 
 
-def handle_multi_word(rules):
+def handle_multi_word(rules, config):
     """
     spaCy splits everything in tokens. Words with dash ends up in different tokens.
     We don't want for user to even care about this, so we make this work implicitly
@@ -52,7 +52,7 @@ def has_complex(args):
                 for a in args])
 
 
-def branch_pattern(pattern):
+def branch_pattern(pattern, config):
     """
     Creates multiple lists for each possible permutation
     """
@@ -66,9 +66,7 @@ def branch_pattern(pattern):
             current = n
             current.depth = depth
             for e in p[1]:
-                values = e(context=[])
-                for v in values:
-                    current.add_child(v)
+                current.add_child(e(config=config))
                 depth += 1
         elif p[0] == "any_of" and has_complex(p[1]):
             _all = set(p[1])
@@ -92,7 +90,7 @@ def branch_pattern(pattern):
         yield p
 
 
-def handle_rule_branching(rules):
+def handle_rule_branching(rules, config):
     """
     If we have an OR statement, eg. `WORD(w1)|WORD(w2)`,
     Generic approach is to clone rules and use w1 in one, w2 in other.
@@ -102,22 +100,23 @@ def handle_rule_branching(rules):
         # Covering WORD(w1)|WORD(w2) case
         if any([p == "either"
                 for (p, _, _) in pattern]):
-            for p in branch_pattern(pattern):
+            for p in branch_pattern(pattern, config):
                 yield (group_label, p)
 
         # Covering case when there are complex items in list
         elif any([p == "any_of" and has_complex(o)
                   for (p, o, _) in pattern]):
-            for p in branch_pattern(pattern):
+            for p in branch_pattern(pattern, config):
                 yield (group_label, p)
         else:
             yield (group_label, pattern)
 
 
-def dummy(rules):
+def dummy(rules, config):
     """
     Placeholder which does nothing
     """
+    logger.debug("Initial rules: {}".format(rules))
     return rules
 
 
@@ -125,9 +124,8 @@ def rule_tuple(d):
     return (d["label"], d["data"])
 
 
-def preprocess_rules(root):
+def preprocess_rules(root, config):
     logger.info("Preprocessing rules")
-    conf = rita.config()
 
     rules = [rule_tuple(doc())
              for doc in root
@@ -135,8 +133,8 @@ def preprocess_rules(root):
 
     pipeline = [dummy, handle_rule_branching, handle_multi_word]
 
-    if conf.implicit_punct:
+    if config.implicit_punct:
         logger.info("Adding implicit Punctuations")
         pipeline.append(add_implicit_punct)
 
-    return reduce(lambda acc, p: p(acc), pipeline, rules)
+    return reduce(lambda acc, p: p(acc, config), pipeline, rules)

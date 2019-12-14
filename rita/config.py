@@ -49,35 +49,13 @@ class SessionConfig(object):
         self._implicit_punct = True
         self._root = Config()
         self.modules = []
-        self.variables = {
-            "TRUE": 1,
-            "FALSE": 0
+        # Default config
+        self._data = {
+            "list_ignore_case": True,
+            "implicit_punct": True
+            
         }
-    
-    @property
-    def list_ignore_case(self):
-        """
-        Ignore case while doing `IN_LIST` operation
-        """
-        return self._list_ignore_case
-
-    @property
-    def implicit_punct(self):
-        """
-        Automatically add optional Punctuation characters inside rule between macros.
-        eg. `WORD(w1), WORD(w2)`
-        would be converted into:
-        `WORD(w1), PUNCT?, WORD(w2)`
-        """
-        return self._implicit_punct
-
-    @implicit_punct.setter
-    def implicit_punct(self, val):
-        self._implicit_punct = val
-
-    @list_ignore_case.setter
-    def list_ignore_case(self, val):
-        self._list_ignore_case = val
+        self.variables = {}
 
     def register_module(self, mod_name):
         logger.debug("Importing module: {}".format(mod_name))
@@ -93,7 +71,19 @@ class SessionConfig(object):
         if name == "_root":
             return self._root
 
+        elif name in self._data:
+            return self._data[name]
+
         return getattr(self._root, name)
+
+    def set_config(self, k, v):
+        # Handle booleans first
+        if v == "1":
+            self._data[k] = True
+        elif v == "0":
+            self._data[k] = False
+        else:
+            self._data[k] = v
 
 
 def with_config(fn):

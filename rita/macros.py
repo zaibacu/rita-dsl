@@ -115,9 +115,14 @@ def ENTITY(name, config, op=None):
     return ("entity", resolve_value(name, config=config), op)
 
 
-def IMPORT(module, config, op=None):
+def IMPORT(module, config):
     mod_name = resolve_value(module, config=config)
     config.register_module(mod_name)
+
+    
+def CONFIG(setting, value, config):
+    logger.debug("Config {0} -> {1}".format(setting, value))
+    config.set_config(setting, resolve_value(value, config=config))
 
 
 def EXEC(obj, config):

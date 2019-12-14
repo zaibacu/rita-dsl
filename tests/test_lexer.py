@@ -71,3 +71,21 @@ def test_tokenize_exec_macro():
     assert tokens[0].type == "EXEC"
     assert tokens[1].type == "KEYWORD"
     assert tokens[3].type == "LITERAL"
+
+def test_tokenize_two_exec_macros():
+    l = RitaLexer()
+    l.build()
+    tokens = list(l.tokenize("""
+    !CONFIG("setting.1", "1")
+    !CONFIG("setting.2", "0")
+    """))
+    assert len(tokens) == 14
+    assert tokens[0].type == "EXEC"
+    assert tokens[1].type == "KEYWORD"
+    assert tokens[3].type == "LITERAL"
+    assert tokens[5].type == "LITERAL"
+
+    assert tokens[7].type == "EXEC"
+    assert tokens[8].type == "KEYWORD"
+    assert tokens[10].type == "LITERAL"
+    assert tokens[12].type == "LITERAL"

@@ -55,7 +55,7 @@ class RitaParser(object):
         ("nonassoc", "ARROW"),
         ("nonassoc", "PIPE"),
         ("nonassoc", "COMMA"),
-        ("nonassoc", "EXEC"),
+        ("left", "EXEC"),
         ("left", "ASSIGN"),
         ("left", "RBRACKET", "LBRACKET", "LPAREN", "RPAREN"),
         ("left", "KEYWORD", "NAME", "LITERAL"),
@@ -96,7 +96,8 @@ class RitaParser(object):
     def p_macro_exec(self, p):
         " MACRO_EXEC : EXEC MACRO "
         logger.debug("Exec {0}".format(p[2]))
-        p[0] = macros.EXEC(p[2], config=self.config)
+        macros.EXEC(p[2], config=self.config)
+        p[0] = stub
 
     def p_macro_w_modif(self, p):
         """
@@ -142,6 +143,8 @@ class RitaParser(object):
         else:
             macros.ASSIGN(p[1], p[3], config=self.config)
 
+        p[0] = stub
+
     def p_either(self, p):
         " ARG : ARG PIPE ARG "
         p[0] = either(p[1], p[3])
@@ -171,7 +174,10 @@ class RitaParser(object):
         p[0] = p[1]
 
     def p_error(self, p):
-        logger.error("Syntax error at '{}'".format(p.value))
+        if p:
+            logger.error("Syntax error at '{}'".format(p.value))
+        else:
+            logger.error("p is null")
 
     def build(self, **kwargs):
         self.lexer = RitaLexer().build(**kwargs)

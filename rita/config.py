@@ -45,13 +45,11 @@ class Config(SingletonMixin):
 
 class SessionConfig(object):
     def __init__(self):
-        self._list_ignore_case = True
-        self._implicit_punct = True
         self._root = Config()
         self.modules = []
         # Default config
         self._data = {
-            "list_ignore_case": True,
+            "ignore_case": True,
             "implicit_punct": True
             
         }
@@ -78,9 +76,9 @@ class SessionConfig(object):
 
     def set_config(self, k, v):
         # Handle booleans first
-        if v == "1":
+        if v.upper() in ["1", "T", "Y"]:
             self._data[k] = True
-        elif v == "0":
+        elif v.upper() in ["0", "F", "N"]:
             self._data[k] = False
         else:
             self._data[k] = v

@@ -25,11 +25,11 @@ def test_registered_engines_has_spacy(cfg):
 
 
 def test_default_values(cfg):
-    assert cfg.list_ignore_case
+    assert cfg.ignore_case
     assert cfg.implicit_punct
 
-    cfg.list_ignore_case = False
-    assert not cfg.list_ignore_case
+    cfg.ignore_case = False
+    assert not cfg.ignore_case
 
     cfg.implicit_punct = False
     assert not cfg.implicit_punct

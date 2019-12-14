@@ -5,9 +5,6 @@ from itertools import chain
 
 logger = logging.getLogger(__name__)
 
-VARIABLES = {}
-MODULES = []
-
 
 def flatten(lst):
     if len(lst) > 1:
@@ -25,7 +22,6 @@ def flatten(lst):
 
 def resolve_value(obj, config=None):
     context = []
-    print("Obj: {0}, Config: {1}".format(obj, config))
 
     logger.debug("Resolving value: {0}".format(obj))
     
@@ -69,7 +65,7 @@ def LOAD(*args, config):
 
 def ASSIGN(k, v, config, op=None):
     logger.debug("Assigning: {0} -> {1}".format(k, v))
-    VARIABLES[k] = resolve_value(v, config=config)
+    config.set_variable(k, resolve_value(v, config=config))
 
 
 def IN_LIST(*args, config, op=None):
@@ -125,5 +121,4 @@ def IMPORT(module, config, op=None):
 
 
 def EXEC(obj, config):
-    print(obj)
     return resolve_value(obj, config=config)

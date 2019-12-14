@@ -49,6 +49,7 @@ class SessionConfig(object):
         self._implicit_punct = True
         self._root = Config()
         self.modules = []
+        self.variables = {}
     
     @property
     def list_ignore_case(self):
@@ -79,6 +80,12 @@ class SessionConfig(object):
         logger.debug("Importing module: {}".format(mod_name))
         self.modules.append(import_module(mod_name))
 
+    def set_variable(self, k, v):
+        self.variables[k] = v
+
+    def get_variable(self, k):
+        return self.variables[k]
+        
     def __getattr__(self, name):
         if name == "_root":
             return self._root

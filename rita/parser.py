@@ -41,10 +41,10 @@ def load_macro(name, config):
     return lazy_load
 
 
-def var_wrapper(variable):
+def var_wrapper(variable, config):
     def wrapper(*args, **kwargs):
-        logger.debug("Variables: {}".format(macros.VARIABLES))
-        return macros.VARIABLES[variable]
+        logger.debug("Variables: {}".format(config.variables))
+        return config.get_variable(variable)
 
     return wrapper
 
@@ -133,7 +133,7 @@ class RitaParser(object):
 
     def p_variable(self, p):
         " VARIABLE_NAME : NAME "
-        p[0] = var_wrapper(p[1])
+        p[0] = var_wrapper(p[1], self.config)
 
     def p_variable_from_args(self, p):
         " VARIABLE : NAME ASSIGN ARGS "

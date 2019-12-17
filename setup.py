@@ -6,6 +6,8 @@ try:
 except:
     from pip.req import parse_requirements
 
+from rita import get_version
+
 
 install_reqs = list(parse_requirements("requirements/main.txt", session={}))
 test_reqs = list(parse_requirements("requirements/test.txt", session={}))
@@ -16,7 +18,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="rita-dsl",
-    version="0.3.1",
+    version=get_version(),
     long_description=desc,
     long_description_content_type="text/markdown",
     description="DSL for building language rules",
@@ -39,6 +41,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],

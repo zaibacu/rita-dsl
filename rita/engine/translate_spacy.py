@@ -2,15 +2,13 @@ import logging
 
 from functools import partial
 
-from rita.utils import Node
-
 logger = logging.getLogger(__name__)
 
 
 def any_of_parse(lst, config, op=None):
     if config.ignore_case:
         normalized = sorted([item.lower()
-                         for item in lst])
+                             for item in lst])
         base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized))}}
     else:
         base = {"REGEX": r"({0})".format("|".join(sorted(lst)))}
@@ -44,11 +42,12 @@ def generic_parse(tag, value, config, op=None):
     if tag == "ORTH" and config.ignore_case:
         d["LOWER"] = value.lower()
     else:
-        d[tag] = value        
+        d[tag] = value
 
     if op:
         d["OP"] = op
     yield d
+
 
 def punct_parse(_, config, op=None):
     d = {}
@@ -56,6 +55,7 @@ def punct_parse(_, config, op=None):
     if op:
         d["OP"] = op
     yield d
+
 
 def phrase_parse(value, config, op=None):
     """

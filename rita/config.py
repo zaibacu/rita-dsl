@@ -3,7 +3,6 @@ import logging
 from importlib import import_module
 
 try:
-    import spacy
     from rita.engine.translate_spacy import compile_rules as spacy_engine
 except ImportError:
     pass
@@ -40,7 +39,6 @@ class Config(SingletonMixin):
 
     def get_engine(self, key):
         return self.engines_by_key[key]
-        
 
 
 class SessionConfig(object):
@@ -51,7 +49,6 @@ class SessionConfig(object):
         self._data = {
             "ignore_case": True,
             "implicit_punct": True
-            
         }
         self.variables = {}
 
@@ -64,7 +61,7 @@ class SessionConfig(object):
 
     def get_variable(self, k):
         return self.variables[k]
-        
+
     def __getattr__(self, name):
         if name == "_root":
             return self._root

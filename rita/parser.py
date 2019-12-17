@@ -2,7 +2,6 @@ import logging
 
 import ply.yacc as yacc
 
-from importlib import import_module
 from functools import partial
 
 from rita.lexer import RitaLexer
@@ -23,7 +22,7 @@ def either(a, b):
 def load_macro(name, config):
     try:
         return partial(getattr(macros, name), config=config)
-    except:
+    except Exception:
         pass
 
     def lazy_load(*args, **kwargs):
@@ -86,12 +85,20 @@ class RitaParser(object):
     def p_macro_chain(self, p):
         " MACRO_CHAIN : MACRO ARROW MACRO "
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
-        p[0] = partial(p[3], macros.PATTERN(p[1], config=self.config), config=self.config)
+        p[0] = partial(
+            p[3],
+            macros.PATTERN(p[1], config=self.config),
+            config=self.config
+        )
 
     def p_macro_chain_from_array(self, p):
         " MACRO_CHAIN : ARRAY ARROW MACRO "
         logger.debug("Have {0} -> {1}".format(p[1], p[3]))
-        p[0] = partial(p[3], macros.PATTERN(*p[1], config=self.config), config=self.config)
+        p[0] = partial(
+            p[3],
+            macros.PATTERN(*p[1], config=self.config),
+            config=self.config
+        )
 
     def p_macro_exec(self, p):
         " MACRO_EXEC : EXEC MACRO "

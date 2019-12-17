@@ -85,6 +85,7 @@ def test_parser_just_assign_macro(config):
     )
     assert len(results) == 1
 
+
 def test_parser_assign_two_variables(config):
     p = RitaParser(config)
     p.build(debug=True)
@@ -130,8 +131,6 @@ def test_parser_import_module(config):
     )
 
     assert len(results) == 2
-    results[0]()
-    rules = results[1]()
 
 
 def test_parser_import_module_shortcut(config, caplog):
@@ -148,13 +147,13 @@ def test_parser_import_module_shortcut(config, caplog):
     )
 
     assert len(results) == 2
-    rules = results[1]()
+
 
 def test_parser_config(config):
     p = RitaParser(config)
     p.build(debug=True)
 
-    results = p.parse(
+    p.parse(
         """
     !CONFIG("foo", "bar")
     !CONFIG("testing", "1")

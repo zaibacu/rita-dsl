@@ -1,17 +1,22 @@
 import logging
 import types
 
-from rita import engine
 from rita.config import with_config
-from rita.parser import RitaParser
 from rita.preprocess import preprocess_rules
 
 
 logger = logging.getLogger(__name__)
 
+__version__ = (0, 3, 2)
+
+
+def get_version():
+    return "{0}.{1}.{2}".format(*__version__)
+
 
 @with_config
 def compile_string(raw, config, use_engine=None):
+    from rita.parser import RitaParser
     parser = RitaParser(config)
     parser.build()
     root = parser.parse(raw)
@@ -32,4 +37,4 @@ def compile(fname, compile_fn=None):
     with open(fname, "r") as f:
         raw = f.read()
 
-    return compile_string(raw, compile_fn)
+    return compile_string(raw)

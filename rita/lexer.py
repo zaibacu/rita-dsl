@@ -1,8 +1,6 @@
 import logging
 import ply.lex as lex
 
-from rita import macros
-
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +39,6 @@ class RitaLexer(object):
     t_EXEC = r"!"
     t_ASSIGN = r"="
     t_PIPE = r"\|"
-
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):

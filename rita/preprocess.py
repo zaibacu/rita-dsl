@@ -1,9 +1,6 @@
 import logging
 
-import rita
-
 from functools import reduce
-from itertools import zip_longest
 
 from rita.utils import Node
 
@@ -12,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 def add_implicit_punct(rules, config):
     """
-    When writing rule, user usually doesn't care about some punct characters between words.
+    When writing rule,
+    user usually doesn't care about some punct characters between words.
     We add them implicitly (unless this setting is turned off)
     """
     for group_label, pattern in rules:
@@ -29,9 +27,12 @@ def add_implicit_punct(rules, config):
 
 def handle_multi_word(rules, config):
     """
-    spaCy splits everything in tokens. Words with dash ends up in different tokens.
-    We don't want for user to even care about this, so we make this work implicitly
-    
+    spaCy splits everything in tokens.
+    Words with dash ends up in different tokens.
+
+    We don't want for user to even care about this,
+    so we make this work implicitly
+
     WORD("Knee-length") => WORD("Knee"), WORD("-"), WORD("length")
     """
     for group_label, pattern in rules:
@@ -43,11 +44,11 @@ def is_complex(arg):
     return any([s in arg
                 for s in splitters])
 
+
 def has_complex(args):
     """
     Tells if any of arguments will be impacted by tokenizer
     """
-    
     return any([is_complex(a)
                 for a in args])
 
@@ -94,8 +95,9 @@ def handle_rule_branching(rules, config):
     """
     If we have an OR statement, eg. `WORD(w1)|WORD(w2)`,
     Generic approach is to clone rules and use w1 in one, w2 in other.
-    It may be an overkill, but some situations are not covered in simple approach
-    """ 
+    It may be an overkill, but some situations are not covered
+    with simple approach
+    """
     for group_label, pattern in rules:
         # Covering WORD(w1)|WORD(w2) case
         if any([p == "either"

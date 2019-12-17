@@ -17,13 +17,21 @@ def premutations(initial):
     # return initial value
     yield initial
 
-    # if we have double letters, like `oo`, we can guess that user can sometimes enter both, sometimes only single
-    double_letters = re.sub(find_re, lambda x: char_translation[x.group(0)], initial)
+    """
+    if we have double letters, like `oo`, we can guess that
+    - user can sometimes enter both
+    - sometimes only single
+    """
+    double_letters = re.sub(
+        find_re,
+        lambda x: char_translation[x.group(0)],
+        initial
+    )
     yield double_letters
 
     # if we have simple word, can add slang alternative
     if initial in slang:
-        yield "\s{0}\s".format(slang[initial])
+        yield r"\s{0}\s".format(slang[initial])
 
 
 def FUZZY(name, config, op=None):

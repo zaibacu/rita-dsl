@@ -11,4 +11,3 @@ def test_simple_compile(mocker):
         "output.jsonl"
     ]
     main()
-

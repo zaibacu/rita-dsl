@@ -1,7 +1,6 @@
 import logging
 import types
 
-from rita import engine
 from rita.config import with_config
 from rita.parser import RitaParser
 from rita.preprocess import preprocess_rules

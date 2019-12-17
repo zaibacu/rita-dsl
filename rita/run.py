@@ -5,10 +5,15 @@ import rita
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Compile rita -> spaCy patterns")
+    parser = argparse.ArgumentParser(
+        description="Compile rita -> spaCy patterns"
+    )
 
     parser.add_argument("-f", help=".rita rules file")
-    parser.add_argument("out", help="output .jsonl file to store rules")
+    parser.add_argument(
+        "out",
+        help="output .jsonl file to store rules"
+    )
     args = parser.parse_args()
 
     patterns = rita.compile(args.f)

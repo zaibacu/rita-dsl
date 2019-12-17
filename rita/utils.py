@@ -33,7 +33,7 @@ class Node(object):
             result = self.current
             self.next_child()
             return result
-        
+
         if self.ref_count >= self.depth:
             self.next_child()
             self.ref_count = 0
@@ -51,16 +51,16 @@ class Node(object):
     def unwrap(self):
         variants = 1
         current = self
-        while current != None:
+        while current is not None:
             variants *= current.weight
             current = current.next_node
 
         logger.debug("Total variants: {}".format(variants))
-        
+
         for i in range(0, variants):
             result = []
             current = self
-            while current != None:
+            while current is not None:
                 if current.data:
                     result.append(current.data)
                 if len(current.children) > 0:
@@ -86,6 +86,7 @@ class Node(object):
 
 class SingletonMixin(object):
     _instance = None
+
     def __new__(class_, *args, **kwargs):
         if not isinstance(class_._instance, class_):
             class_._instance = object.__new__(class_, *args, **kwargs)

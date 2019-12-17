@@ -2,7 +2,6 @@ import logging
 import types
 
 from rita.config import with_config
-from rita.parser import RitaParser
 from rita.preprocess import preprocess_rules
 
 
@@ -17,6 +16,8 @@ def get_version():
 
 @with_config
 def compile_string(raw, config, use_engine=None):
+    from rita.parser import RitaParser
+    
     parser = RitaParser(config)
     parser.build()
     root = parser.parse(raw)

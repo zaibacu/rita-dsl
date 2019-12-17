@@ -1,7 +1,10 @@
 [tool.towncrier]
+directory = "changes"
 package = "rita"
-package_dir = "rita"
 filename = "CHANGELOG.md"
+underlines = ["*", "-"]
+template = "templates/changes.md"
+title_format = "{name} {version} ({project_date})"
 
 [[tool.towncrier.type]]
 directory = "breaking"

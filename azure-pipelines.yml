@@ -25,6 +25,9 @@ strategy:
     ChangeLog:
       python.version: '3.8'
       tox.env: changelog
+    Lint:
+      python.version: '3.8'
+      tox.env: lint
 
 steps:
 - task: UsePythonVersion@0

@@ -24,18 +24,18 @@ def resolve_value(obj, config=None):
     context = []
 
     logger.debug("Resolving value: {0}".format(obj))
-    
+
     if isinstance(obj, str):
         return obj
 
     elif isinstance(obj, tuple):
         return obj
-    
+
     elif isinstance(obj, list):
         for item in obj:
             context.append(item)
         return context
-    
+
     elif isinstance(obj, types.GeneratorType):
         return ("either", list(obj), None)
 
@@ -54,7 +54,10 @@ def PUNCT(config, op=None):
 
 
 def MARK(type_, obj, config, op=None):
-    return {"label": resolve_value(type_, config=config), "data": resolve_value(obj, config=config)}
+    return {
+        "label": resolve_value(type_, config=config),
+        "data": resolve_value(obj, config=config)
+    }
 
 
 def LOAD(*args, config):
@@ -119,7 +122,7 @@ def IMPORT(module, config):
     mod_name = resolve_value(module, config=config)
     config.register_module(mod_name)
 
-    
+
 def CONFIG(setting, value, config):
     logger.debug("Config {0} -> {1}".format(setting, value))
     config.set_config(setting, resolve_value(value, config=config))

@@ -12,7 +12,7 @@ __version__ = (0, 3, 2)
 
 
 def get_version():
-    return "{0}.{1}.{2}".format(__version__)
+    return "{0}.{1}.{2}".format(*__version__)
 
 
 @with_config
@@ -37,4 +37,4 @@ def compile(fname, compile_fn=None):
     with open(fname, "r") as f:
         raw = f.read()
 
-    return compile_string(raw, compile_fn)
+    return compile_string(raw)

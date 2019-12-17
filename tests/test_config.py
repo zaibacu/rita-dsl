@@ -18,7 +18,7 @@ def test_registered_engines(cfg):
 
 
 def test_registered_engines_has_spacy(cfg):
-    spacy = pytest.importorskip("spacy", minversion="2.1")
+    pytest.importorskip("spacy", minversion="2.1")
     from rita.engine.translate_spacy import compile_rules
     assert len(cfg.available_engines) == 2
     assert cfg.default_engine == compile_rules
@@ -33,6 +33,7 @@ def test_default_values(cfg):
 
     cfg.implicit_punct = False
     assert not cfg.implicit_punct
+
 
 def test_register_module(cfg):
     cfg.register_module("rita.modules.fuzzy")

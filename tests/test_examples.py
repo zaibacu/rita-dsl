@@ -1,6 +1,5 @@
 import csv
 import pytest
-import rita
 
 from utils import spacy_engine, standalone_engine, load_rules
 
@@ -15,7 +14,8 @@ def bench_text():
 @pytest.mark.parametrize('engine', [spacy_engine])
 def test_color_car(engine):
     text = """
-    John Silver was driving a red car. It was BMW X6 Mclass. John likes driving it very much.
+    John Silver was driving a red car. It was BMW X6 Mclass.
+    John likes driving it very much.
     """
     parser = engine(load_rules("examples/color-car.rita"))
     entities = set(parser(text))
@@ -55,7 +55,7 @@ def test_fuzzy_matching(engine):
     assert len(entities) == 1
     assert entities[0] == ("SQUIRREL", "CRITTER")
 
-    
+
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_election(engine):
     parser = engine(load_rules("examples/simple-match.rita"))
@@ -118,4 +118,9 @@ def test_benchmark(benchmark, engine, bench_text):
         for r in rows:
             parser(r)
 
-    benchmark.pedantic(parse_rows, args=(parser, bench_text,), iterations=3, rounds=3)
+    benchmark.pedantic(
+        parse_rows,
+        args=(parser, bench_text),
+        iterations=3,
+        rounds=3
+    )

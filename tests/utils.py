@@ -15,7 +15,7 @@ def spacy_engine(rules):
     print(patterns)
     ruler.add_patterns(patterns)
     nlp.add_pipe(ruler)
-    
+
     def parse(text):
         doc = nlp(text)
         return list([(e.text, e.label_) for e in doc.ents])
@@ -25,6 +25,7 @@ def spacy_engine(rules):
 def standalone_engine(rules):
     parser = rita.compile_string(rules, use_engine="standalone")
     print(parser.patterns)
+
     def parse(text):
         results = list(parser.execute(text))
         return list([(r["text"], r["label"]) for r in results])

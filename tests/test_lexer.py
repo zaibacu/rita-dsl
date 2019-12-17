@@ -1,24 +1,22 @@
-from pytest import fixture
 from rita.lexer import RitaLexer
-from rita import macros
 
 
 def test_tokenize_any_macro_wo_args_wo_type():
-    l = RitaLexer()
-    l.build()
+    lex = RitaLexer()
+    lex.build()
 
-    tokens = list(l.tokenize("ANY"))
+    tokens = list(lex.tokenize("ANY"))
     assert len(tokens) == 1
-    t = tokens[0]
-    assert t.type == "KEYWORD"
-    assert t.value == "ANY"
+    token = tokens[0]
+    assert token.type == "KEYWORD"
+    assert token.value == "ANY"
 
 
 def test_tokenize_any_macro_wo_args_w_type():
-    l = RitaLexer()
-    l.build()
+    lex = RitaLexer()
+    lex.build()
 
-    tokens = list(l.tokenize('ANY -> MARK{"Placeholder"}'))
+    tokens = list(lex.tokenize('ANY -> MARK{"Placeholder"}'))
     assert len(tokens) == 6
     t0 = tokens[0]
     assert t0.type == "KEYWORD"
@@ -38,10 +36,10 @@ def test_tokenize_any_macro_wo_args_w_type():
 
 
 def test_tokenize_assign_literal():
-    l = RitaLexer()
-    l.build()
+    lex = RitaLexer()
+    lex.build()
 
-    tokens = list(l.tokenize('Test = "Test"'))
+    tokens = list(lex.tokenize('Test = "Test"'))
 
     assert len(tokens) == 3
 
@@ -51,10 +49,10 @@ def test_tokenize_assign_literal():
 
 
 def test_tokenize_assign_macro():
-    l = RitaLexer()
-    l.build()
+    lex = RitaLexer()
+    lex.build()
 
-    tokens = list(l.tokenize('Test = WORD{"Test"}'))
+    tokens = list(lex.tokenize('Test = WORD{"Test"}'))
 
     assert len(tokens) == 6
 
@@ -63,19 +61,21 @@ def test_tokenize_assign_macro():
     assert tokens[2].type == "KEYWORD"
     assert tokens[4].type == "LITERAL"
 
+
 def test_tokenize_exec_macro():
-    l = RitaLexer()
-    l.build()
-    tokens = list(l.tokenize('!IMPORT("module.test")'))
+    lex = RitaLexer()
+    lex.build()
+    tokens = list(lex.tokenize('!IMPORT("module.test")'))
     assert len(tokens) == 5
     assert tokens[0].type == "EXEC"
     assert tokens[1].type == "KEYWORD"
     assert tokens[3].type == "LITERAL"
 
+
 def test_tokenize_two_exec_macros():
-    l = RitaLexer()
-    l.build()
-    tokens = list(l.tokenize("""
+    lex = RitaLexer()
+    lex.build()
+    tokens = list(lex.tokenize("""
     !CONFIG("setting.1", "1")
     !CONFIG("setting.2", "0")
     """))

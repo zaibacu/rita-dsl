@@ -28,7 +28,3 @@ steps:
 
 - script: tox -e py
   displayName: 'Run Tox'
-
-- script: |
-    bash <(curl -s https://codecov.io/bash)
-  displayName: "Upload to codecov.io"

@@ -29,8 +29,6 @@ steps:
 - script: tox -e py
   displayName: 'Run Tox'
 
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+- script: |
+    bash <(curl -s https://codecov.io/bash)
+  displayName: "Upload to codecov.io"

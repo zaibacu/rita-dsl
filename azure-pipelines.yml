@@ -32,9 +32,7 @@ steps:
 - task: UsePythonVersion@0
   displayName: 'Upload coverage results'
   inputs:
-      versionSpec: '3.7'
-- script: pip install tox
-  displayName: 'Install tox'
+      versionSpec: '3.8'
 
 - script: tox -e codecoverage-report
   displayName: 'Upload results to codecov'

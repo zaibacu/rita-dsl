@@ -22,6 +22,9 @@ strategy:
     CoverageReport:
       python.version: '3.8'
       tox.env: codecoverage-report
+    ChangeLog:
+      python.version: '3.8'
+      tox.env: changelog
 
 steps:
 - task: UsePythonVersion@0

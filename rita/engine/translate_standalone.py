@@ -5,14 +5,15 @@ from functools import partial
 
 logger = logging.getLogger(__name__)
 
+
 def apply_operator(syntax, op):
     if not op:
         return syntax
 
-    elif op == "!": # A bit complicated one
-        return ("((?!{})\w+)".format(syntax
-                            .rstrip(")")
-                            .lstrip("(")))
+    elif op == "!":  # A bit complicated one
+        return (r"((?!{})\w+)".format(syntax
+                                      .rstrip(")")
+                                      .lstrip("(")))
     else:
         return syntax + op
 
@@ -55,6 +56,7 @@ def word_parse(value, op=None):
 
     return apply_operator(initial, op)
 
+
 def fuzzy_parse(r, op=None):
     # TODO: build premutations
     return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
@@ -62,6 +64,7 @@ def fuzzy_parse(r, op=None):
 
 def whitespace_parse(_, op=None):
     return r"\s"
+
 
 def phrase_parse(value, op=None):
     return apply_operator(r"({})".format(value), op)
@@ -83,19 +86,21 @@ PARSERS = {
 
 def rules_to_patterns(label, data):
     logger.debug("data: {}".format(data))
+
     def gen():
         """
         Implicitly add spaces between rules
         """
         if len(data) == 0:
             return
-        
+
         yield data[0]
+
         for (t, d, op) in data[1:]:
             if t != "punct":
-                yield ("whitespace", None, None) 
+                yield ("whitespace", None, None)
             yield (t, d, op)
-    
+
     return (
         label,
         [PARSERS[t](d, op) for (t, d, op) in gen()],
@@ -112,7 +117,7 @@ class RuleExecutor(object):
         flags = re.DOTALL
         if self.config.ignore_case:
             flags = flags | re.IGNORECASE
-            
+
         return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), flags)
 
     def execute(self, text):

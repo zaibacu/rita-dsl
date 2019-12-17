@@ -32,5 +32,5 @@ steps:
 - script: pip install tox
   displayName: 'Install Tox'
 
-- script: tox -e $(tox.env)
+- script: CODECOV_TOKEN=$(CODECOV_TOKEN) tox -e $(tox.env)
   displayName: 'Run Tox'

@@ -1,0 +1,24 @@
+[tool.towncrier]
+package = "rita"
+package_dir = "rita"
+filename = "CHANGELOG.md"
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Backward-incompatible Changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fix"
+name = "Fix"
+showcontent = true

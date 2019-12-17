@@ -12,10 +12,16 @@ strategy:
   matrix:
     Python36:
       python.version: '3.6'
+      tox.env: py36
     Python37:
       python.version: '3.7'
+      tox.env: py37
     Python38:
       python.version: '3.8'
+      tox.env: py38
+    CoverageReport:
+      python.version: '3.8'
+      tox.env: codecoverage-report
 
 steps:
 - task: UsePythonVersion@0
@@ -26,13 +32,5 @@ steps:
 - script: pip install tox
   displayName: 'Install Tox'
 
-- script: tox -e py
+- script: tox -e $(tox.env)
   displayName: 'Run Tox'
-
-- task: UsePythonVersion@0
-  displayName: 'Upload coverage results'
-  inputs:
-      versionSpec: '3.8'
-
-- script: tox -e codecoverage-report
-  displayName: 'Upload results to codecov'

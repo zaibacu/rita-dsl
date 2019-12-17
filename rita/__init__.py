@@ -17,7 +17,6 @@ def get_version():
 @with_config
 def compile_string(raw, config, use_engine=None):
     from rita.parser import RitaParser
-    
     parser = RitaParser(config)
     parser.build()
     root = parser.parse(raw)

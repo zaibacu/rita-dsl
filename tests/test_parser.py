@@ -162,3 +162,18 @@ def test_parser_config(config):
 
     assert config.foo == "bar"
     assert config.testing
+
+
+def test_parser_list_w_one_item(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+        MEMBERS = { "one" }
+
+        IN_LIST(MEMBERS) -> MARK("MEMBER")
+        """
+    )
+
+    assert len(results) == 3

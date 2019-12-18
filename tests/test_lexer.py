@@ -78,9 +78,9 @@ def test_tokenize_two_exec_macros():
     tokens = list(
         lex.tokenize(
             """
-    !CONFIG("setting.1", "1")
-    !CONFIG("setting.2", "0")
-    """
+            !CONFIG("setting.1", "1")
+            !CONFIG("setting.2", "0")
+            """
         )
     )
     assert len(tokens) == 14
@@ -102,8 +102,8 @@ def test_tokenize_list_w_one_item():
     tokens = list(
         lex.tokenize(
             """
-    MEMBERS = { "first" }
-    """
+            MEMBERS = { "first" }
+            """
         )
     )
 

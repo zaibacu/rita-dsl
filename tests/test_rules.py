@@ -190,7 +190,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "SPLIT_WORD",
-            "pattern": [{"LOWER": "test1"}, {"LOWER", "-"}, {"LOWER": "test2"}]
+            "pattern": [{"LOWER": "test1"}, {"LOWER": "-"}, {"LOWER": "test2"}]
         }
         
 

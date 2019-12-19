@@ -61,11 +61,17 @@ def phrase_parse(value, config, op=None):
     """
     TODO: Does not support operators
     """
-    buff = value.split("-")
-    yield next(generic_parse("ORTH", buff[0], config=config, op=None))
-    for b in buff[1:]:
-        yield next(generic_parse("ORTH", "-", config=config, op=None))
-        yield next(generic_parse("ORTH", b, config=config, op=None))
+    splitter = next((s for s in ["-", " "]
+                     if s in value), None)
+    if splitter:
+        buff = value.split(splitter)
+        yield next(generic_parse("ORTH", buff[0], config=config, op=None))
+        for b in buff[1:]:
+            if splitter != " ":
+                yield next(generic_parse("ORTH", splitter, config=config, op=None))
+            yield next(generic_parse("ORTH", b, config=config, op=None))
+    else:
+        yield generic_parse("ORTH", value, config=config, op=None)
 
 
 PARSERS = {

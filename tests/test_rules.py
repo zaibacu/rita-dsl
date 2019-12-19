@@ -13,6 +13,33 @@ class TestSpacy(object):
         pytest.importorskip("spacy", minversion="2.1")
         return rita.compile_string(rules, use_engine="spacy")
 
+    def test_punct(self):
+        rules = self.compiler('PUNCT->MARK("SOME_PUNCT")')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "pattern": [{"IS_PUNCT": True}],
+            "label": "SOME_PUNCT"
+        }
+
+    def test_number(self):
+        rules = self.compiler('NUM("42")->MARK("SOME_NUMBER")')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "pattern": [{"LOWER": "42"}],
+            "label": "SOME_NUMBER"
+        }
+
+    def test_pos(self):
+        rules = self.compiler('POS("VERB")->MARK("SOME_POS")')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "pattern": [{"POS": "VERB"}],
+            "label": "SOME_POS"
+        }
+
     def test_single_word(self):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')
         print(rules)
@@ -142,6 +169,31 @@ class TestSpacy(object):
             "pattern": [{"LOWER": "test"}, {"LOWER": "-"}, {"LOWER": "5"}]
         }
 
+    def test_word_with_spaces(self):
+        rules = self.compiler('''
+        WORD("test1 test2")->MARK("SPLIT_WORD")
+        ''')
+        print(rules)
+        # It should be split into two: WORD("test1"), WORD("test2")
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "SPLIT_WORD",
+            "pattern": [{"LOWER": "test1"}, {"LOWER": "test2"}]
+        }
+
+    def test_word_with_dash(self):
+        rules = self.compiler('''
+        WORD("test1-test2")->MARK("SPLIT_WORD")
+        ''')
+        print(rules)
+        # It should be split into two: WORD("test1"), WORD("test2")
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "SPLIT_WORD",
+            "pattern": [{"LOWER": "test1"}, {"LOWER": "-"}, {"LOWER": "test2"}]
+        }
+        
+
 
 class TestStandalone(object):
     @property
@@ -154,6 +206,18 @@ class TestStandalone(object):
 
     def compiler(self, rules):
         return rita.compile_string(rules, use_engine="standalone").patterns
+
+    def test_punct(self):
+        rules = self.compiler('PUNCT->MARK("SOME_PUNCT")')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<SOME_PUNCT>[.,!;?:])", self.flags)
+
+    def test_number(self):
+        rules = self.compiler('NUM("42")->MARK("SOME_NUMBER")')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<SOME_NUMBER>(42))", self.flags)
 
     def test_single_word(self):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')

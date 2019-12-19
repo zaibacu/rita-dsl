@@ -36,11 +36,19 @@ def handle_multi_word(rules, config):
     WORD("Knee-length") => WORD("Knee"), WORD("-"), WORD("length")
     """
     for group_label, pattern in rules:
-        yield (group_label, pattern)
+        def gen():
+            for p in pattern:
+                (name, args, op) = p
+                if name == "value" and is_complex(args):
+                    yield ("phrase", args, op)
+                else:
+                    yield p
+
+        yield (group_label, list(gen()))
 
 
 def is_complex(arg):
-    splitters = ["-"]
+    splitters = ["-", " "]
     return any([s in arg
                 for s in splitters])
 

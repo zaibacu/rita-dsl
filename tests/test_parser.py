@@ -42,10 +42,10 @@ def test_parser_assign_literal_and_ignore_it(config):
 
     results = p.parse(
         """
-    my_variable = "Test"
+        my_variable = "Test"
 
-    {WORD("something")} -> MARK("TEST")
-    """
+        {WORD("something")} -> MARK("TEST")
+        """
     )
     assert len(results) == 2
 
@@ -61,10 +61,10 @@ def test_parser_assign_literal_and_use_it(config):
 
     results = p.parse(
         """
-    my_variable = "Test"
+        my_variable = "Test"
 
-    {WORD(my_variable)} -> MARK("TEST")
-    """
+        {WORD(my_variable)} -> MARK("TEST")
+        """
     )
     assert len(results) == 2
 
@@ -80,8 +80,8 @@ def test_parser_just_assign_macro(config):
 
     results = p.parse(
         """
-    x = WORD("Test")
-    """
+        x = WORD("Test")
+        """
     )
     assert len(results) == 1
 
@@ -92,9 +92,9 @@ def test_parser_assign_two_variables(config):
 
     results = p.parse(
         """
-    a = "A"
-    b = "B"
-    """
+        a = "A"
+        b = "B"
+        """
     )
     assert len(results) == 2
 
@@ -105,10 +105,10 @@ def test_parser_assign_macro_and_use_it(config):
 
     results = p.parse(
         """
-    my_variable = WORD("Test")
+        my_variable = WORD("Test")
 
-    {my_variable} -> MARK("TEST")
-    """
+        {my_variable} -> MARK("TEST")
+        """
     )
     assert len(results) == 2
 
@@ -124,10 +124,10 @@ def test_parser_import_module(config):
 
     results = p.parse(
         """
-    IMPORT("rita.modules.fuzzy") -> EXEC
+        IMPORT("rita.modules.fuzzy") -> EXEC
 
-    FUZZY("test") -> MARK("FUZZY_MATCH")
-    """
+        FUZZY("test") -> MARK("FUZZY_MATCH")
+        """
     )
 
     assert len(results) == 2
@@ -140,10 +140,10 @@ def test_parser_import_module_shortcut(config, caplog):
 
     results = p.parse(
         """
-    !IMPORT("rita.modules.fuzzy")
+        !IMPORT("rita.modules.fuzzy")
 
-    FUZZY("test") -> MARK("FUZZY_MATCH")
-    """
+        FUZZY("test") -> MARK("FUZZY_MATCH")
+        """
     )
 
     assert len(results) == 2
@@ -155,10 +155,39 @@ def test_parser_config(config):
 
     p.parse(
         """
-    !CONFIG("foo", "bar")
-    !CONFIG("testing", "1")
-    """
+        !CONFIG("foo", "bar")
+        !CONFIG("testing", "1")
+        """
     )
 
     assert config.foo == "bar"
     assert config.testing
+
+
+def test_parser_list_w_one_item(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+        members = { "one" }
+
+        IN_LIST(members) -> MARK("MEMBER")
+        """
+    )
+
+    assert len(results) == 2
+
+def test_parser_list_w_two_items(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+        members = {"one", "two"}
+
+        IN_LIST(members) -> MARK("MEMBER")
+        """
+    )
+
+    assert len(results) == 2

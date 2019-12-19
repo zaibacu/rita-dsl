@@ -7,11 +7,11 @@ from rita.preprocess import preprocess_rules
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 3, 2)
+__version__ = (0, 3, 2, "a")
 
 
 def get_version():
-    return "{0}.{1}.{2}".format(*__version__)
+    return "{0}.{1}.{2}-{3}".format(*__version__)
 
 
 @with_config

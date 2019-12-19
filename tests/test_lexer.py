@@ -75,10 +75,14 @@ def test_tokenize_exec_macro():
 def test_tokenize_two_exec_macros():
     lex = RitaLexer()
     lex.build()
-    tokens = list(lex.tokenize("""
-    !CONFIG("setting.1", "1")
-    !CONFIG("setting.2", "0")
-    """))
+    tokens = list(
+        lex.tokenize(
+            """
+            !CONFIG("setting.1", "1")
+            !CONFIG("setting.2", "0")
+            """
+        )
+    )
     assert len(tokens) == 14
     assert tokens[0].type == "EXEC"
     assert tokens[1].type == "KEYWORD"
@@ -89,3 +93,20 @@ def test_tokenize_two_exec_macros():
     assert tokens[8].type == "KEYWORD"
     assert tokens[10].type == "LITERAL"
     assert tokens[12].type == "LITERAL"
+
+
+def test_tokenize_list_w_one_item():
+    lex = RitaLexer()
+    lex.build()
+
+    tokens = list(
+        lex.tokenize(
+            """
+            members = { "first" }
+            """
+        )
+    )
+
+    assert tokens[0].type == "NAME"
+    assert tokens[1].type == "ASSIGN"
+    assert tokens[3].type == "LITERAL"

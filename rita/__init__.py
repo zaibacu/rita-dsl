@@ -1,3 +1,5 @@
+import os
+
 import logging
 import types
 
@@ -7,11 +9,15 @@ from rita.preprocess import preprocess_rules
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 3, 2, "a")
+__version__ = (0, 3, 2, os.getenv("VERSION_PATCH"))
 
 
 def get_version():
-    return "{0}.{1}.{2}-{3}".format(*__version__)
+    normalized = list([i for i in __version__ if i is not None])
+    if len(normalized) == 4:
+        return "{0}.{1}.{2}-{3}".format(*normalized)
+    else:
+        return "{0}.{1}.{2}".format(*normalized)
 
 
 @with_config

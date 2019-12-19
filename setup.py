@@ -15,6 +15,8 @@ test_reqs = list(parse_requirements("requirements/test.txt", session={}))
 with open("README.md", "r") as f:
     desc = f.read()
 
+with open("CHANGELOG.md", "r") as f:
+    desc += "## Changelog\n" + f.read()
 
 setup(
     name="rita-dsl",

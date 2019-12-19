@@ -170,10 +170,24 @@ def test_parser_list_w_one_item(config):
 
     results = p.parse(
         """
-        MEMBERS = { "one" }
+        members = { "one" }
 
-        IN_LIST(MEMBERS) -> MARK("MEMBER")
+        IN_LIST(members) -> MARK("MEMBER")
         """
     )
 
-    assert len(results) == 3
+    assert len(results) == 2
+
+def test_parser_list_w_two_items(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        """
+        members = {"one", "two"}
+
+        IN_LIST(members) -> MARK("MEMBER")
+        """
+    )
+
+    assert len(results) == 2

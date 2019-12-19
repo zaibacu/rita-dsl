@@ -102,11 +102,11 @@ def test_tokenize_list_w_one_item():
     tokens = list(
         lex.tokenize(
             """
-            MEMBERS = { "first" }
+            members = { "first" }
             """
         )
     )
 
-    assert tokens[0].type == "KEYWORD"
+    assert tokens[0].type == "NAME"
     assert tokens[1].type == "ASSIGN"
     assert tokens[3].type == "LITERAL"

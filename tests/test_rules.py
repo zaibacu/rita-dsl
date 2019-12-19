@@ -192,8 +192,7 @@ class TestSpacy(object):
             "label": "SPLIT_WORD",
             "pattern": [{"LOWER": "test1"}, {"LOWER": "-"}, {"LOWER": "test2"}]
         }
-        
-
+  
 
 class TestStandalone(object):
     @property

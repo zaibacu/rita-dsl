@@ -178,6 +178,7 @@ def test_parser_list_w_one_item(config):
 
     assert len(results) == 2
 
+
 def test_parser_list_w_two_items(config):
     p = RitaParser(config)
     p.build(debug=True)

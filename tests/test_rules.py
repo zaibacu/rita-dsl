@@ -216,6 +216,7 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "(jonas|jurgis|sarunas|šarūnas)"}}]
         }
 
+
 class TestStandalone(object):
     @property
     def punct(self):

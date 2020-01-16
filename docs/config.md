@@ -14,7 +14,8 @@ First argument is config key, second value. `"1"`, `"Y"` and `"T"` results in `T
 
 ## Configurations
 
-| Setting            | Default              | Description                                                                |
-|--------------------|----------------------|----------------------------------------------------------------------------|
-| implicit_punct     |`T`                   |Automatically adds punctuation characters `,.!:\;` to the rules             |
-| ignore_case        |`T`                   |All rules are case-insensitive                                              |
+| Setting            | Default              | Description                                                                   |
+|--------------------|----------------------|-------------------------------------------------------------------------------|
+| implicit_punct     |`T`                   |Automatically adds punctuation characters `,.!:\;` to the rules                |
+| ignore_case        |`T`                   |All rules are case-insensitive                                                 |
+| deaccent           |`T`                   |If provided word with accent letters, use two versions - with and without them |

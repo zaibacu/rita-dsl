@@ -48,7 +48,8 @@ class SessionConfig(object):
         # Default config
         self._data = {
             "ignore_case": True,
-            "implicit_punct": True
+            "implicit_punct": True,
+            "deaccent": True
         }
         self.variables = {}
 

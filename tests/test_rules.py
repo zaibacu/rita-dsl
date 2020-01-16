@@ -193,6 +193,30 @@ class TestSpacy(object):
             "pattern": [{"LOWER": "test1"}, {"LOWER": "-"}, {"LOWER": "test2"}]
         }
 
+    def test_word_with_accent(self):
+        rules = self.compiler('''
+        WORD("Šarūnas")->MARK("TWO_WORDS")
+        ''')
+        print(rules)
+        # It should be split into two: WORD("Šarūnas")|WORD("Sarunas")
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "TWO_WORDS",
+            "pattern": [{"LOWER": {"REGEX": "(sarunas|šarūnas)"}}]
+        }
+
+    def test_list_with_accent(self):
+        rules = self.compiler('''
+        names={"Jonas", "Jurgis", "Šarūnas"}
+        IN_LIST(names)->MARK("EXTENDED_LIST")
+        ''')
+        print(rules)
+        # It should be split into two: WORD("Šarūnas")|WORD("Sarunas")
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "EXTENDED_LIST",
+            "pattern": [{"LOWER": {"REGEX": "(jonas|jurgis|sarunas|šarūnas)"}}]
+        }
 
 class TestStandalone(object):
     @property

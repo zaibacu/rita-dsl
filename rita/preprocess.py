@@ -2,9 +2,42 @@ import logging
 
 from functools import reduce
 
-from rita.utils import Node
+from rita.utils import Node, deaccent
 
 logger = logging.getLogger(__name__)
+
+
+def handle_deaccent(rules, config):
+    """
+    If we get accented word, eg: {WORD("naïve"), WORD("bayes")}
+    In case of word, it should become list => {IN_LIST({"naïve", "naive"}), WORD("bayes")}
+    In case of list, it should extend list with extra items for accented and not accented versions
+    """
+    for group_label, pattern in rules:
+        def gen():
+            for p in pattern:
+                (name, args, op) = p
+                if name == "value":
+                    (v1, v2) = (args, deaccent(args))
+                    if v1 != v2:
+                        yield ("any_of", (v1, v2,), op)
+                    else:
+                        yield p
+                elif name == "any_of":
+                    def items():
+                        for w in args:
+                            (v1, v2) = (w, deaccent(w))
+                            if v1 != v2:
+                                yield v1
+                                yield v2
+                            else:
+                                yield v1
+
+                    yield ("any_of", list(items()), op)
+                else:
+                    yield p
+
+        yield (group_label, list(gen()))
 
 
 def add_implicit_punct(rules, config):
@@ -141,7 +174,7 @@ def preprocess_rules(root, config):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy, handle_rule_branching, handle_multi_word]
+    pipeline = [dummy, handle_deaccent, handle_rule_branching, handle_multi_word]
 
     if config.implicit_punct:
         logger.info("Adding implicit Punctuations")

@@ -1,5 +1,6 @@
 import logging
 
+from unicodedata import normalize, category
 from itertools import cycle
 
 logger = logging.getLogger(__name__)
@@ -91,3 +92,10 @@ class SingletonMixin(object):
         if not isinstance(class_._instance, class_):
             class_._instance = object.__new__(class_, *args, **kwargs)
         return class_._instance
+
+
+def deaccent(text):
+    return normalize("NFC",
+                     "".join(c
+                             for c in normalize("NFD", text)
+                             if category(c) != "Mn"))

@@ -117,7 +117,9 @@ def test_case_sensitive(engine):
     )
 
     text = """
-    A bitcoin mining magnate has proposed a new development fund for Bitcoin Cash. According to BTC.TOP CEO Jiang Zhuoer, the scheme will 'tax' Bitcoin Cash mining rewards in an effort to increase funding for Bitcoin Cash infrastructure. 
+    A bitcoin mining magnate has proposed a new development fund for Bitcoin Cash.
+    According to BTC.TOP CEO Jiang Zhuoer, the scheme will 'tax' Bitcoin Cash mining rewards
+    in an effort to increase funding for Bitcoin Cash infrastructure.
     """
 
     results = parser(text)

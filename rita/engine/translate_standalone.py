@@ -2,6 +2,7 @@ import logging
 import re
 
 from functools import partial
+from itertools import groupby
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +121,7 @@ class RuleExecutor(object):
 
         return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), flags)
 
-    def execute(self, text):
+    def _results(self, text):
         for p in self.patterns:
             for match in p.finditer(text):
                 yield {
@@ -129,6 +130,16 @@ class RuleExecutor(object):
                     "text": match.group(),
                     "label": match.lastgroup,
                 }
+
+    def execute(self, text):
+        results = sorted(list(self._results(text)), key=lambda x: x["start"])
+        for k, g in groupby(results, lambda x: x["start"]):
+            group = list(g)
+            if len(group) == 1:
+                yield group[0]
+            else:
+                data = sorted(group, key=lambda x: -x["end"])
+                yield data[0]
 
 
 def compile_rules(rules, config):

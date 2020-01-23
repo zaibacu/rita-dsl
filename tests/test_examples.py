@@ -105,6 +105,29 @@ def test_exclude_word(engine):
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_case_sensitive(engine):
+    parser = engine(
+        """
+        !CONFIG("ignore_case", "N")
+
+        variants = {"Bitcoin", "BTC", "Bitcoin Cash"}
+
+        {IN_LIST(variants)}->MARK("CRYPTO")
+        """
+    )
+
+    text = """
+    A bitcoin mining magnate has proposed a new development fund for Bitcoin Cash.
+    According to BTC.TOP CEO Jiang Zhuoer, the scheme will 'tax' Bitcoin Cash mining rewards
+    in an effort to increase funding for Bitcoin Cash infrastructure.
+    """
+
+    results = parser(text)
+    print(results)
+    assert results[0] == ("Bitcoin Cash", "CRYPTO")
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_benchmark(benchmark, engine, bench_text):
     """
     These tests will only run if parameters:

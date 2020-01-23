@@ -11,7 +11,7 @@ def any_of_parse(lst, config, op=None):
                              for item in lst])
         base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized))}}
     else:
-        base = {"REGEX": r"({0})".format("|".join(sorted(lst)))}
+        base = {"TEXT": {"REGEX": r"({0})".format("|".join(sorted(lst)))}}
 
     if op:
         base["OP"] = op

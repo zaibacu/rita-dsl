@@ -142,7 +142,6 @@ class RuleExecutor(object):
                 yield data[0]
 
 
-
 def compile_rules(rules, config):
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group) for group in rules]

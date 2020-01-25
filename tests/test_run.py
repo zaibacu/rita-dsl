@@ -42,3 +42,10 @@ def test_shortcuts_spacy_compiled():
         for pattern in patterns:
             f.write(json.dumps(pattern) + "\n")
         setup_spacy(nlp, patterns=f.name)
+
+
+def test_shortcuts_spacy_giving_no_rules():
+    spacy = pytest.importorskip("spacy", minversion="2.1")
+    nlp = spacy.load("en")
+    with pytest.raises(RuntimeError):
+        setup_spacy(nlp)

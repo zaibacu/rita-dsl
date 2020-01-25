@@ -41,5 +41,4 @@ def test_shortcuts_spacy_compiled():
         patterns = rita.compile("examples/color-car.rita")
         for pattern in patterns:
             f.write(json.dumps(pattern) + "\n")
-        print(f.name)
         setup_spacy(nlp, patterns=f.name)

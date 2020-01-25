@@ -39,8 +39,8 @@ def compile_string(raw, config, use_engine=None):
         return result
 
 
-def compile(fname, compile_fn=None):
+def compile(fname, use_engine=None):
     with open(fname, "r") as f:
         raw = f.read()
 
-    return compile_string(raw)
+    return compile_string(raw, use_engine=use_engine)

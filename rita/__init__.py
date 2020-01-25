@@ -9,7 +9,7 @@ from rita.preprocess import preprocess_rules
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 3, 4, os.getenv("VERSION_PATCH"))
+__version__ = (0, 4, 0, os.getenv("VERSION_PATCH"))
 
 
 def get_version():
@@ -39,8 +39,8 @@ def compile_string(raw, config, use_engine=None):
         return result
 
 
-def compile(fname, compile_fn=None):
+def compile(fname, use_engine=None):
     with open(fname, "r") as f:
         raw = f.read()
 
-    return compile_string(raw)
+    return compile_string(raw, use_engine=use_engine)

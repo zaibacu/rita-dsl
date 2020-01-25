@@ -1,0 +1,1 @@
+Added shortcuts module to simplify injecting into spaCy

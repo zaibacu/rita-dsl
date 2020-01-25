@@ -22,6 +22,23 @@ Now you can compile these rules `rita -f <your-file>.rita output.jsonl`
 
 ## spaCy backend
 
+### NEW in 0.4.0: Shortcuts to simplify life:
+```
+import spacy
+from rita.shortcuts import setup_spacy
+
+nlp = spacy.load("en")
+setup_spacy(nlp, ...)
+```
+
+If comipling rules from string:
+`setup_spacy(nlp, rules_string=rules)`
+If loading rules from `.rita` file
+`setup_spacy(nlp, rules_path="examples/car-colors.rita")`
+If loading from spaCy compiled rules:
+`setup_spacy(nlp, patterns="rules.jsonl")`
+
+### Doing it manually
 ```python
 import spacy
 from spacy.pipeline import EntityRuler

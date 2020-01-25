@@ -20,3 +20,49 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 ## Support
 
 [![reddit](https://img.shields.io/reddit/subreddit-subscribers/ritaDSL?style=social)](https://www.reddit.com/r/ritaDSL/)
+
+
+## Simple Rules example
+
+```python
+rules = """
+cuts = {"fitted", "wide-cut"}
+lengths = {"short", "long", "calf-length", "knee-length"}
+fabric_types = {"soft", "airy", "crinkled"}
+fabrics = {"velour", "chiffon", "knit", "woven", "stretch"}
+
+{IN_LIST(cuts)?, IN_LIST(lengths), WORD("dress")}->MARK("DRESS_TYPE")
+{IN_LIST(lengths), IN_LIST(cuts), WORD("dress")}->MARK("DRESS_TYPE")
+{IN_LIST(fabric_types)?, IN_LIST(fabrics)}->MARK("DRESS_FABRIC")
+"""
+```
+
+### Loading in spaCy
+```python
+import spacy
+from rita.shortcuts import setup_spacy
+
+
+nlp = spacy.load("en")
+setup_spacy(nlp, rules_string=rules)
+```
+
+And using it:
+```
+>>> r = nlp("She was wearing a short wide-cut dress")
+>>> [{"label": e.label_, "text": e.text} for e in r.ents]
+[{'label': 'DRESS_TYPE', 'text': 'short wide-cut dress'}]
+```
+
+### Loading using Regex (standalone)
+```
+import rita
+
+patterns = rita.compile_string(rules, use_engine="standalone")
+```
+
+And using it:
+```
+>>> list(patterns.execute("She was wearing a short wide-cut dress"))
+[{'end': 38, 'label': 'DRESS_TYPE', 'start': 18, 'text': 'short wide-cut dress'}]
+```

@@ -7,6 +7,37 @@ from rita.utils import Node, deaccent
 logger = logging.getLogger(__name__)
 
 
+def handle_prefix(rules, config):
+    """
+    If we have a prefix and rule following it, we apply this prefix on that rule
+    """
+    def apply_prefix(pattern, prefix):
+        (name, args, op) = pattern
+        if name == "any_of":
+            return (name, list(["{0}{1}".format(prefix, item)
+                                for item in args]), op)
+        elif name == "value":
+            return (name, "{0}{1}".format(prefix, args), op)
+        else:
+            logger.warn("Don't know how to apply prefix on: {}".format(name))
+            return pattern
+
+    def gen():
+        prefix = None
+        for p in pattern:
+            (name, args, op) = p
+            if name == "prefix":
+                prefix = args
+            else:
+                if prefix:
+                    yield apply_prefix(p, prefix)
+                    prefix = None
+                else:
+                    yield p
+    for group_label, pattern in rules:
+        yield (group_label, list(gen()))
+
+
 def handle_deaccent(rules, config):
     """
     If we get accented word, eg: {WORD("naïve"), WORD("bayes")}
@@ -174,7 +205,7 @@ def preprocess_rules(root, config):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy, handle_deaccent, handle_rule_branching, handle_multi_word]
+    pipeline = [dummy, handle_deaccent, handle_rule_branching, handle_multi_word, handle_prefix]
 
     if config.implicit_punct:
         logger.info("Adding implicit Punctuations")

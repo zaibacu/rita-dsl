@@ -216,6 +216,29 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "(jonas|jurgis|sarunas|šarūnas)"}}]
         }
 
+    def test_prefix_on_word(self):
+        rules = self.compiler('''
+        {PREFIX("meta"), WORD("physics")}->MARK("META_WORD")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "META_WORD",
+            "pattern": [{"LOWER": "metaphysics"}]
+        }
+
+    def test_prefix_on_list(self):
+        rules = self.compiler('''
+        science = {"physics", "mathematics"}
+        {PREFIX("meta"), IN_LIST(science)}->MARK("META_LIST")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "META_LIST",
+            "pattern": [{"LOWER": {"REGEX": "(metamathematics|metaphysics)"}}]
+        }
+        
 
 class TestStandalone(object):
     @property
@@ -342,3 +365,21 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<DOUBLE_OP>(\w+\s?)+)", self.flags)
+
+    def test_prefix_on_word(self):
+        rules = self.compiler('''
+        {PREFIX("meta"), WORD("physics")}->MARK("META_WORD")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<META_WORD>(metaphysics\s?))", self.flags)
+
+    def test_prefix_on_list(self):
+        rules = self.compiler('''
+        science = {"physics", "mathematics"}
+        {PREFIX("meta"), IN_LIST(science)}->MARK("META_LIST")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<META_LIST>(metamathematics|metaphysics))", self.flags)
+        

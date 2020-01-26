@@ -238,7 +238,7 @@ class TestSpacy(object):
             "label": "META_LIST",
             "pattern": [{"LOWER": {"REGEX": "(metamathematics|metaphysics)"}}]
         }
-        
+
 
 class TestStandalone(object):
     @property
@@ -382,4 +382,3 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<META_LIST>(metamathematics|metaphysics))", self.flags)
-        

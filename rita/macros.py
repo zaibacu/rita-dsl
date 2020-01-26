@@ -115,6 +115,10 @@ def ENTITY(name, config, op=None):
     return ("entity", resolve_value(name, config=config), op)
 
 
+def PREFIX(name, config, op=None):
+    return ("prefix", resolve_value(name, config=config), op)
+
+
 def IMPORT(module, config):
     mod_name = resolve_value(module, config=config)
     config.register_module(mod_name)

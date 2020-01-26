@@ -96,7 +96,7 @@ def rules_to_patterns(label, data):
 
         for (t, d, op) in data[1:]:
             if t not in ["punct", "word", "prefix"]:
-                 yield ("whitespace", None, None)
+                yield ("whitespace", None, None)
             yield (t, d, op)
 
     return (

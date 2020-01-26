@@ -24,7 +24,8 @@ def any_of_parse(lst, op=None):
 
 
 def regex_parse(r, op=None):
-    return apply_operator(r, op)
+    initial = "(" + r + r"\s?" + ")"
+    return apply_operator(initial, op)
 
 
 def not_supported(key, *args, **kwargs):
@@ -50,11 +51,7 @@ def punct_parse(_, op=None):
 
 
 def word_parse(value, op=None):
-    if value:
-        initial = r"({})".format(value)
-    else:
-        initial = r"(\w+)"
-
+    initial = r"({}\s?)".format(value)
     return apply_operator(initial, op)
 
 
@@ -98,8 +95,8 @@ def rules_to_patterns(label, data):
         yield data[0]
 
         for (t, d, op) in data[1:]:
-            if t != "punct":
-                yield ("whitespace", None, None)
+            if t not in ["punct", "word", "prefix"]:
+                 yield ("whitespace", None, None)
             yield (t, d, op)
 
     return (
@@ -119,7 +116,12 @@ class RuleExecutor(object):
         if self.config.ignore_case:
             flags = flags | re.IGNORECASE
 
-        return re.compile(r"(?P<{0}>{1})".format(label, "".join(rules)), flags)
+        regex_str = r"(?P<{0}>{1})".format(label, "".join(rules))
+        try:
+            return re.compile(regex_str, flags)
+        except Exception as ex:
+            logger.exception("Failed to compile: '{0}', Reason: \n{1}".format(regex_str, str(ex)))
+            return None
 
     def _results(self, text):
         for p in self.patterns:
@@ -127,7 +129,7 @@ class RuleExecutor(object):
                 yield {
                     "start": match.start(),
                     "end": match.end(),
-                    "text": match.group(),
+                    "text": match.group().strip(),
                     "label": match.lastgroup,
                 }
 

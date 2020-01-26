@@ -9,7 +9,7 @@ from rita.preprocess import preprocess_rules
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 4, 0, os.getenv("VERSION_PATCH"))
+__version__ = (0, 4, 1, os.getenv("VERSION_PATCH"))
 
 
 def get_version():

@@ -128,6 +128,26 @@ def test_case_sensitive(engine):
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_prefix(engine):
+    parser = engine(
+        """
+        science = {"mathematics", "physics"}
+        {PREFIX("meta"), IN_LIST(science)}->MARK("META_SCIENCE")
+        {PREFIX("pseudo"), WORD("science")}->MARK("PSEUDO_SCIENCE")
+        """
+    )
+
+    text = """
+    This paper is full of metaphysics and pseudoscience
+    """
+
+    results = parser(text)
+    print(results)
+    assert results[0] == ("metaphysics", "META_SCIENCE")
+    assert results[1] == ("pseudoscience", "PSEUDO_SCIENCE")
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_benchmark(benchmark, engine, bench_text):
     """
     These tests will only run if parameters:

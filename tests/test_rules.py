@@ -239,6 +239,17 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "(metamathematics|metaphysics)"}}]
         }
 
+    def test_prefix_on_unknown_type(self):
+        rules = self.compiler('''
+        {PREFIX("test"), ANY}->MARK("NOT_VALID")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "NOT_VALID",
+            "pattern": [{"LOWER": {"REGEX": ".*"}}]
+        }
+
 
 class TestStandalone(object):
     @property
@@ -382,3 +393,11 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<META_LIST>(metamathematics|metaphysics))", self.flags)
+
+    def test_prefix_on_unknown_type(self):
+        rules = self.compiler('''
+        {PREFIX("test"), ANY}->MARK("NOT_VALID")
+        ''')
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == re.compile(r"(?P<NOT_VALID>(.*\s?))", self.flags)

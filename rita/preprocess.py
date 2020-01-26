@@ -19,7 +19,7 @@ def handle_prefix(rules, config):
         elif name == "value":
             return (name, "{0}{1}".format(prefix, args), op)
         else:
-            logger.warn("Don't know how to apply prefix on: {}".format(name))
+            logger.warning("Don't know how to apply prefix on: {}".format(name))
             return pattern
 
     def gen():

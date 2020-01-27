@@ -20,7 +20,7 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, op=None):
-    return apply_operator(r"({0})".format("|".join(sorted(lst))), op)
+    return apply_operator(r"(({0})\s?)".format("|".join(sorted(lst))), op)
 
 
 def regex_parse(r, op=None):
@@ -47,7 +47,7 @@ def entity_parse(value, op=None):
 
 
 def punct_parse(_, op=None):
-    return apply_operator(r"[.,!;?:]", op)
+    return apply_operator(r"([.,!;?:]\s?)", op)
 
 
 def word_parse(value, op=None):
@@ -60,12 +60,8 @@ def fuzzy_parse(r, op=None):
     return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
 
 
-def whitespace_parse(_, op=None):
-    return r"\s"
-
-
 def phrase_parse(value, op=None):
-    return apply_operator(r"({})".format(value), op)
+    return apply_operator(r"({}\s?)".format(value), op)
 
 
 PARSERS = {
@@ -77,7 +73,6 @@ PARSERS = {
     "pos": partial(not_supported, "POS"),
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
-    "whitespace": whitespace_parse,
     "phrase": phrase_parse,
 }
 
@@ -95,8 +90,6 @@ def rules_to_patterns(label, data):
         yield data[0]
 
         for (t, d, op) in data[1:]:
-            if t not in ["punct", "word", "prefix"]:
-                yield ("whitespace", None, None)
             yield (t, d, op)
 
     return (

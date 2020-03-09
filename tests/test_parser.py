@@ -10,6 +10,13 @@ def config():
     return SessionConfig()
 
 
+def test_parser_empty_rules(config):
+    p = RitaParser(config)
+    p.build()
+    results = p.parse("")
+    assert len(results) == 0
+
+
 def test_parser_any_macro_wo_args_w_type(config):
     p = RitaParser(config)
     p.build()

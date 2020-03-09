@@ -166,8 +166,6 @@ def test_compile_context():
     }
 
 
-
-
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_benchmark(benchmark, engine, bench_text):
     """

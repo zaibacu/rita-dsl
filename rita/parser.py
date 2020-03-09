@@ -191,4 +191,7 @@ class RitaParser(object):
         self.parser = yacc.yacc(module=self, errorlog=logger, **kwargs)
 
     def parse(self, data):
+        if data.strip() == "":
+            return []
+
         return self.parser.parse(data, lexer=self.lexer, debug=logger)

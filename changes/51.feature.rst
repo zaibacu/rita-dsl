@@ -1,0 +1,1 @@
+Allow to pass variables directly when doing `compile` and `compile_string`

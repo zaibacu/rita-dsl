@@ -1,6 +1,8 @@
 import csv
 import pytest
 
+import rita
+
 from utils import spacy_engine, standalone_engine, load_rules
 
 
@@ -145,6 +147,23 @@ def test_prefix(engine):
     print(results)
     assert results[0] == ("metaphysics", "META_SCIENCE")
     assert results[1] == ("pseudoscience", "PSEUDO_SCIENCE")
+
+
+def test_compile_context():
+    rules = """
+
+    {WORD*, IN_LIST(companies), WORD*}->MARK("SUSPISCIOUS_COMPANY")
+    """
+    parser = rita.compile_string(rules, use_engine="standalone", companies=["CompanyA", "CompanyB"])
+    print(parser.patterns)
+
+    results = list(parser.execute("CompanyB is doing it's dirty work."))
+    assert results[0] == {
+        "start": 0,
+        "end": 33,
+        "label": "SUSPISCIOUS_COMPANY",
+        "text": "CompanyB is doing it's dirty work"
+    }
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])

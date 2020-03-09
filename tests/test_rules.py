@@ -375,7 +375,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<DOUBLE_OP>(\w+\s?)+)", self.flags)
+        assert rules[0] == re.compile(r"(?P<DOUBLE_OP>((\w|['_-])+\s?)+)", self.flags)
 
     def test_prefix_on_word(self):
         rules = self.compiler('''

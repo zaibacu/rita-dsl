@@ -21,6 +21,9 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 
 [![reddit](https://img.shields.io/reddit/subreddit-subscribers/ritaDSL?style=social)](https://www.reddit.com/r/ritaDSL/)
 
+## Install
+
+`pip install rita-dsl`
 
 ## Simple Rules example
 

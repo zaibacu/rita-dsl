@@ -47,7 +47,7 @@ def entity_parse(value, op=None):
 
 
 def punct_parse(_, op=None):
-    return apply_operator(r"([.,!;?:]\s?)", op)
+    return apply_operator(r"([.,!;?:']\s?)", op)
 
 
 def word_parse(value, op=None):

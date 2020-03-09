@@ -21,8 +21,11 @@ def get_version():
 
 
 @with_config
-def compile_string(raw, config, use_engine=None):
+def compile_string(raw, config, use_engine=None, **kwargs):
     from rita.parser import RitaParser
+    for k, v in kwargs.items():
+        config.set_variable(k, v)
+
     parser = RitaParser(config)
     parser.build()
     root = parser.parse(raw)
@@ -39,8 +42,8 @@ def compile_string(raw, config, use_engine=None):
         return result
 
 
-def compile(fname, use_engine=None):
+def compile(fname, use_engine=None, **kwargs):
     with open(fname, "r") as f:
         raw = f.read()
 
-    return compile_string(raw, use_engine=use_engine)
+    return compile_string(raw, use_engine=use_engine, **kwargs)

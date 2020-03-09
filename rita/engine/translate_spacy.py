@@ -31,7 +31,7 @@ def regex_parse(r, config, op=None):
 
 def fuzzy_parse(r, config, op=None):
     # TODO: build premutations
-    d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
+    d = {"LOWER": {"REGEX": "({0})[.,?;!']?".format("|".join(r))}}
     if op:
         d["OP"] = op
     yield d

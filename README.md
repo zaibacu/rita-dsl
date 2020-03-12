@@ -20,6 +20,7 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 ## Support
 
 [![reddit](https://img.shields.io/reddit/subreddit-subscribers/ritaDSL?style=social)](https://www.reddit.com/r/ritaDSL/)
+[![Gitter](https://badges.gitter.im/rita-dsl/community.svg)](https://gitter.im/rita-dsl/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Install
 

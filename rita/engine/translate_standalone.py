@@ -139,7 +139,9 @@ class RuleExecutor(object):
                 yield data[0]
 
     @staticmethod
-    def load(self, path, config):
+    def load(path):
+        from rita.config import SessionConfig
+        config = SessionConfig()
         with open(path, "r") as f:
             patterns = [(obj["label"], obj["rules"])
                         for obj in map(json.loads, f.readlines())]

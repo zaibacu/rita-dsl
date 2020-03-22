@@ -19,6 +19,28 @@ def test_simple_compile(mocker):
     main()
 
 
+def test_simple_spacy_compile(mocker):
+    sys.argv = [
+        "rita-dsl",
+        "-f",
+        "examples/cheap-phones.rita",
+        "--engine=spacy",
+        "output.jsonl"
+    ]
+    main()
+
+
+def test_simple_standalone_compile(mocker):
+    sys.argv = [
+        "rita-dsl",
+        "-f",
+        "examples/cheap-phones.rita",
+        "--engine=standalone",
+        "output.jsonl"
+    ]
+    main()
+
+
 def test_shortcuts_spacy_inline():
     spacy = pytest.importorskip("spacy", minversion="2.1")
     nlp = spacy.load("en")

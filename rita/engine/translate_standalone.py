@@ -1,5 +1,6 @@
 import logging
 import re
+import json
 
 from functools import partial
 from itertools import groupby
@@ -103,6 +104,7 @@ class RuleExecutor(object):
         self.config = config
         self.patterns = [self.compile(label, rules)
                          for label, rules in patterns]
+        self.raw_patterns = patterns
 
     def compile(self, label, rules):
         flags = re.DOTALL
@@ -135,6 +137,22 @@ class RuleExecutor(object):
             else:
                 data = sorted(group, key=lambda x: -x["end"])
                 yield data[0]
+
+    @staticmethod
+    def load(self, path, config):
+        with open(path, "r") as f:
+            patterns = [(obj["label"], obj["rules"])
+                        for obj in map(json.loads, f.readlines())]
+            return RuleExecutor(patterns, config)
+
+    def save(self, path):
+        with open(path, "w") as f:
+            for pattern in self:
+                f.write("{0}\n".format(json.dumps(pattern)))
+
+    def __iter__(self):
+        for label, rules in self.raw_patterns:
+            yield {"label": label, "rules": rules}
 
 
 def compile_rules(rules, config):

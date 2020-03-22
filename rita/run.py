@@ -27,7 +27,6 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-
     patterns = rita.compile(args.f, use_engine=args.engine)
 
     logger.info("Compiling rules using {} engine".format(args.engine))

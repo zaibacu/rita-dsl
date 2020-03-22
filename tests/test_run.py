@@ -9,6 +9,20 @@ from rita.run import main
 from rita.shortcuts import setup_spacy
 
 
+def test_help(mocker):
+    sys.argv = [
+        "rita-dsl"
+        "--help"
+    ]
+
+
+def test_debug(mocker):
+    sys.argv = [
+        "rita-dsl"
+        "--debug"
+    ]
+
+
 def test_simple_compile(mocker):
     sys.argv = [
         "rita-dsl",

@@ -401,3 +401,12 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<NOT_VALID>(.*\s?))", self.flags)
+
+    def test_save_and_load_rules_from_file(self):
+        rules = '''
+        {WORD("Hello"), WORD("world")}->MARK("HELLO")
+        '''
+        engine = rita.compile_string(rules, use_engine="standalone")
+        engine.save("/tmp/rules-example.json")
+        engine.load("/tmp/rules-example.json")
+        engine.execute("Hello world")

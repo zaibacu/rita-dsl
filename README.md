@@ -8,7 +8,7 @@
 [![PyPI download month](https://img.shields.io/pypi/dm/rita-dsl.svg)](https://pypi.python.org/pypi/rita-dsl/)
 [![GitHub license](https://img.shields.io/github/license/zaibacu/rita-dsl.svg)](https://github.com/zaibacu/rita-dsl/blob/master/LICENSE)
 
-This is a language, loosely based on language [Apache UIMA RUTA](https://uima.apache.org/ruta.html), focused on writing manual language rules, which compiles into [spaCy](https://github.com/explosion/spaCy) compatible patterns. These patterns can be used for doing [manual NER](https://spacy.io/api/entityruler) as well as used in other processes, like retokenizing and pure matching
+This is a language, loosely based on language [Apache UIMA RUTA](https://uima.apache.org/ruta.html), focused on writing manual language rules, which compiles into either [spaCy](https://github.com/explosion/spaCy) compatible patterns, or pure regex. These patterns can be used for doing [manual NER](https://spacy.io/api/entityruler) as well as used in other processes, like retokenizing and pure matching
 
 
 
@@ -52,21 +52,21 @@ setup_spacy(nlp, rules_string=rules)
 ```
 
 And using it:
-```
+```python
 >>> r = nlp("She was wearing a short wide-cut dress")
 >>> [{"label": e.label_, "text": e.text} for e in r.ents]
 [{'label': 'DRESS_TYPE', 'text': 'short wide-cut dress'}]
 ```
 
 ### Loading using Regex (standalone)
-```
+```python
 import rita
 
 patterns = rita.compile_string(rules, use_engine="standalone")
 ```
 
 And using it:
-```
+```python
 >>> list(patterns.execute("She was wearing a short wide-cut dress"))
 [{'end': 38, 'label': 'DRESS_TYPE', 'start': 18, 'text': 'short wide-cut dress'}]
 ```

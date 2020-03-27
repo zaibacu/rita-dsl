@@ -10,7 +10,8 @@
 
 This is a language, loosely based on language [Apache UIMA RUTA](https://uima.apache.org/ruta.html), focused on writing manual language rules, which compiles into either [spaCy](https://github.com/explosion/spaCy) compatible patterns, or pure regex. These patterns can be used for doing [manual NER](https://spacy.io/api/entityruler) as well as used in other processes, like retokenizing and pure matching
 
-
+## An Introduction Video
+[![Intro](https://img.youtube.com/vi/GScerMeWz68/0.jpg)](https://www.youtube.com/watch?v=GScerMeWz68)
 
 ## Links
 - [Live Demo](https://rita-demo.herokuapp.com/)

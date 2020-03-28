@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import tempfile
@@ -73,11 +74,14 @@ def test_shortcuts_spacy_file():
 def test_shortcuts_spacy_compiled():
     spacy = pytest.importorskip("spacy", minversion="2.1")
     nlp = spacy.load("en")
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl") as f:
-        patterns = rita.compile("examples/color-car.rita")
-        for pattern in patterns:
-            f.write(json.dumps(pattern) + "\n")
-        setup_spacy(nlp, patterns=f.name)
+    tmp = tempfile.NamedTemporaryFile(mode="w", encoding="UTF-8", suffix=".jsonl", delete=False)
+    patterns = rita.compile("examples/color-car.rita")
+    for pattern in patterns:
+        tmp.write(json.dumps(pattern) + "\n")
+    tmp.flush()
+    tmp.close()
+    setup_spacy(nlp, patterns=tmp.name)
+    os.unlink(tmp.name)
 
 
 def test_shortcuts_spacy_giving_no_rules():

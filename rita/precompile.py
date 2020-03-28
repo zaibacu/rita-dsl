@@ -13,5 +13,5 @@ def handle_import(m):
 
 
 def precompile(raw):
-    raw = re.sub(r"@import [\"'](?P<path>(\w|[/\-.])+)[\"']", handle_import, raw)
+    raw = re.sub(r"@import\s+[\"'](?P<path>(\w|[/\-.])+)[\"']", handle_import, raw)
     return raw

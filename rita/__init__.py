@@ -5,6 +5,7 @@ import types
 
 from rita.config import with_config
 from rita.preprocess import preprocess_rules
+from rita.precompile import precompile
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
 
     parser = RitaParser(config)
     parser.build()
-    root = parser.parse(raw)
+    root = parser.parse(precompile(raw))
     logger.debug(root)
     if use_engine:
         compile_rules = config.get_engine(use_engine)

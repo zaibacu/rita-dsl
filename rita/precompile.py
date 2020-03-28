@@ -9,7 +9,7 @@ def handle_import(m):
     path = m.group("path")
     logger.debug("Importing: {}".format(path))
     with open(path, "r") as f:
-        return f.read()
+        return precompile(f.read())
 
 
 def precompile(raw):

@@ -5,11 +5,12 @@ import types
 
 from rita.config import with_config
 from rita.preprocess import preprocess_rules
+from rita.precompile import precompile
 
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 4, 4, os.getenv("VERSION_PATCH"))
+__version__ = (0, 4, 5, os.getenv("VERSION_PATCH"))
 
 
 def get_version():
@@ -28,7 +29,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
 
     parser = RitaParser(config)
     parser.build()
-    root = parser.parse(raw)
+    root = parser.parse(precompile(raw))
     logger.debug(root)
     if use_engine:
         compile_rules = config.get_engine(use_engine)

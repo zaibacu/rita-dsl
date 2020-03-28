@@ -1,4 +1,6 @@
+import os.path
 import re
+import tempfile
 
 import pytest
 import rita
@@ -407,6 +409,8 @@ class TestStandalone(object):
         {WORD("Hello"), WORD("world")}->MARK("HELLO")
         '''
         engine = rita.compile_string(rules, use_engine="standalone")
-        engine.save("/tmp/rules-example.json")
-        engine.load("/tmp/rules-example.json")
-        engine.execute("Hello world")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rules_path = os.path.join(tmpdir, "rules-example.json")
+            engine.save(rules_path)
+            engine.load(rules_path)
+            engine.execute("Hello world")

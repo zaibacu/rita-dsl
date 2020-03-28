@@ -8,7 +8,7 @@ from utils import spacy_engine, standalone_engine, load_rules
 
 @pytest.fixture(scope="session")
 def bench_text():
-    with open("benchmarks/reviews-subset.csv", "r") as f:
+    with open("benchmarks/reviews-subset.csv", "r", encoding="UTF-8") as f:
         reader = csv.reader(f)
         return list([row[1] for row in reader])
 

@@ -9,6 +9,7 @@ nav:
   - Macros: macros.md
   - Extending: extend.md
   - Config: config.md
+  - Advanced: advanced.md
 theme: readthedocs
 markdown_extensions:
   - toc:

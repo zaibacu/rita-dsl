@@ -1,5 +1,0 @@
-include requirements/main.txt
-include requirements/test.txt
-include README.md
-include CHANGELOG.md
-

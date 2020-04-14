@@ -100,7 +100,7 @@ def NUM(*args, config, op=None):
         literal = resolve_value(args[0], config=config)
         return ("value", literal, op)
     elif len(args) == 0:
-        return ("regex", "\\d+", op)
+        return ("regex", "\\d+[.]?\\d*", op)
 
 
 def POS(name, config, op=None):

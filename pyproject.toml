@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rita-dsl"
-version = "0.4.5"
+version = "0.4.6"
 description = "DSL for building language rules"
 authors = [
     "Šarūnas Navickas <zaibacu@gmail.com>"
@@ -28,7 +28,6 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.5"
 ply = "3.11"
-spacy = { version = "^2.2.0", optional = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2.4"

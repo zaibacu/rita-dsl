@@ -9,9 +9,9 @@ def any_of_parse(lst, config, op=None):
     if config.ignore_case:
         normalized = sorted([item.lower()
                              for item in lst])
-        base = {"LOWER": {"REGEX": r"({0})".format("|".join(normalized))}}
+        base = {"LOWER": {"REGEX": r"^({0})$".format("|".join(normalized))}}
     else:
-        base = {"TEXT": {"REGEX": r"({0})".format("|".join(sorted(lst)))}}
+        base = {"TEXT": {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}}
 
     if op:
         base["OP"] = op

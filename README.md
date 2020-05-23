@@ -71,3 +71,11 @@ And using it:
 >>> list(patterns.execute("She was wearing a short wide-cut dress"))
 [{'end': 38, 'label': 'DRESS_TYPE', 'start': 18, 'text': 'short wide-cut dress'}]
 ```
+
+## Special Thank You
+
+Special thanks goes to 
+
+[![JetBrains](docs/assets/jetbrains.svg?raw=true)](https://www.jetbrains.com/?from=rita-dsl)
+
+for supporting development of this library

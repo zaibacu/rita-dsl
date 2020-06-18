@@ -91,7 +91,7 @@ def rules_to_patterns(label, data):
         yield data[0]
 
         for (t, d, op) in data[1:]:
-            yield (t, d, op)
+            yield t, d, op
 
     return (
         label,

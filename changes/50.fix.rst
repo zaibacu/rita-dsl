@@ -1,1 +1,0 @@
-Don't crash when no rules are provided

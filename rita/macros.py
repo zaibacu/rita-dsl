@@ -1,28 +1,12 @@
 import logging
 import types
 
-from itertools import chain
+from rita.utils import flatten
 
 logger = logging.getLogger(__name__)
 
 
-def flatten(lst):
-    if len(lst) > 1:
-        return lst
-
-    def explode(v):
-        if callable(v):
-            return v()
-        else:
-            return v
-
-    new_lst = map(explode, lst)
-    return chain(*new_lst)
-
-
 def resolve_value(obj, config):
-    context = []
-
     logger.debug("Resolving value: {0}".format(obj))
 
     if isinstance(obj, str):
@@ -32,9 +16,7 @@ def resolve_value(obj, config):
         return obj
 
     elif isinstance(obj, list):
-        for item in obj:
-            context.append(item)
-        return context
+        return obj
 
     elif isinstance(obj, types.GeneratorType):
         return "either", list(obj), None
@@ -69,10 +51,8 @@ def ASSIGN(k, v, config, op=None):
 
 
 def IN_LIST(*args, config, op=None):
-    variants = []
-    for arg in flatten(args):
-        variants.append(resolve_value(arg, config=config))
-    return "any_of", variants, None
+    return "any_of", [resolve_value(arg, config=config)
+                      for arg in flatten(args)], None
 
 
 def PATTERN(*args, config, op=None):

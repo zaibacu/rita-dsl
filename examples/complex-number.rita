@@ -1,0 +1,3 @@
+Complex_Number = { NUM+, WORD("/")?, NUM? }
+{PATTERN(Complex_Number), WORD("inches"), WORD("Width")}->MARK("WIDTH")
+{PATTERN(Complex_Number), WORD("inches"), WORD("Height")}->MARK("HEIGHT")

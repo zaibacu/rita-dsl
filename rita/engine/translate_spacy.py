@@ -88,7 +88,7 @@ PARSERS = {
 
 
 def rules_to_patterns(label, data, config):
-    print(data)
+    logger.debug(data)
     return {
         "label": label,
         "pattern": [p

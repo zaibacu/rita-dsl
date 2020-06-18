@@ -1,7 +1,7 @@
 import logging
 
 from unicodedata import normalize, category
-from itertools import cycle
+from itertools import cycle, chain
 
 logger = logging.getLogger(__name__)
 
@@ -100,3 +100,20 @@ def deaccent(text):
                      "".join(c
                              for c in normalize("NFD", text)
                              if category(c) != "Mn"))
+
+
+def flatten(lst, shallow=False):
+    def explode(v):
+        if callable(v):
+            return v()
+        else:
+            return v
+
+    if len(lst) > 1 and not shallow:
+        return lst
+
+    new_lst = map(explode, lst)
+    if shallow:
+        return new_lst
+    else:
+        return chain(*new_lst)

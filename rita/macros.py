@@ -21,8 +21,6 @@ def flatten(lst):
 
 
 def resolve_value(obj, config):
-    context = []
-
     logger.debug("Resolving value: {0}".format(obj))
 
     if isinstance(obj, str):
@@ -32,9 +30,7 @@ def resolve_value(obj, config):
         return obj
 
     elif isinstance(obj, list):
-        for item in obj:
-            context.append(item)
-        return context
+        return obj
 
     elif isinstance(obj, types.GeneratorType):
         return "either", list(obj), None

@@ -37,17 +37,17 @@ def resolve_value(obj, config):
         return context
 
     elif isinstance(obj, types.GeneratorType):
-        return ("either", list(obj), None)
+        return "either", list(obj), None
 
     return obj(config=config)
 
 
 def ANY(config, op=None):
-    return ("regex", r".*", op)
+    return "regex", r".*", op
 
 
 def PUNCT(config, op=None):
-    return ("punct", None, op)
+    return "punct", None, op
 
 
 def MARK(type_, obj, config, op=None):
@@ -60,7 +60,7 @@ def MARK(type_, obj, config, op=None):
 def LOAD(*args, config):
     fpath = resolve_value(args[0], config=config)
     with open(fpath, "r") as f:
-        return list([l.strip() for l in f.readlines()])
+        return list([line.strip() for line in f.readlines()])
 
 
 def ASSIGN(k, v, config, op=None):
@@ -72,7 +72,7 @@ def IN_LIST(*args, config, op=None):
     variants = []
     for arg in flatten(args):
         variants.append(resolve_value(arg, config=config))
-    return ("any_of", variants, None)
+    return "any_of", variants, None
 
 
 def PATTERN(*args, config, op=None):
@@ -90,33 +90,33 @@ def PATTERN(*args, config, op=None):
 def WORD(*args, config, op=None):
     if len(args) == 1:
         literal = resolve_value(args[0], config=config)
-        return ("value", literal, op)
+        return "value", literal, op
     elif len(args) == 0:
-        return ("regex", "(\\w|['_-])+", op)
+        return "regex", "(\\w|['_-])+", op
 
 
 def NUM(*args, config, op=None):
     if len(args) == 1:
         literal = resolve_value(args[0], config=config)
-        return ("value", literal, op)
+        return "value", literal, op
     elif len(args) == 0:
-        return ("regex", "\\d+[.]?\\d*", op)
+        return "regex", "\\d+[.]?\\d*", op
 
 
 def POS(name, config, op=None):
-    return ("pos", resolve_value(name, config=config), op)
+    return "pos", resolve_value(name, config=config), op
 
 
 def LEMMA(name, config, op=None):
-    return ("lemma", resolve_value(name, config=config), op)
+    return "lemma", resolve_value(name, config=config), op
 
 
 def ENTITY(name, config, op=None):
-    return ("entity", resolve_value(name, config=config), op)
+    return "entity", resolve_value(name, config=config), op
 
 
 def PREFIX(name, config, op=None):
-    return ("prefix", resolve_value(name, config=config), op)
+    return "prefix", resolve_value(name, config=config), op
 
 
 def IMPORT(module, config):

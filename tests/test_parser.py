@@ -217,7 +217,9 @@ def test_parser_pattern_in_variable(config):
     p.build(debug=True)
 
     results = p.parse(
-        r'COMPLEX_NUMBER = {NUM+, WORD("/")?, NUM}'
+        '''
+        complex_number = { NUM+, WORD("/")?, NUM? }
+        '''
     )
 
     assert len(results) == 1

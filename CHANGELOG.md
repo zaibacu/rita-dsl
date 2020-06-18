@@ -1,3 +1,42 @@
+0.5.0 (2020-06-18)
+****************************
+
+Features
+--------
+
+- Added `PREFIX` macro which allows to attach word in front of list items or words
+  #47
+- Allow to pass variables directly when doing `compile` and `compile_string`
+  #51
+- Allow to compile (and later load) rules using rita CLI while using standalone engine (spacy is already supported)
+  #53
+- Added ability to import rule files into rule file. Recursive import is supported as well.
+  #55
+- Added possibility to define pattern as a variable and reuse it in other patterns:
+
+  Example:
+  .. code-block:: RITA
+
+      ComplexNumber = {NUM+, WORD("/")?, NUM?}
+
+      {PATTERN(ComplexNumber), WORD("inches"), WORD("Height")}->MARK("HEIGHT")
+
+      {PATTERN(ComplexNumber), WORD("inches"), WORD("Width")}->MARK("WIDTH")
+  #64
+
+Fix
+---
+
+- Fix issue with multiple wildcard words using standalone engine
+  #46
+- Don't crash when no rules are provided
+  #50
+- Fix Number and ANY-OF parsing
+  #59
+- Allow escape characters inside LITERAL
+  #62
+
+
 0.4.0 (2020-01-25)
 ****************************
 

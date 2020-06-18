@@ -2,7 +2,7 @@ import logging
 
 from functools import reduce
 
-from rita.utils import Node, deaccent, flatten
+from rita.utils import Node, deaccent
 from rita.macros import resolve_value
 
 logger = logging.getLogger(__name__)

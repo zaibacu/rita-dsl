@@ -197,3 +197,15 @@ def test_benchmark(benchmark, engine, bench_text):
         iterations=3,
         rounds=3
     )
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_variable_pattern(engine):
+    parser = engine(load_rules("examples/complex-number.rita"))
+    text = """
+        It is 17 1/2 inches width and 10 inches height
+        """
+
+    results = parser(text)
+
+    assert len(results) == 2

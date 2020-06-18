@@ -223,4 +223,6 @@ def test_parser_pattern_in_variable(config):
         '''
     )
 
+    print(results)
     assert len(results) == 2
+

@@ -17,7 +17,7 @@ def handle_prefix(rules, config):
             return (name, list(["{0}{1}".format(prefix, item)
                                 for item in args]), op)
         elif name == "value":
-            return (name, "{0}{1}".format(prefix, args), op)
+            return name, "{0}{1}".format(prefix, args), op
         else:
             logger.warning("Don't know how to apply prefix on: {}".format(name))
             return pattern
@@ -35,7 +35,7 @@ def handle_prefix(rules, config):
                 else:
                     yield p
     for group_label, pattern in rules:
-        yield (group_label, list(gen()))
+        yield group_label, list(gen())
 
 
 def handle_deaccent(rules, config):
@@ -51,7 +51,7 @@ def handle_deaccent(rules, config):
                 if name == "value":
                     (v1, v2) = (args, deaccent(args))
                     if v1 != v2:
-                        yield ("any_of", (v1, v2,), op)
+                        yield "any_of", (v1, v2,), op
                     else:
                         yield p
                 elif name == "any_of":
@@ -64,11 +64,11 @@ def handle_deaccent(rules, config):
                             else:
                                 yield v1
 
-                    yield ("any_of", list(items()), op)
+                    yield "any_of", list(items()), op
                 else:
                     yield p
 
-        yield (group_label, list(gen()))
+        yield group_label, list(gen())
 
 
 def add_implicit_punct(rules, config):
@@ -81,12 +81,12 @@ def add_implicit_punct(rules, config):
         def gen():
             for p in pattern:
                 yield p
-                yield ("punct", None, "?")
+                yield "punct", None, "?"
 
         if len(pattern) == 1:
-            yield (group_label, pattern)
+            yield group_label, pattern
         else:
-            yield (group_label, list(gen())[:-1])
+            yield group_label, list(gen())[:-1]
 
 
 def handle_multi_word(rules, config):
@@ -104,11 +104,11 @@ def handle_multi_word(rules, config):
             for p in pattern:
                 (name, args, op) = p
                 if name == "value" and is_complex(args):
-                    yield ("phrase", args, op)
+                    yield "phrase", args, op
                 else:
                     yield p
 
-        yield (group_label, list(gen()))
+        yield group_label, list(gen())
 
 
 def is_complex(arg):
@@ -175,15 +175,15 @@ def handle_rule_branching(rules, config):
         if any([p == "either"
                 for (p, _, _) in pattern]):
             for p in branch_pattern(pattern, config):
-                yield (group_label, p)
+                yield group_label, p
 
         # Covering case when there are complex items in list
         elif any([p == "any_of" and has_complex(o)
                   for (p, o, _) in pattern]):
             for p in branch_pattern(pattern, config):
-                yield (group_label, p)
+                yield group_label, p
         else:
-            yield (group_label, pattern)
+            yield group_label, pattern
 
 
 def dummy(rules, config):
@@ -195,7 +195,29 @@ def dummy(rules, config):
 
 
 def rule_tuple(d):
-    return (d["label"], d["data"])
+    return d["label"], d["data"]
+
+
+def expand_patterns(rules, config):
+    """
+    We can have situations where inside pattern we have another pattern (via Variable).
+    We want to expand this inner pattern and prepend to outer pattern
+    """
+    for group_label, pattern in rules:
+        if any([callable(p) for p in pattern]):
+            def gen():
+                for p in pattern:
+                    if callable(p):
+                        inner_pattern = p()
+                        print(inner_pattern)
+                        for p_inner in inner_pattern:
+                            yield p_inner
+                    else:
+                        yield p
+
+            yield group_label, list(gen())
+        else:
+            yield group_label, pattern
 
 
 def preprocess_rules(root, config):
@@ -205,7 +227,7 @@ def preprocess_rules(root, config):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy, handle_deaccent, handle_rule_branching, handle_multi_word, handle_prefix]
+    pipeline = [dummy, expand_patterns, handle_deaccent, handle_rule_branching, handle_multi_word, handle_prefix]
 
     if config.implicit_punct:
         logger.info("Adding implicit Punctuations")

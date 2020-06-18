@@ -63,6 +63,8 @@ class RitaParser(object):
 
     def __init__(self, config):
         self.config = config
+        self.lexer = None
+        self.parser = None
 
     def p_document(self, p):
         """
@@ -193,5 +195,7 @@ class RitaParser(object):
     def parse(self, data):
         if data.strip() == "":
             return []
+        print(data)
+        print(r"{}".format(data))
 
-        return self.parser.parse(data, lexer=self.lexer, debug=logger)
+        return self.parser.parse(r"{}".format(data), lexer=self.lexer, debug=logger)

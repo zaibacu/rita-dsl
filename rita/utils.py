@@ -19,6 +19,7 @@ class Node(object):
         self.children_cycle = None
         self.ref_count = 0
         self.depth = 0
+        self.current = None
 
     def add_child(self, c):
         self.children.append(Node(c))

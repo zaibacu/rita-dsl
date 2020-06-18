@@ -199,3 +199,14 @@ def test_parser_list_w_two_items(config):
     )
 
     assert len(results) == 2
+
+
+def test_parser_literal_w_escape(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        r'WORD("Hello \"WORLD\"") -> MARK("TEST")'
+    )
+
+    assert len(results) == 1

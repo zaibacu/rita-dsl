@@ -107,6 +107,12 @@ def test_exclude_word(engine):
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_escape_string(engine):
+    # If it compiles - good enough
+    engine(load_rules("examples/match-with-escaped-string.rita"))
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_case_sensitive(engine):
     parser = engine(
         """
@@ -126,7 +132,12 @@ def test_case_sensitive(engine):
 
     results = parser(text)
     print(results)
-    assert results[0] == ("Bitcoin Cash", "CRYPTO")
+    filtered = list([r
+                    for r in results
+                    if r[1] == "CRYPTO"])
+
+    assert len(filtered) > 0
+    assert filtered[0] == ("Bitcoin Cash", "CRYPTO")
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])

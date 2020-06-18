@@ -2,7 +2,8 @@ import logging
 
 from functools import reduce
 
-from rita.utils import Node, deaccent
+from rita.utils import Node, deaccent, flatten
+from rita.macros import resolve_value
 
 logger = logging.getLogger(__name__)
 
@@ -204,20 +205,14 @@ def expand_patterns(rules, config):
     We want to expand this inner pattern and prepend to outer pattern
     """
     for group_label, pattern in rules:
-        if any([callable(p) for p in pattern]):
-            def gen():
-                for p in pattern:
-                    if callable(p):
-                        inner_pattern = p()
-                        print(inner_pattern)
-                        for p_inner in inner_pattern:
-                            yield p_inner
-                    else:
-                        yield p
+        def gen():
+            for p in pattern:
+                if callable(p):
+                    yield resolve_value(p, config=config)
+                else:
+                    yield p
 
-            yield group_label, list(gen())
-        else:
-            yield group_label, pattern
+        yield group_label, list(gen())
 
 
 def preprocess_rules(root, config):

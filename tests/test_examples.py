@@ -207,5 +207,4 @@ def test_variable_pattern(engine):
         """
 
     results = parser(text)
-
     assert len(results) == 2

@@ -219,7 +219,7 @@ def test_parser_pattern_in_variable(config):
     results = p.parse(
         '''
         Complex_Number = { NUM+, WORD("/")?, NUM? }
-        {Complex_Number, WORD("inch")}->MARK("WIDTH")
+        {PATTERN(Complex_Number), WORD("inch")}->MARK("WIDTH")
         '''
     )
 

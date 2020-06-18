@@ -195,7 +195,5 @@ class RitaParser(object):
     def parse(self, data):
         if data.strip() == "":
             return []
-        print(data)
-        print(r"{}".format(data))
 
         return self.parser.parse(r"{}".format(data), lexer=self.lexer, debug=logger)

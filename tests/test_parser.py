@@ -210,3 +210,14 @@ def test_parser_literal_w_escape(config):
     )
 
     assert len(results) == 1
+
+
+def test_parser_pattern_in_variable(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        r'COMPLEX_NUMBER = {NUM+, WORD("/")?, NUM}'
+    )
+
+    assert len(results) == 1

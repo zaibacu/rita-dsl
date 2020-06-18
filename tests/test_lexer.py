@@ -126,3 +126,14 @@ def test_tokenize_variable_w_escape():
     assert tokens[2].type == "LITERAL"
     assert tokens[4].type == "ARROW"
     assert tokens[5].type == "KEYWORD"
+
+
+def test_pattern_in_variable():
+    lex = RitaLexer()
+    lex.build()
+
+    tokens = list(
+        lex.tokenize(r'COMPLEX_NUMBER = {NUM+, WORD("/")?, NUM}')
+    )
+
+    assert len(tokens) == 14

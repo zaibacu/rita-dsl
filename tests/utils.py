@@ -1,3 +1,5 @@
+import re
+
 import pytest
 import rita
 
@@ -30,3 +32,14 @@ def standalone_engine(rules):
         results = list(parser.execute(text))
         return list([(r["text"], r["label"]) for r in results])
     return parse
+
+
+def normalize_output(r):
+    return re.sub(r"\s+", " ", r.strip().replace("\n", ""))
+
+
+def raw_compare(r1, r2):
+    r1 = normalize_output(r1)
+    r2 = normalize_output(r2)
+
+    assert r1 == r2

@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 MAX_DEPTH = 5
+ALIAS_PATTERN = re.compile(r"@alias\s+(?P<original>(\w|[_])+)\s+(?P<alias>(\w|[_])+)")
 
 
 def handle_import(m, depth=0):
@@ -29,4 +30,14 @@ def precompile(raw, depth=0):
         partial(handle_import, depth=depth),
         raw
     )
+
+    for m in ALIAS_PATTERN.finditer(raw):
+        # Delete alias definition
+        full = m.group(0)
+        raw = raw.replace(full, "")
+
+        original = m.group("original")
+        alias = m.group("alias")
+        raw = raw.replace(alias, original)
+
     return raw

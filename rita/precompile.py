@@ -38,6 +38,6 @@ def precompile(raw, depth=0):
 
         original = m.group("original")
         alias = m.group("alias")
-        raw = raw.replace(alias, original)
+        raw = re.sub(r"(?:(\s|->))(?P<alias>{})([\(])".format(alias), r"\1{}(".format(original), raw)
 
     return raw

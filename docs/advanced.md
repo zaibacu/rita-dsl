@@ -22,3 +22,16 @@ ComplexNumber = {NUM+, WORD("/")?, NUM?}
 {PATTERN(ComplexNumber), WORD("inches"), WORD("Height")}->MARK("HEIGHT")
 {PATTERN(ComplexNumber), WORD("inches"), WORD("Width")}->MARK("WIDTH")
 ```
+
+# Alias
+
+You can alias frequently used macros to make their names shorter:
+
+```
+numbers = {"one", "two", "three"}
+@alias IN_LIST IL
+
+IL(numbers) -> MARK("NUMBER")
+```
+
+Now using "IL" will actually call "IN_LIST" macro. 

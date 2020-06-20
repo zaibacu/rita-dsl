@@ -1,0 +1,10 @@
+Implemented ability to alias macros, eg.:
+
+.. code-block::
+
+    numbers = {"one", "two", "three"}
+    @alias IN_LIST IL
+
+    IL(numbers) -> MARK("NUMBER")
+
+Now using "IL" will actually call "IN_LIST" macro.

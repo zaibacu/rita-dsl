@@ -29,16 +29,15 @@ def test_alias():
     numbers = {"one", "two", "three"}
     @alias IN_LIST IL
     @alias MARK M
-    
+
     IL(numbers)->M("HELLO")
     """
 
     expected = """
-    numbers = {"one", "two", "three"}    
+    numbers = {"one", "two", "three"}
 
     IN_LIST(numbers)->MARK("HELLO")
     """
 
     result = precompile(rules.strip())
     raw_compare(expected, result)
-

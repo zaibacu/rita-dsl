@@ -234,7 +234,6 @@ def test_pattern_with_escaped_characters(config):
     results = p.parse(
         '''
         special = { '"', "*", "-" }
-        
         IN_LIST(special)->MARK("TEST")
         '''
     )

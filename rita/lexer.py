@@ -50,8 +50,8 @@ class RitaLexer(object):
         return t
 
     def t_LITERAL(self, t):
-        r'"(\\.|.)+?"'
-        t.value = t.value.strip('"')
+        r'("|\')(\\.|.)+?("|\')'
+        t.value = t.value[1:-1]
         return t
 
     def t_NAME(self, t):

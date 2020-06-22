@@ -225,3 +225,21 @@ def test_parser_pattern_in_variable(config):
 
     print(results)
     assert len(results) == 2
+
+
+def test_pattern_with_escaped_characters(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        '''
+        special = { '"', "*", "-" }
+        IN_LIST(special)->MARK("TEST")
+        '''
+    )
+
+    assert len(results) > 0
+
+    rules = results[1]()
+
+    assert {"label": "TEST", "data": [("any_of", ["\"", "*", "-"], None)]} == rules

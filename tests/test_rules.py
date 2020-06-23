@@ -252,6 +252,27 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": ".*"}}]
         }
 
+    def test_multiple_optionals(self):
+        rules = self.compiler("""
+        {NUM+, WORD("-")?, NUM?, WORD("/")?, NUM?}->MARK("NUMBER_PATTERN")
+        """)
+        print(rules)
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "NUMBER_PATTERN",
+            "pattern": [
+                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "+"},
+                {"IS_PUNCT": True, "OP": "?"},
+                {"LOWER": "-", "OP": "?"},
+                {"IS_PUNCT": True, "OP": "?"},
+                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "?"},
+                {"IS_PUNCT": True, "OP": "?"},
+                {"LOWER": "/", "OP": "?"},
+                {"IS_PUNCT": True, "OP": "?"},
+                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "?"},
+            ]
+        }
+
 
 class TestStandalone(object):
     @property

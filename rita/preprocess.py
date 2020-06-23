@@ -113,6 +113,10 @@ def handle_multi_word(rules, config):
 
 
 def is_complex(arg):
+    # if we want to use `-` as a word
+    if arg.strip() == "-":
+        return False
+
     splitters = ["-", " "]
     return any([s in arg
                 for s in splitters])

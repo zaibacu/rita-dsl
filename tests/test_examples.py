@@ -60,10 +60,13 @@ def test_fuzzy_matching(engine):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_election(engine):
-    parser = engine(load_rules("examples/simple-match.rita"))
-    text = """
-    Donald Trump was elected President in 2016 defeating Hilary Clinton.
-    """
+    parser = engine(
+        """
+        {ENTITY("PERSON")+, WORD("was"), WORD("elected")}->MARK("WON_ELECTION")
+        {WORD("defeating"), ENTITY("PERSON")+}->MARK("LOST_ELECTION")
+        """
+    )
+    text = "Donald Trump was elected President in 2016 defeating Hilary Clinton."
 
     entities = set(parser(text))
     expected = set([

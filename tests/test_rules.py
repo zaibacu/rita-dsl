@@ -349,19 +349,19 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 4
         assert rules[0] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?((one|three|two)\s?)([.,!;?:]\s?)?(test3\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?((three|one|two)\s?)([.,!;?:]\s?)?(test3\s?))",
             self.flags
         )
         assert rules[1] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?((one|three|two)\s?)([.,!;?:]\s?)?(test3\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?((three|one|two)\s?)([.,!;?:]\s?)?(test3\s?))",
             self.flags
         )
         assert rules[2] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?((one|three|two)\s?)([.,!;?:]\s?)?(test4\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?((three|one|two)\s?)([.,!;?:]\s?)?(test4\s?))",
             self.flags
         )
         assert rules[3] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?((one|three|two)\s?)([.,!;?:]\s?)?(test4\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?((three|one|two)\s?)([.,!;?:]\s?)?(test4\s?))",
             self.flags
         )
 
@@ -390,7 +390,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<EXTENDED_LIST>((Jonas|Jurgis|Sarunas|Šarūnas)\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<EXTENDED_LIST>((Sarunas|Šarūnas|Jurgis|Jonas)\s?))", self.flags)
 
     def test_double_op(self):
         rules = self.compiler('''

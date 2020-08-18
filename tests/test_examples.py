@@ -15,10 +15,7 @@ def bench_text():
 
 @pytest.mark.parametrize('engine', [spacy_engine])
 def test_color_car(engine):
-    text = """
-    John Silver was driving a red car. It was BMW X6 Mclass.
-    John likes driving it very much.
-    """
+    text = "John Silver was driving a red car. It was BMW X6 Mclass. John likes driving it very much."
     parser = engine(load_rules("examples/color-car.rita"))
     entities = set(parser(text))
     print(entities)
@@ -60,10 +57,13 @@ def test_fuzzy_matching(engine):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_election(engine):
-    parser = engine(load_rules("examples/simple-match.rita"))
-    text = """
-    Donald Trump was elected President in 2016 defeating Hilary Clinton.
-    """
+    parser = engine(
+        """
+        {ENTITY("PERSON")+, WORD("was"), WORD("elected")}->MARK("WON_ELECTION")
+        {WORD("defeating"), ENTITY("PERSON")+}->MARK("LOST_ELECTION")
+        """
+    )
+    text = "Donald Trump was elected President in 2016 defeating Hilary Clinton."
 
     entities = set(parser(text))
     expected = set([
@@ -208,3 +208,22 @@ def test_variable_pattern(engine):
 
     results = parser(text)
     assert len(results) == 2
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_inlist_longest(engine):
+    parser = engine("""
+    units = {"m", "mm", "cm"}
+    dimensions = {"width", "height", "length"}
+    {IN_LIST(dimensions), NUM, IN_LIST(units)}->MARK("TEST")
+    """)
+
+    text = """
+    width 10 mm
+    """
+
+    results = parser(text)
+
+    assert len(results) == 1
+    (result, label) = results[0]
+    assert result == "width 10 mm"

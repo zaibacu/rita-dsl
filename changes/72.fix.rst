@@ -1,0 +1,1 @@
+Fix regex matching, when shortest word is selected from IN_LIST

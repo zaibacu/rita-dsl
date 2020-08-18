@@ -215,7 +215,6 @@ def test_inlist_longest(engine):
     parser = engine("""
     units = {"m", "mm", "cm"}
     dimensions = {"width", "height", "length"}
-    
     {IN_LIST(dimensions), NUM, IN_LIST(units)}->MARK("TEST")
     """)
 

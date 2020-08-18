@@ -208,3 +208,23 @@ def test_variable_pattern(engine):
 
     results = parser(text)
     assert len(results) == 2
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_inlist_longest(engine):
+    parser = engine("""
+    units = {"m", "mm", "cm"}
+    dimensions = {"width", "height", "length"}
+    
+    {IN_LIST(dimensions), NUM, IN_LIST(units)}->MARK("TEST")
+    """)
+
+    text = """
+    width 10 mm
+    """
+
+    results = parser(text)
+
+    assert len(results) == 1
+    (result, label) = results[0]
+    assert result == "width 10 mm"

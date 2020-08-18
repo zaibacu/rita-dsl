@@ -15,10 +15,7 @@ def bench_text():
 
 @pytest.mark.parametrize('engine', [spacy_engine])
 def test_color_car(engine):
-    text = """
-    John Silver was driving a red car. It was BMW X6 Mclass.
-    John likes driving it very much.
-    """
+    text = "John Silver was driving a red car. It was BMW X6 Mclass. John likes driving it very much."
     parser = engine(load_rules("examples/color-car.rita"))
     entities = set(parser(text))
     print(entities)

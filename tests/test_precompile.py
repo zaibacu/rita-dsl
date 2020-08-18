@@ -7,11 +7,11 @@ from utils import raw_compare
 
 def test_rule_import():
     rules = """
-    @import "examples/simple-match.rita"
+    @import "examples/color-car.rita"
     """
 
     result = precompile(rules.strip())
-    with open("examples/simple-match.rita", "r") as f:
+    with open("examples/color-car.rita", "r") as f:
         assert result == f.read()
 
 

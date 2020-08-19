@@ -1,0 +1,1 @@
+Fix IN_LIST regex so that it wouldn't take part of word

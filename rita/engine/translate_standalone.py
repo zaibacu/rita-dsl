@@ -21,7 +21,7 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, op=None):
-    return apply_operator(r"(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x)))), op)
+    return apply_operator(r"(^|\s)(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x)))), op)
 
 
 def regex_parse(r, op=None):

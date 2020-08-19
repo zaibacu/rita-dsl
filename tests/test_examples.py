@@ -137,7 +137,7 @@ def test_case_sensitive(engine):
                     if r[1] == "CRYPTO"])
 
     assert len(filtered) > 0
-    assert filtered[0] == ("Bitcoin Cash", "CRYPTO")
+    assert filtered[1] == ("Bitcoin Cash", "CRYPTO")
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
@@ -227,3 +227,19 @@ def test_inlist_longest(engine):
     assert len(results) == 1
     (result, label) = results[0]
     assert result == "width 10 mm"
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
+def test_inlist_word_based(engine):
+    parser = engine("""
+    units = {"m", "mm", "cm", "inches", "in"}
+    {IN_LIST(units), NUM}->MARK("TEST")
+    """)
+
+    text = """
+    twin 20 turbo
+    """
+
+    results = parser(text)
+    print(results)
+    assert len(results) == 0

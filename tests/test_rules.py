@@ -273,6 +273,20 @@ class TestSpacy(object):
             ]
         }
 
+    def test_optional_list(self):
+        rules = self.compiler("""
+        elements = {"one", "two"}
+        {IN_LIST(elements)?}->MARK("OPTIONAL_LIST")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "OPTIONAL_LIST",
+            "pattern": [{"LOWER": {"REGEX": "^(one|two)$", "OP": "?"}}]
+        }
+
 
 class TestStandalone(object):
     @property

@@ -137,7 +137,7 @@ def test_case_sensitive(engine):
                     if r[1] == "CRYPTO"])
 
     assert len(filtered) > 0
-    assert filtered[1] == ("Bitcoin Cash", "CRYPTO")
+    assert filtered[0] == ("Bitcoin Cash", "CRYPTO")
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])

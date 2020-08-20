@@ -1,0 +1,1 @@
+Fix IN_LIST operation bug - it was ignoring them

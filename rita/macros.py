@@ -52,7 +52,7 @@ def ASSIGN(k, v, config, op=None):
 
 def IN_LIST(*args, config, op=None):
     return "any_of", [resolve_value(arg, config=config)
-                      for arg in flatten(args)], None
+                      for arg in flatten(args)], op
 
 
 def PATTERN(*args, config, op=None):

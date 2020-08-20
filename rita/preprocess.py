@@ -184,7 +184,7 @@ def handle_rule_branching(rules, config):
 
         # Covering case when there are complex items in list
         elif config.list_branching and any([p == "any_of" and has_complex(o)
-                  for (p, o, _) in pattern]):
+                                            for (p, o, _) in pattern]):
             for p in branch_pattern(pattern, config):
                 yield group_label, p
         else:

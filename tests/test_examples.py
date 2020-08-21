@@ -251,16 +251,17 @@ def test_pluralize(engine):
     !IMPORT("rita.modules.pluralize")
     
     vehicles={"car", "motorbike", "bicycle", "ship", "plane"}
-    PLURALIZE(vehicles)->MARK("VEHICLES")
+    {NUM, PLURALIZE(vehicles)}->MARK("VEHICLES")
     """)
 
     text = """
     There were 7 cars, 2 motorbikes, 1 ship, 1 bicycle and 9 planes
     """
 
-    results = list([(label, text)
-                    for text, label in parser(text)
-                    if label == "VEHICLES"])
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "VEHICLES"])
     print(results)
 
     assert len(results) == 5
+    assert {"7 cars", "2 motorbikes", "1 ship", "1 bicycle", "9 planes"} == results

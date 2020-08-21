@@ -26,7 +26,7 @@ def load_macro(name, config):
         pass
 
     def lazy_load(*args, **kwargs):
-        print(config.modules)
+        logger.info(config.modules)
         for mod in config.modules:
             try:
                 fn = getattr(mod, name)

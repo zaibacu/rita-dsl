@@ -1,3 +1,4 @@
+import sys
 import logging
 try:
     import inflect
@@ -6,6 +7,7 @@ except ImportError:
         "Pluralize module requires 'inflect' package to be installed."
         "Install it and try again"
     )
+    sys.exit(1)
 
 from rita.macros import resolve_value
 from rita.utils import flatten

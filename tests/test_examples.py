@@ -281,3 +281,25 @@ def test_inlist_word_based(engine):
     results = parser(text)
     print(results)
     assert len(results) == 0
+
+
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine])
+def test_pluralize(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.pluralize")
+
+    vehicles={"car", "motorbike", "bicycle", "ship", "plane"}
+    {NUM, PLURALIZE(vehicles)}->MARK("VEHICLES")
+    """)
+
+    text = """
+    There were 7 cars, 2 motorbikes, 1 ship, 1 bicycle and 9 planes
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "VEHICLES"])
+    print(results)
+
+    assert len(results) == 5
+    assert {"7 cars", "2 motorbikes", "1 ship", "1 bicycle", "9 planes"} == results

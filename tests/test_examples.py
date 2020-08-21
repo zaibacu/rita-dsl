@@ -147,6 +147,7 @@ def test_with_implicit_hyphon(engine):
         !CONFIG("implicit_punct", "N")
         !CONFIG("implicit_hyphon", "Y")
         {WORD("Hello"), WORD("World")}->MARK("HYPHON_LABEL")
+        WORD("Hello")->MARK("HELLO_LABEL")
         """
     )
 
@@ -165,6 +166,7 @@ def test_without_implicit_hyphon(engine):
         !CONFIG("implicit_punct", "N")
         !CONFIG("implicit_hyphon", "N")
         {WORD("Hello"), WORD("World")}->MARK("HYPHON_LABEL")
+        WORD("Hello")->MARK("HELLO_LABEL")
         """
     )
 
@@ -172,7 +174,8 @@ def test_without_implicit_hyphon(engine):
     results = parser(text)
     print(results)
 
-    assert len(results) == 0
+    assert len(results) == 1
+    assert results[0] == ("Hello", "HELLO_LABEL")
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])

@@ -90,6 +90,23 @@ def add_implicit_punct(rules, config):
             yield group_label, list(gen())[:-1]
 
 
+def add_implicit_hyphon(rules, config):
+    """
+    When writing rule,
+    user usually doesn't care about hyphon characters - between words.
+    """
+    for group_label, pattern in rules:
+        def gen():
+            for p in pattern:
+                yield p
+                yield "value", "-", "?"
+
+        if len(pattern) == 1:
+            yield group_label, pattern
+        else:
+            yield group_label, list(gen())[:-1]
+
+
 def handle_multi_word(rules, config):
     """
     spaCy splits everything in tokens.
@@ -228,7 +245,10 @@ def preprocess_rules(root, config):
 
     pipeline = [dummy, expand_patterns, handle_deaccent, handle_rule_branching, handle_multi_word, handle_prefix]
 
-    if config.implicit_punct:
+    if config.implicit_hyphon:
+        logger.info("Adding implicit Hyphons")
+        pipeline.append(add_implicit_hyphon)
+    elif config.implicit_punct:
         logger.info("Adding implicit Punctuations")
         pipeline.append(add_implicit_punct)
 

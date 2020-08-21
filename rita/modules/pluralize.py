@@ -1,4 +1,12 @@
-import inflect
+import logging
+try:
+    import inflect
+except ImportError:
+    logging.exception(
+        "Pluralize module requires 'inflect' package to be installed."
+        "Install it and try again"
+    )
+
 from rita.macros import resolve_value
 from rita.utils import flatten
 

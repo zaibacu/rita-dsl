@@ -287,6 +287,21 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "^(one|two)$"}, "OP": "?"}]
         }
 
+    def test_tag_module(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.tag")
+
+        TAG("^NN|^JJ")->MARK("TEST_TAG")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "TEST_TAG",
+            "pattern": [{"TAG": {"REGEX": "^NN|^JJ"}}]
+        }
+
 
 class TestStandalone(object):
     @property
@@ -379,16 +394,6 @@ class TestStandalone(object):
             self.flags
         )
 
-    def test_branching_list(self):
-        rules = self.compiler('''
-        items={"test1", "test2", "test-3", "test4"}
-        {IN_LIST(items)}->MARK("SPLIT_LIST")
-        ''')
-        print(rules)
-        assert len(rules) == 2
-        assert rules[0] == re.compile(r"(?P<SPLIT_LIST>((^|\s)((test1|test2|test4)\s?)))", self.flags)
-        assert rules[1] == re.compile(r"(?P<SPLIT_LIST>(test-3\s?))", self.flags)
-
     def test_word_with_accent(self):
         rules = self.compiler('''
         WORD("Šarūnas")->MARK("TWO_WORDS")
@@ -460,3 +465,17 @@ class TestStandalone(object):
 
         assert len(rules) == 1
         assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>((^|\s)((one|two)\s?))?)", self.flags)
+
+    def test_complex_list(self):
+        rules = self.compiler("""
+        fractions={"1 / 2", "3 / 4", "1 / 8", "3 / 8", "5 / 8", "7 / 8", "1 / 16", "3 / 16",
+                   "5 / 16", "7 / 16", "9 / 16", "11 / 16", "13 / 16", "15 / 16", "1 / 32",
+                   "3 / 32", "5 / 32", "7 / 32", "9 / 32", "11 / 32", "13 / 32", "15 / 32",
+                   "17 / 32", "19 / 32", "21 / 32", "23 / 32", "25 / 32", "27 / 32",
+                   "29 / 32", "31 / 32"}
+        {NUM+, WORD("-")?, IN_LIST(fractions)?}->MARK("COMPLEX_NUMBER")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1

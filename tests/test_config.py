@@ -27,12 +27,16 @@ def test_registered_engines_has_spacy(cfg):
 def test_default_values(cfg):
     assert cfg.ignore_case
     assert cfg.implicit_punct
+    assert not cfg.implicit_hyphon
 
     cfg.ignore_case = False
     assert not cfg.ignore_case
 
     cfg.implicit_punct = False
     assert not cfg.implicit_punct
+
+    cfg.implicit_hyphon = True
+    assert cfg.implicit_hyphon
 
 
 def test_register_module(cfg):

@@ -1,0 +1,4 @@
+Add a new Configuration implicit_hyphon (default false) for automatically adding hyphon characters - to the rules.
+
+Implemented by:
+Roland M. Mueller (https://github.com/rolandmueller)

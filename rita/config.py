@@ -19,6 +19,7 @@ class Config(SingletonMixin):
     def __init__(self):
         self.available_engines = []
         self.engines_by_key = {}
+        self.current_engine = None
 
         try:
             self.register_engine(1, "spacy", spacy_engine)
@@ -34,11 +35,20 @@ class Config(SingletonMixin):
 
     @property
     def default_engine(self):
-        (_, _, compile_fn) = self.available_engines[0]
+        (_, key, compile_fn) = self.available_engines[0]
+        self.current_engine = key
         return compile_fn
 
-    def get_engine(self, key):
+    def set_engine(self, key):
+        self.current_engine = key
         return self.engines_by_key[key]
+
+    @property
+    def list_branching(self):
+        if self.current_engine == "spacy":
+            return True
+
+        return False
 
 
 class SessionConfig(object):
@@ -49,7 +59,8 @@ class SessionConfig(object):
         self._data = {
             "ignore_case": True,
             "implicit_punct": True,
-            "deaccent": True
+            "deaccent": True,
+            "implicit_hyphon": False,
         }
         self.variables = {}
 

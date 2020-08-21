@@ -32,7 +32,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
     root = parser.parse(precompile(raw))
     logger.debug(root)
     if use_engine:
-        compile_rules = config.get_engine(use_engine)
+        compile_rules = config.set_engine(use_engine)
     else:
         compile_rules = config.default_engine
     rules = list(preprocess_rules(root, config))

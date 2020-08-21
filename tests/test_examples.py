@@ -137,7 +137,45 @@ def test_case_sensitive(engine):
                     if r[1] == "CRYPTO"])
 
     assert len(filtered) > 0
-    assert filtered[1] == ("Bitcoin Cash", "CRYPTO")
+    assert filtered[0] == ("Bitcoin Cash", "CRYPTO")
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_with_implicit_hyphon(engine):
+    parser = engine(
+        """
+        !CONFIG("implicit_punct", "N")
+        !CONFIG("implicit_hyphon", "Y")
+        {WORD("Hello"), WORD("World")}->MARK("HYPHON_LABEL")
+        WORD("Hello")->MARK("HELLO_LABEL")
+        """
+    )
+
+    text = "Hello - world!"
+    results = parser(text)
+    print(results)
+
+    assert len(results) == 1
+    assert results[0] == ("Hello - world", "HYPHON_LABEL")
+
+
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+def test_without_implicit_hyphon(engine):
+    parser = engine(
+        """
+        !CONFIG("implicit_punct", "N")
+        !CONFIG("implicit_hyphon", "N")
+        {WORD("Hello"), WORD("World")}->MARK("HYPHON_LABEL")
+        WORD("Hello")->MARK("HELLO_LABEL")
+        """
+    )
+
+    text = "Hello - world!"
+    results = parser(text)
+    print(results)
+
+    assert len(results) == 1
+    assert results[0] == ("Hello", "HELLO_LABEL")
 
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])

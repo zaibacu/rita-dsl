@@ -14,13 +14,18 @@ def pluralizing(initial_list):
 
 def PLURALIZE(*args, config, op=None):
     """
-    For a noun or a list of nouns, it will match any singluar or plural word
-    Will work even if the lemmatizer is making an error
+    For a noun or a list of nouns, it will match any singular or plural word
+    Usage for a single word, e.g.:
+    PLURALIZE("car")
+    Usage for lists, e.g.:
+    vehicles = {"car", "bicycle", "ship"}
+    PLURALIZE(vehicles)
+    Will work even for regex or if the lemmatizer of spaCy is making an error
+    Has dependency to the Python inflect package https://pypi.org/project/inflect/
     """
     if type(args[0]) == list:
         initial_list = [resolve_value(arg, config=config)
                         for arg in flatten(args)]
     else:
         initial_list = [args[0]]
-    print(initial_list)
     return "any_of", pluralizing(initial_list), op

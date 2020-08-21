@@ -302,6 +302,7 @@ class TestSpacy(object):
             "pattern": [{"TAG": {"REGEX": "^NN|^JJ"}}]
         }
 
+
 class TestStandalone(object):
     @property
     def punct(self):

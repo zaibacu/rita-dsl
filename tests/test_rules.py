@@ -287,6 +287,20 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "^(one|two)$"}, "OP": "?"}]
         }
 
+    def test_tag_module(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.tag")
+
+        TAG("^NN|^JJ")->MARK("TEST_TAG")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "TEST_TAG",
+            "pattern": [{"TAG": {"REGEX": "^NN|^JJ"}}]
+        }
 
 class TestStandalone(object):
     @property

@@ -1,5 +1,6 @@
 from rita.macros import resolve_value
 
+
 def TAG(name, config, op=None):
     """
     For generating POS/TAG patterns based on a Regex

@@ -249,7 +249,7 @@ def test_inlist_word_based(engine):
 def test_pluralize(engine):
     parser = engine("""
     !IMPORT("rita.modules.pluralize")
-    
+
     vehicles={"car", "motorbike", "bicycle", "ship", "plane"}
     {NUM, PLURALIZE(vehicles)}->MARK("VEHICLES")
     """)

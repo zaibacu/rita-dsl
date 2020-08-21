@@ -74,6 +74,18 @@ def phrase_parse(value, config, op=None):
         yield generic_parse("ORTH", value, config=config, op=None)
 
 
+def tag_parse(r, config, op=None):
+    """
+    For generating POS/TAG patterns based on a Regex
+    e.g. TAG("^NN|^JJ") for adjectives or nouns
+    """
+    d = {"TAG": {"REGEX": r}}
+
+    if op:
+        d["OP"] = op
+    yield d
+
+
 PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
@@ -84,6 +96,7 @@ PARSERS = {
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
     "phrase": phrase_parse,
+    "tag": tag_parse,
 }
 
 

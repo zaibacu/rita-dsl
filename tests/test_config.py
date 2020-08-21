@@ -38,6 +38,7 @@ def test_default_values(cfg):
     cfg.implicit_hyphon = True
     assert cfg.implicit_hyphon
 
+
 def test_register_module(cfg):
     cfg.register_module("rita.modules.fuzzy")
 

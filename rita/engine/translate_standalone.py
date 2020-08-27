@@ -162,5 +162,5 @@ class RuleExecutor(object):
 def compile_rules(rules, config, regex_impl=re, **kwargs):
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group) for group in rules]
-    executor = RuleExecutor(patterns, config, regex_impl=regex_impl, **kwargs)
+    executor = RuleExecutor(patterns, config, regex_impl=regex_impl)
     return executor

@@ -110,7 +110,7 @@ def rules_to_patterns(label, data, config):
     }
 
 
-def compile_rules(rules, config):
+def compile_rules(rules, config, **kwargs):
     logger.info("Using spaCy rules implementation")
     return [rules_to_patterns(*group, config=config)
             for group in rules]

@@ -101,20 +101,21 @@ def rules_to_patterns(label, data):
 
 
 class RuleExecutor(object):
-    def __init__(self, patterns, config):
+    def __init__(self, patterns, config, regex_impl=re):
         self.config = config
+        self.regex_impl = regex_impl
         self.patterns = [self.compile(label, rules)
                          for label, rules in patterns]
         self.raw_patterns = patterns
 
     def compile(self, label, rules):
-        flags = re.DOTALL
+        flags = self.regex_impl.DOTALL
         if self.config.ignore_case:
-            flags = flags | re.IGNORECASE
+            flags = flags | self.regex_impl.IGNORECASE
 
         regex_str = r"(?P<{0}>{1})".format(label, "".join(rules))
         try:
-            return re.compile(regex_str, flags)
+            return self.regex_impl.compile(regex_str, flags)
         except Exception as ex:
             logger.exception("Failed to compile: '{0}', Reason: \n{1}".format(regex_str, str(ex)))
             return None
@@ -158,7 +159,7 @@ class RuleExecutor(object):
             yield {"label": label, "rules": rules}
 
 
-def compile_rules(rules, config):
+def compile_rules(rules, config, regex_impl=re, **kwargs):
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group) for group in rules]
     executor = RuleExecutor(patterns, config)

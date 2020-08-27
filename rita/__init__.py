@@ -36,7 +36,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
     else:
         compile_rules = config.default_engine
     rules = list(preprocess_rules(root, config))
-    result = compile_rules(rules, config)
+    result = compile_rules(rules, config, **kwargs)
     if isinstance(result, types.GeneratorType):
         return list(result)
     else:

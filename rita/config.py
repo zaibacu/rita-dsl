@@ -1,7 +1,6 @@
 import operator
 import logging
 from importlib import import_module
-from functools import partial
 
 try:
     from rita.engine.translate_spacy import compile_rules as spacy_engine
@@ -40,9 +39,9 @@ class Config(SingletonMixin):
         self.current_engine = key
         return compile_fn
 
-    def set_engine(self, key, **kwargs):
+    def set_engine(self, key):
         self.current_engine = key
-        return partial(self.engines_by_key[key], **kwargs)
+        return self.engines_by_key[key]
 
     @property
     def list_branching(self):

@@ -303,3 +303,49 @@ def test_pluralize(engine):
 
     assert len(results) == 5
     assert {"7 cars", "2 motorbikes", "1 ship", "1 bicycle", "9 planes"} == results
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
+def test_custom_regex_impl(engine):
+    import re
+
+    class MyMatch(object):
+        def __init__(self, result):
+            self.result = result
+
+        def start(self):
+            return 0
+
+        def end(self):
+            return len(self.result)
+
+        def group(self):
+            return self.result
+
+        @property
+        def lastgroup(self):
+            return "TEST_MATCH"
+
+    class MyCustomRegex(object):
+        DOTALL = re.DOTALL
+        IGNORECASE = re.IGNORECASE
+
+        def compile(self, *args, **kwargs):
+            return self
+
+        def match(self, *args, **kwargs):
+            return self
+
+        def search(self, *args, **kwargs):
+            return self
+
+        def finditer(self, text):
+            return [MyMatch("Hello new REGEX")]
+
+    parser = engine("""
+    {WORD("Hello"), WORD("new"), WORD("regex")}->MARK("TEST_MATCH")
+    """, regex_impl=MyCustomRegex())
+
+    results = parser("Hello new REGEX!")
+
+    assert len(results) == 1

@@ -9,9 +9,9 @@ def load_rules(rules_path):
         return f.read()
 
 
-def spacy_engine(rules):
+def spacy_engine(rules, **kwargs):
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    patterns = rita.compile_string(rules)
+    patterns = rita.compile_string(rules, **kwargs)
     nlp = spacy.load("en")
     ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
     print(patterns)
@@ -24,8 +24,8 @@ def spacy_engine(rules):
     return parse
 
 
-def standalone_engine(rules):
-    parser = rita.compile_string(rules, use_engine="standalone")
+def standalone_engine(rules, **kwargs):
+    parser = rita.compile_string(rules, use_engine="standalone", **kwargs)
     print(parser.patterns)
 
     def parse(text):

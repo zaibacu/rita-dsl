@@ -110,3 +110,13 @@ def test_standalone_simple():
     assert entities[0] == ("Donald Trump was elected", "WON_ELECTION")
     assert entities[1] == ("defeating Hilary Clinton", "LOST_ELECTION")
 ```
+
+**Since version** `0.5.10`: custom regex implementation can be given. Either to boost performance, or to improve matches. By default, standard Python `re` is used.
+
+It can be passed like this:
+
+```python
+import rita
+import regex
+patterns = rita.compile("examples/simple-match.rita", use_engine="standalone", regex_impl=regex)
+```

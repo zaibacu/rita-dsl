@@ -10,7 +10,7 @@ from rita.precompile import precompile
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 5, 9, os.getenv("VERSION_PATCH"))
+__version__ = (0, 5, 10, os.getenv("VERSION_PATCH"))
 
 
 def get_version():
@@ -36,7 +36,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
     else:
         compile_rules = config.default_engine
     rules = list(preprocess_rules(root, config))
-    result = compile_rules(rules, config)
+    result = compile_rules(rules, config, **kwargs)
     if isinstance(result, types.GeneratorType):
         return list(result)
     else:

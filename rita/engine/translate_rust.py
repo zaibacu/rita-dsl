@@ -59,7 +59,7 @@ class RustRuleExecutor(RuleExecutor):
 
     @staticmethod
     def _build_regex_str(label, rules):
-        return r"(?P<{0}>{1})".format(label, "".join(rules))
+        return r"(?P<{0}>{1})".format(label, "".join(rules)).encode().decode("unicode-escape")
 
     def compile(self):
         c_array = (c_char_p * len(self.patterns))(*list([p.encode("UTF-8") for p in self.patterns]))

@@ -106,7 +106,7 @@ def test_exclude_word(engine):
     assert len(r2) == 0
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_escape_string(engine):
     # If it compiles - good enough
     engine(load_rules("examples/match-with-escaped-string.rita"))

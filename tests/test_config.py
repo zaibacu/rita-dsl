@@ -20,7 +20,7 @@ def test_registered_engines(cfg):
 def test_registered_engines_has_spacy(cfg):
     pytest.importorskip("spacy", minversion="2.1")
     from rita.engine.translate_spacy import compile_rules
-    assert len(cfg.available_engines) == 2
+    assert len(cfg.available_engines) == 3
     assert cfg.default_engine == compile_rules
 
 

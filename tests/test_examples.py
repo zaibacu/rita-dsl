@@ -3,7 +3,7 @@ import pytest
 
 import rita
 
-from utils import spacy_engine, standalone_engine, load_rules
+from utils import spacy_engine, standalone_engine, rust_engine, load_rules
 
 
 @pytest.fixture(scope="session")
@@ -215,7 +215,7 @@ def test_compile_context():
     }
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_benchmark(benchmark, engine, bench_text):
     """
     These tests will only run if parameters:
@@ -248,7 +248,7 @@ def test_variable_pattern(engine):
     assert len(results) == 2
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_inlist_longest(engine):
     parser = engine("""
     units = {"m", "mm", "cm"}
@@ -285,6 +285,7 @@ def test_inlist_word_based(engine):
 
 @pytest.mark.parametrize('engine', [standalone_engine, spacy_engine])
 def test_pluralize(engine):
+    pytest.importorskip("inflect")
     parser = engine("""
     !IMPORT("rita.modules.pluralize")
 

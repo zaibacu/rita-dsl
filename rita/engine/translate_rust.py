@@ -74,7 +74,7 @@ class RustRuleExecutor(RuleExecutor):
                 "start": match.start,
                 "end": match.end,
                 "text": match.text.decode("UTF-8").strip(),
-                "label": match.label,
+                "label": match.label.decode("UTF-8"),
             }
 
     def clean_context(self):

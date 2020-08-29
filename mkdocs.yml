@@ -7,6 +7,8 @@ nav:
   - Quickstart: quickstart.md
   - Syntax: syntax.md
   - Macros: macros.md
+  - Engines: engines.md
+  - Modules: modules.md
   - Extending: extend.md
   - Config: config.md
   - Advanced: advanced.md

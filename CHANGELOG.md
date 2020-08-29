@@ -1,3 +1,61 @@
+0.6.0 (2020-08-29)
+****************************
+
+Features
+--------
+
+- Implemented ability to alias macros, eg.:
+
+  .. code-block::
+
+      numbers = {"one", "two", "three"}
+      @alias IN_LIST IL
+
+      IL(numbers) -> MARK("NUMBER")
+
+  Now using "IL" will actually call "IN_LIST" macro.
+  #66
+- introduce the TAG element as a module. Needs a new parser for the SpaCy translate.
+  Would allow more flexible matching of detailed part-of-speech tag, like all adjectives or nouns: TAG("^NN|^JJ").
+
+  Implemented by:
+  Roland M. Mueller (https://github.com/rolandmueller)
+  #81
+- Add a new module for a PLURALIZE tag
+  For a noun or a list of nouns, it will match any singular or plural word.
+
+  Implemented by:
+  Roland M. Mueller (https://github.com/rolandmueller)
+  #82
+- Add a new Configuration implicit_hyphon (default false) for automatically adding hyphon characters - to the rules.
+
+  Implemented by:
+  Roland M. Mueller (https://github.com/rolandmueller)
+  #84
+- Allow to give custom regex impl. By default `re` is used
+  #86
+- An interface to be able to use rust engine.
+
+  In general it's identical to `standalone`, but differs in one crucial part - all of the rules are compiled into actual binary code and that provides large performance boost.
+  It is proprietary, because there are various caveats, engine itself is a bit more fragile and needs to be tinkered to be optimized to very specific case
+  (eg. few long texts with many matches vs a lot short texts with few matches).
+  #87
+
+Fix
+---
+
+- Fix `-` bug when it is used as stand alone word
+  #71
+- Fix regex matching, when shortest word is selected from IN_LIST
+  #72
+- Fix IN_LIST regex so that it wouldn't take part of word
+  #75
+- Fix IN_LIST operation bug - it was ignoring them
+  #77
+- Use list branching only when using spaCy Engine
+  #80
+
+
 0.5.0 (2020-06-18)
 ****************************
 

@@ -1,5 +1,0 @@
-Add a new module for a PLURALIZE tag
-For a noun or a list of nouns, it will match any singular or plural word.
-
-Implemented by:
-Roland M. Mueller (https://github.com/rolandmueller)

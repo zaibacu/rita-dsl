@@ -1,1 +1,0 @@
-Allow to give custom regex impl. By default `re` is used

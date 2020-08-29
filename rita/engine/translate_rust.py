@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 class ResultEntity(Structure):
     _fields_ = [
         ("label", c_char_p),
-        ("text", c_char_p),
         ("start", c_size_t),
         ("end", c_size_t),
     ]
@@ -67,14 +66,15 @@ class RustRuleExecutor(RuleExecutor):
         self.context = self.lib.compile(c_array, len(c_array), flag)
         return self.context
 
-    def _results(self, text):
+    def execute(self, text):
         raw = self.lib.execute(self.context, text.encode("UTF-8"))
         for i in range(0, raw.count):
             match = raw.results[i]
+            matched_text = text[match.start:match.end].strip()
             yield {
                 "start": match.start,
                 "end": match.end,
-                "text": match.text.decode("UTF-8").strip(),
+                "text": matched_text,
                 "label": match.label.decode("UTF-8"),
             }
 

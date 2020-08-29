@@ -30,9 +30,13 @@ def test_color_car(engine):
     assert entities.issuperset(expected)
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_fuzzy_matching(engine):
-    parser = engine(load_rules("examples/fuzzy-matching.rita"))
+    parser = engine("""
+    !IMPORT("rita.modules.fuzzy")
+
+    FUZZY("squirrel") -> MARK("CRITTER")
+    """)
 
     # Check if we're matching with capitalized word
     t1 = """

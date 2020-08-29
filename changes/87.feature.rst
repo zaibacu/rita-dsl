@@ -1,0 +1,5 @@
+An interface to be able to use rust engine.
+
+In general it's identical to `standalone`, but differs in one crucial part - all of the rules are compiled into actual binary code and that provides large performance boost.
+It is proprietary, because there are various caveats, engine itself is a bit more fragile and needs to be tinkered to be optimized to very specific case
+(eg. few long texts with many matches vs a lot short texts with few matches).

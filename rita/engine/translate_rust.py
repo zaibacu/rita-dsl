@@ -1,7 +1,7 @@
 import os
 import logging
 
-from ctypes import *
+from ctypes import (c_char_p, c_size_t, c_uint, Structure, cdll, POINTER)
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
 
@@ -59,7 +59,6 @@ class RustRuleExecutor(RuleExecutor):
 
     @staticmethod
     def _build_regex_str(label, rules):
-        # return r"(?P<{0}>{1})".format(label, "".join(rules)).encode().decode("unicode-escape")
         return r"(?P<{0}>{1})".format(label, "".join(rules))
 
     def compile(self):

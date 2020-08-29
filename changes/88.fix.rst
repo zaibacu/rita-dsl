@@ -1,0 +1,5 @@
+Optimizations for Rust Engine
+
+- No need for passing text forward and backward, we can calculate from text[start:end]
+
+- Grouping and sorting logic can be done in binary code

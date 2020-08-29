@@ -1,7 +1,6 @@
 import os
 import logging
 
-from copy import copy
 from ctypes import (c_char_p, c_size_t, c_uint, Structure, cdll, POINTER)
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor

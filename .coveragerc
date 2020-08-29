@@ -3,5 +3,8 @@ branch = True
 source =
     rita
 
+omit = rita/engine/translate_rust.py
+
 [report]
 show_missing = True
+omit = rita/engine/translate_rust.py

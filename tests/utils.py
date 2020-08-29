@@ -34,6 +34,21 @@ def standalone_engine(rules, **kwargs):
     return parse
 
 
+def rust_engine(rules, **kwargs):
+    from rita.engine.translate_rust import load_lib
+    lib = load_lib()
+    if lib is None:
+        pytest.skip("Missing rita-rust dynamic lib, skipping related tests")
+    print("Trying to run: {}".format(rules))
+    parser = rita.compile_string(rules, use_engine="rust", **kwargs)
+    print(parser.patterns)
+
+    def parse(text):
+        results = list(parser.execute(text))
+        return list([(r["text"], r["label"]) for r in results])
+    return parse
+
+
 def normalize_output(r):
     return re.sub(r"\s+", " ", r.strip().replace("\n", ""))
 

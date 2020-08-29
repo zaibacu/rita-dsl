@@ -8,6 +8,7 @@ except ImportError:
     pass
 
 from rita.engine.translate_standalone import compile_rules as standalone_engine
+from rita.engine.translate_rust import compile_rules as rust_engine
 
 from rita.utils import SingletonMixin
 
@@ -27,6 +28,7 @@ class Config(SingletonMixin):
             # spacy_engine is not imported
             pass
         self.register_engine(2, "standalone", standalone_engine)
+        self.register_engine(3, "rust", rust_engine)
 
     def register_engine(self, priority, key, compile_fn):
         self.available_engines.append((priority, key, compile_fn))

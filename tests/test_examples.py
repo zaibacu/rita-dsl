@@ -3,7 +3,7 @@ import pytest
 
 import rita
 
-from utils import spacy_engine, standalone_engine, load_rules
+from utils import spacy_engine, standalone_engine, rust_engine, load_rules
 
 
 @pytest.fixture(scope="session")
@@ -55,7 +55,7 @@ def test_fuzzy_matching(engine):
     assert entities[0] == ("SQUIRREL", "CRITTER")
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_election(engine):
     parser = engine(
         """
@@ -75,7 +75,7 @@ def test_election(engine):
     assert entities.issuperset(expected)
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_dash_case(engine):
     parser = engine(load_rules("examples/dress-match.rita"))
     text = """
@@ -106,13 +106,13 @@ def test_exclude_word(engine):
     assert len(r2) == 0
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_escape_string(engine):
     # If it compiles - good enough
     engine(load_rules("examples/match-with-escaped-string.rita"))
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_case_sensitive(engine):
     parser = engine(
         """
@@ -140,7 +140,7 @@ def test_case_sensitive(engine):
     assert filtered[0] == ("Bitcoin Cash", "CRYPTO")
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_with_implicit_hyphon(engine):
     parser = engine(
         """
@@ -159,7 +159,7 @@ def test_with_implicit_hyphon(engine):
     assert results[0] == ("Hello - world", "HYPHON_LABEL")
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_without_implicit_hyphon(engine):
     parser = engine(
         """
@@ -178,7 +178,7 @@ def test_without_implicit_hyphon(engine):
     assert results[0] == ("Hello", "HELLO_LABEL")
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_prefix(engine):
     parser = engine(
         """
@@ -215,7 +215,7 @@ def test_compile_context():
     }
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_benchmark(benchmark, engine, bench_text):
     """
     These tests will only run if parameters:
@@ -237,7 +237,7 @@ def test_benchmark(benchmark, engine, bench_text):
     )
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_variable_pattern(engine):
     parser = engine(load_rules("examples/complex-number.rita"))
     text = """
@@ -248,7 +248,7 @@ def test_variable_pattern(engine):
     assert len(results) == 2
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_inlist_longest(engine):
     parser = engine("""
     units = {"m", "mm", "cm"}
@@ -267,7 +267,7 @@ def test_inlist_longest(engine):
     assert result == "width 10 mm"
 
 
-@pytest.mark.parametrize('engine', [standalone_engine])
+@pytest.mark.parametrize('engine', [standalone_engine, rust_engine])
 def test_inlist_word_based(engine):
     parser = engine("""
     units = {"m", "mm", "cm", "inches", "in"}
@@ -283,8 +283,9 @@ def test_inlist_word_based(engine):
     assert len(results) == 0
 
 
-@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine])
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
 def test_pluralize(engine):
+    pytest.importorskip("inflect")
     parser = engine("""
     !IMPORT("rita.modules.pluralize")
 

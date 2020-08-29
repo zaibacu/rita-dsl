@@ -1,1 +1,0 @@
-Fix `-` bug when it is used as stand alone word

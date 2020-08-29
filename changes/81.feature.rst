@@ -1,5 +1,0 @@
-introduce the TAG element as a module. Needs a new parser for the SpaCy translate.
-Would allow more flexible matching of detailed part-of-speech tag, like all adjectives or nouns: TAG("^NN|^JJ").
-
-Implemented by:
-Roland M. Mueller (https://github.com/rolandmueller)

@@ -36,8 +36,8 @@ def standalone_engine(rules, **kwargs):
 
 def rust_engine(rules, **kwargs):
     from rita.engine.translate_rust import load_lib
-    l = load_lib()
-    if l is None:
+    lib = load_lib()
+    if lib is None:
         pytest.skip("Missing rita-rust dynamic lib, skipping related tests")
     print("Trying to run: {}".format(rules))
     parser = rita.compile_string(rules, use_engine="rust", **kwargs)

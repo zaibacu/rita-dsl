@@ -59,11 +59,13 @@ class RustRuleExecutor(RuleExecutor):
 
     @staticmethod
     def _build_regex_str(label, rules):
-        return r"(?P<{0}>{1})".format(label, "".join(rules)).encode().decode("unicode-escape")
+        # return r"(?P<{0}>{1})".format(label, "".join(rules)).encode().decode("unicode-escape")
+        return r"(?P<{0}>{1})".format(label, "".join(rules))
 
     def compile(self):
+        flag = 0 if self.config.ignore_case else 1
         c_array = (c_char_p * len(self.patterns))(*list([p.encode("UTF-8") for p in self.patterns]))
-        self.context = self.lib.compile(c_array, len(c_array))
+        self.context = self.lib.compile(c_array, len(c_array), flag)
         return self.context
 
     def _results(self, text):

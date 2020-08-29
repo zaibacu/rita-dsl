@@ -30,7 +30,7 @@ def test_color_car(engine):
     assert entities.issuperset(expected)
 
 
-@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
+@pytest.mark.parametrize('engine', [spacy_engine, standalone_engine])
 def test_fuzzy_matching(engine):
     parser = engine(load_rules("examples/fuzzy-matching.rita"))
 

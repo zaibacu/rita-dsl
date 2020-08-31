@@ -21,12 +21,12 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, op=None):
-    clause = r"((^|\s)(({0})\s?))".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
+    clause = r"((^|\s)(({0})\s??))".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return apply_operator(clause, op)
 
 
 def regex_parse(r, op=None):
-    initial = "(" + r + r"\s?" + ")"
+    initial = "(" + r + r"\s??" + ")"
     return apply_operator(initial, op)
 
 
@@ -38,7 +38,7 @@ def not_supported(key, *args, **kwargs):
 
 
 def person_parse(op=None):
-    return apply_operator(r"([A-Z]\w+\s?)", op)
+    return apply_operator(r"([A-Z]\w+\s??)", op)
 
 
 def entity_parse(value, op=None):
@@ -49,7 +49,7 @@ def entity_parse(value, op=None):
 
 
 def punct_parse(_, op=None):
-    return apply_operator(r"([.,!;?:]\s?)", op)
+    return apply_operator(r"([.,!;?:]\s??)", op)
 
 
 def word_parse(value, op=None):
@@ -63,7 +63,7 @@ def fuzzy_parse(r, op=None):
 
 
 def phrase_parse(value, op=None):
-    return apply_operator(r"({}\s?)".format(value), op)
+    return apply_operator(r"({}\s??)".format(value), op)
 
 
 PARSERS = {

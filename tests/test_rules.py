@@ -261,15 +261,15 @@ class TestSpacy(object):
         assert rules[0] == {
             "label": "NUMBER_PATTERN",
             "pattern": [
-                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "+"},
+                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "+"},
                 {"IS_PUNCT": True, "OP": "?"},
                 {"LOWER": "-", "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
-                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "?"},
+                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
                 {"LOWER": "/", "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
-                {"LOWER": {"REGEX": "\\d+[.]?\\d*"}, "OP": "?"},
+                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "?"},
             ]
         }
 
@@ -417,7 +417,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<DOUBLE_OP>((\w|['_-])+\s?)+)", self.flags)
+        assert rules[0] == re.compile(r"(?P<DOUBLE_OP>(((\w|['_-])+)\s?)+)", self.flags)
 
     def test_prefix_on_word(self):
         rules = self.compiler('''
@@ -464,7 +464,7 @@ class TestStandalone(object):
         print(rules)
 
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>((^|\s)((one|two)\s?))?)", self.flags)
+        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>((^|\s)((one|two)\s?)?))", self.flags)
 
     def test_complex_list(self):
         rules = self.compiler("""

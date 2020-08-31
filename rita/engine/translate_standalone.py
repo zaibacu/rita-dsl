@@ -135,14 +135,19 @@ class RuleExecutor(object):
                     for k, v in match.groupdict().items():
                         if not v or v.strip() == "":
                             continue
-                        yield k, v.strip()
+                        yield {
+                            "key": k,
+                            "text": v.strip(),
+                            "start": match.start(k),
+                            "end": match.end(k)
+                        }
 
                 yield {
                     "start": match.start(),
                     "end": match.end(),
                     "text": match.group().strip(),
                     "label": match.lastgroup,
-                    "submatches": dict(submatches())
+                    "submatches": sorted(list(submatches()), key=lambda x: x["start"])
                 }
 
     def execute(self, text):

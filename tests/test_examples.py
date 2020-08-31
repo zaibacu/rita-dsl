@@ -216,11 +216,26 @@ def test_compile_context():
         "end": 33,
         "label": "SUSPISCIOUS_COMPANY",
         "text": "CompanyB is doing it's dirty work",
-        "submatches": {
-            "SUSPISCIOUS_COMPANY": "CompanyB is doing it's dirty work",
-            "s2": "CompanyB",
-            "s4": "is doing it's dirty work"
-        }
+        "submatches": [
+            {
+                "start": 0,
+                "end": 33,
+                "key": "SUSPISCIOUS_COMPANY",
+                "text": "CompanyB is doing it's dirty work"
+            },
+            {
+                "start": 0,
+                "end": 9,
+                "key": "s2",
+                "text": "CompanyB"
+            },
+            {
+                "start": 9,
+                "end": 33,
+                "key": "s4",
+                "text": "is doing it's dirty work"
+            }
+        ],
     }
 
 

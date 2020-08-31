@@ -434,5 +434,5 @@ def test_simple_float_number_match(engine):
 def test_invalid_entity(engine):
     with pytest.raises(RuntimeError):
         engine("""
-        ENTITY("ORG")->MARK("ORG_MATCH")    
+        ENTITY("ORG")->MARK("ORG_MATCH")
         """)

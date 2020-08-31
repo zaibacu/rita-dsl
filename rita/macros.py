@@ -3,6 +3,8 @@ import types
 
 from rita.utils import flatten
 
+from functools import partial
+
 logger = logging.getLogger(__name__)
 
 
@@ -60,11 +62,16 @@ def PATTERN(*args, config, op=None):
     for arg in args:
         result = resolve_value(arg, config=config)
         if isinstance(result, list):
-            context += result
+            # context += result
+            context.append(NESTED(result, config, op))
         else:
             context.append(result)
 
     return context
+
+
+def NESTED(children, config, op=None):
+    return "nested", children, op
 
 
 def WORD(*args, config, op=None):

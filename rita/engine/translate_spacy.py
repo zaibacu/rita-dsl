@@ -86,6 +86,11 @@ def tag_parse(r, config, op=None):
     yield d
 
 
+def nested_parse(values, config, op=None):
+    results = rules_to_patterns("", values, config=config)
+    return results["pattern"]
+
+
 PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
@@ -97,16 +102,25 @@ PARSERS = {
     "fuzzy": fuzzy_parse,
     "phrase": phrase_parse,
     "tag": tag_parse,
+    "nested": nested_parse,
 }
+
+
+def flatten_patterns(p):
+    if isinstance(p, list):
+        return p
+    else:
+        return [p]
 
 
 def rules_to_patterns(label, data, config):
     logger.debug(data)
     return {
         "label": label,
-        "pattern": [p
+        "pattern": [r
                     for (t, d, op) in data
-                    for p in PARSERS[t](d, config=config, op=op)],
+                    for p in PARSERS[t](d, config=config, op=op)
+                    for r in flatten_patterns(p)],
     }
 
 

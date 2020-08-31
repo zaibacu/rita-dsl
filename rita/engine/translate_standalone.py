@@ -20,12 +20,12 @@ def apply_operator(syntax, op):
         return syntax + op
 
 
-def any_of_parse(lst, op=None):
+def any_of_parse(lst, config, op=None):
     clause = r"\b(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return "(" + apply_operator(clause, op) + ")"
 
 
-def regex_parse(r, op=None):
+def regex_parse(r, config, op=None):
     initial = "(" + r + r"\s?" + ")"
     return apply_operator(initial, op)
 
@@ -37,33 +37,38 @@ def not_supported(key, *args, **kwargs):
     )
 
 
-def person_parse(op=None):
+def person_parse(config, op=None):
     return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
-def entity_parse(value, op=None):
+def entity_parse(value, config, op=None):
     if value == "PERSON":
-        return person_parse(op)
+        return person_parse(config, op=op)
     else:
         return not_supported(value)
 
 
-def punct_parse(_, op=None):
+def punct_parse(_, config, op=None):
     return apply_operator(r"([.,!;?:]\s?)", op)
 
 
-def word_parse(value, op=None):
+def word_parse(value, config, op=None):
     initial = r"({}\s?)".format(value)
     return apply_operator(initial, op)
 
 
-def fuzzy_parse(r, op=None):
+def fuzzy_parse(r, config, op=None):
     # TODO: build premutations
     return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
 
 
-def phrase_parse(value, op=None):
+def phrase_parse(value, config, op=None):
     return apply_operator(r"({}\s?)".format(value), op)
+
+
+def nested_parse(values, config, op=None):
+    (_, patterns) = rules_to_patterns("", values, config=config)
+    return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 
 PARSERS = {
@@ -76,10 +81,11 @@ PARSERS = {
     "punct": punct_parse,
     "fuzzy": fuzzy_parse,
     "phrase": phrase_parse,
+    "nested": nested_parse,
 }
 
 
-def rules_to_patterns(label, data):
+def rules_to_patterns(label, data, config):
     logger.debug("data: {}".format(data))
 
     def gen():
@@ -96,7 +102,7 @@ def rules_to_patterns(label, data):
 
     return (
         label,
-        [PARSERS[t](d, op) for (t, d, op) in gen()],
+        [PARSERS[t](d, op=op, config=config) for (t, d, op) in gen()],
     )
 
 
@@ -113,8 +119,8 @@ class RuleExecutor(object):
         if self.config.ignore_case:
             flags = flags | self.regex_impl.IGNORECASE
 
-        # regex_str = r"(?P<{0}>{1})".format(label, "".join(rules))
-        indexed_rules = ["(?P<s{}>({}))".format(i, r) for i, r in enumerate(rules)]
+        indexed_rules = ["(?P<s{}>({}))".format(i, r) if not r.startswith("(?P<") else r
+                         for i, r in enumerate(rules)]
         regex_str = r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
         try:
             return self.regex_impl.compile(regex_str, flags)
@@ -129,14 +135,14 @@ class RuleExecutor(object):
                     for k, v in match.groupdict().items():
                         if not v or v.strip() == "":
                             continue
-                        yield {k: v.strip()}
+                        yield k, v.strip()
 
                 yield {
                     "start": match.start(),
                     "end": match.end(),
                     "text": match.group().strip(),
                     "label": match.lastgroup,
-                    "submatches": list(submatches())
+                    "submatches": dict(submatches())
                 }
 
     def execute(self, text):
@@ -170,6 +176,6 @@ class RuleExecutor(object):
 
 def compile_rules(rules, config, regex_impl=re, **kwargs):
     logger.info("Using standalone rule implementation")
-    patterns = [rules_to_patterns(*group) for group in rules]
+    patterns = [rules_to_patterns(*group, config=config) for group in rules]
     executor = RuleExecutor(patterns, config, regex_impl=regex_impl)
     return executor

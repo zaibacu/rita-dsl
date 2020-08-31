@@ -215,7 +215,12 @@ def test_compile_context():
         "start": 0,
         "end": 33,
         "label": "SUSPISCIOUS_COMPANY",
-        "text": "CompanyB is doing it's dirty work"
+        "text": "CompanyB is doing it's dirty work",
+        "submatches": {
+            "SUSPISCIOUS_COMPANY": "CompanyB is doing it's dirty work",
+            "s2": "CompanyB",
+            "s4": "is doing it's dirty work"
+        }
     }
 
 
@@ -243,7 +248,11 @@ def test_benchmark(benchmark, engine, bench_text):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_variable_pattern(engine):
-    parser = engine(load_rules("examples/complex-number.rita"))
+    parser = engine("""
+    Complex_Number = { NUM+, WORD("/")?, NUM? }
+    {PATTERN(Complex_Number), WORD("inches"), WORD("Width")}->MARK("WIDTH")
+    {PATTERN(Complex_Number), WORD("inches"), WORD("Height")}->MARK("HEIGHT")
+    """)
     text = """
         It is 17 1/2 inches width and 10 inches height
         """
@@ -326,6 +335,9 @@ def test_custom_regex_impl(engine):
 
         def group(self):
             return self.result
+
+        def groupdict(self):
+            return {}
 
         @property
         def lastgroup(self):

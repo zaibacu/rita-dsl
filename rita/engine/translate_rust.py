@@ -84,6 +84,6 @@ class RustRuleExecutor(RuleExecutor):
 
 def compile_rules(rules, config, **kwargs):
     logger.info("Using rita-rust rule implementation")
-    patterns = [rules_to_patterns(*group) for group in rules]
+    patterns = [rules_to_patterns(*group, config=config) for group in rules]
     executor = RustRuleExecutor(patterns, config)
     return executor

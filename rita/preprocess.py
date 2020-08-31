@@ -230,6 +230,14 @@ def expand_patterns(rules, config):
             for p in pattern:
                 if callable(p):
                     yield resolve_value(p, config=config)
+                elif type(p) is tuple:
+                    (k, other, op) = p
+                    if k == "nested":
+                        fns = other[0][1]
+                        yield "nested", list([resolve_value(f, config)
+                                              for f in fns]), op
+                    else:
+                        yield p
                 else:
                     yield p
 

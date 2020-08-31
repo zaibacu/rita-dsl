@@ -119,7 +119,7 @@ class RuleExecutor(object):
         if self.config.ignore_case:
             flags = flags | self.regex_impl.IGNORECASE
 
-        indexed_rules = ["(?P<s{}>({}))".format(i, r) if not r.startswith("(?P<") else r
+        indexed_rules = ["(?P<s{}>{})".format(i, r) if not r.startswith("(?P<") else r
                          for i, r in enumerate(rules)]
         regex_str = r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
         try:

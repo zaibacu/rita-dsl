@@ -38,7 +38,7 @@ def not_supported(key, *args, **kwargs):
 
 
 def person_parse(op=None):
-    return apply_operator(r"([A-Z]\w+\s??)", op)
+    return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
 def entity_parse(value, op=None):

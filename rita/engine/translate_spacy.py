@@ -106,21 +106,13 @@ PARSERS = {
 }
 
 
-def flatten_patterns(p):
-    if isinstance(p, list):
-        return p
-    else:
-        return [p]
-
-
 def rules_to_patterns(label, data, config):
     logger.debug(data)
     return {
         "label": label,
-        "pattern": [r
+        "pattern": [p
                     for (t, d, op) in data
-                    for p in PARSERS[t](d, config=config, op=op)
-                    for r in flatten_patterns(p)],
+                    for p in PARSERS[t](d, config=config, op=op)],
     }
 
 

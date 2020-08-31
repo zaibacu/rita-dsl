@@ -428,3 +428,11 @@ def test_simple_float_number_match(engine):
     assert parser("25")[0] == ("25", "NUMBER")
     assert parser("25.7")[0] == ("25.7", "NUMBER")
     assert parser("19,6")[0] == ("19,6", "NUMBER")
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
+def test_invalid_entity(engine):
+    with pytest.raises(RuntimeError):
+        engine("""
+        ENTITY("ORG")->MARK("ORG_MATCH")    
+        """)

@@ -60,7 +60,6 @@ def PATTERN(*args, config, op=None):
     for arg in args:
         result = resolve_value(arg, config=config)
         if isinstance(result, list):
-            # context += result
             context.append(NESTED(result, config, op))
         else:
             context.append(result)

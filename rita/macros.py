@@ -80,7 +80,7 @@ def NUM(*args, config, op=None):
         literal = resolve_value(args[0], config=config)
         return "value", literal, op
     elif len(args) == 0:
-        return "regex", r"((\d+)|(\d+[\.]\d+?))", op
+        return "regex", r"((\d+)|(\d+[\.]\d+))", op
 
 
 def POS(name, config, op=None):

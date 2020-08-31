@@ -53,7 +53,7 @@ def punct_parse(_, op=None):
 
 
 def word_parse(value, op=None):
-    initial = r"({}\s?)".format(value)
+    initial = r"({}\s??)".format(value)
     return apply_operator(initial, op)
 
 

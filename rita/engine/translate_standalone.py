@@ -113,7 +113,9 @@ class RuleExecutor(object):
         if self.config.ignore_case:
             flags = flags | self.regex_impl.IGNORECASE
 
-        regex_str = r"(?P<{0}>{1})".format(label, "".join(rules))
+        # regex_str = r"(?P<{0}>{1})".format(label, "".join(rules))
+        indexed_rules = ["(?P<s{}>({}))".format(i, r) for i, r in enumerate(rules)]
+        regex_str = r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
         try:
             return self.regex_impl.compile(regex_str, flags)
         except Exception as ex:
@@ -123,11 +125,18 @@ class RuleExecutor(object):
     def _results(self, text):
         for p in self.patterns:
             for match in p.finditer(text):
+                def submatches():
+                    for k, v in match.groupdict().items():
+                        if not v or v.strip() == "":
+                            continue
+                        yield {k: v.strip()}
+
                 yield {
                     "start": match.start(),
                     "end": match.end(),
                     "text": match.group().strip(),
                     "label": match.lastgroup,
+                    "submatches": list(submatches())
                 }
 
     def execute(self, text):

@@ -372,3 +372,14 @@ def test_complex_number_match(engine):
     print(results)
     assert len(results) == 1
     assert results[0] == ("10 1 / 2", "NUMBER")
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
+def test_simple_float_number_match(engine):
+    parser = engine("""
+    NUM->MARK("NUMBER")
+    """)
+
+    assert parser("25")[0] == ("25", "NUMBER")
+    assert parser("25.7")[0] == ("25.7", "NUMBER")
+    assert parser("19,6")[0] == ("19,6", "NUMBER")

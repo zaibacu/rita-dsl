@@ -72,7 +72,7 @@ def WORD(*args, config, op=None):
         literal = resolve_value(args[0], config=config)
         return "value", literal, op
     elif len(args) == 0:
-        return "regex", "(\\w|['_-])+", op
+        return "regex", r"((\w|['_-])+)", op
 
 
 def NUM(*args, config, op=None):

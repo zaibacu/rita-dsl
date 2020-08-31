@@ -1,0 +1,1 @@
+Switch from `(^\s)` to `\b` when doing `IN_LIST`. Should solve several corner cases

@@ -21,7 +21,7 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, op=None):
-    clause = r"(^|\s)(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
+    clause = r"\b(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return "(" + apply_operator(clause, op) + ")"
 
 

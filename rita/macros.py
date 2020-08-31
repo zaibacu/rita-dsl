@@ -3,8 +3,6 @@ import types
 
 from rita.utils import flatten
 
-from functools import partial
-
 logger = logging.getLogger(__name__)
 
 

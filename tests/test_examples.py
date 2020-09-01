@@ -215,7 +215,27 @@ def test_compile_context():
         "start": 0,
         "end": 33,
         "label": "SUSPISCIOUS_COMPANY",
-        "text": "CompanyB is doing it's dirty work"
+        "text": "CompanyB is doing it's dirty work",
+        "submatches": [
+            {
+                "start": 0,
+                "end": 33,
+                "key": "SUSPISCIOUS_COMPANY",
+                "text": "CompanyB is doing it's dirty work"
+            },
+            {
+                "start": 0,
+                "end": 9,
+                "key": "s2",
+                "text": "CompanyB"
+            },
+            {
+                "start": 9,
+                "end": 33,
+                "key": "s4",
+                "text": "is doing it's dirty work"
+            }
+        ],
     }
 
 
@@ -243,7 +263,11 @@ def test_benchmark(benchmark, engine, bench_text):
 
 @pytest.mark.parametrize('engine', [spacy_engine, standalone_engine, rust_engine])
 def test_variable_pattern(engine):
-    parser = engine(load_rules("examples/complex-number.rita"))
+    parser = engine("""
+    Complex_Number = { NUM+, WORD("/")?, NUM? }
+    {PATTERN(Complex_Number), WORD("inches"), WORD("Width")}->MARK("WIDTH")
+    {PATTERN(Complex_Number), WORD("inches"), WORD("Height")}->MARK("HEIGHT")
+    """)
     text = """
         It is 17 1/2 inches width and 10 inches height
         """
@@ -327,6 +351,9 @@ def test_custom_regex_impl(engine):
         def group(self):
             return self.result
 
+        def groupdict(self):
+            return {}
+
         @property
         def lastgroup(self):
             return "TEST_MATCH"
@@ -375,6 +402,24 @@ def test_complex_number_match(engine):
 
 
 @pytest.mark.parametrize('engine', [standalone_engine])
+def test_complex_number_match_2(engine):
+    parser = engine("""
+    fractions={"1 / 2", "3 / 4", "1 / 8", "3 / 8", "5 / 8", "7 / 8", "1 / 16", "3 / 16", "5 / 16", "7 / 16", "9 / 16",
+    "11 / 16", "13 / 16", "15 / 16", "1 / 32", "3 / 32", "5 / 32", "7 / 32", "9 / 32", "11 / 32", "13 / 32", "15 / 32",
+    "17 / 32", "19 / 32", "21 / 32", "23 / 32", "25 / 32", "27 / 32", "29 / 32", "31 / 32"}
+    complex_number = {NUM, WORD("-")?, IN_LIST(fractions)?}
+
+    {WORD("length"), PATTERN(complex_number)}->MARK("NUMBER")
+    """)
+
+    results = parser('length 10 1 / 2 "')
+
+    print(results)
+    assert len(results) == 1
+    assert results[0] == ("length 10 1 / 2", "NUMBER")
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
 def test_simple_float_number_match(engine):
     parser = engine("""
     NUM->MARK("NUMBER")
@@ -383,3 +428,11 @@ def test_simple_float_number_match(engine):
     assert parser("25")[0] == ("25", "NUMBER")
     assert parser("25.7")[0] == ("25.7", "NUMBER")
     assert parser("19,6")[0] == ("19,6", "NUMBER")
+
+
+@pytest.mark.parametrize('engine', [standalone_engine])
+def test_invalid_entity(engine):
+    with pytest.raises(RuntimeError):
+        engine("""
+        ENTITY("ORG")->MARK("ORG_MATCH")
+        """)

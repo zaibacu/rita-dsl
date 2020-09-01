@@ -86,6 +86,11 @@ def tag_parse(r, config, op=None):
     yield d
 
 
+def nested_parse(values, config, op=None):
+    results = rules_to_patterns("", values, config=config)
+    return results["pattern"]
+
+
 PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
@@ -97,6 +102,7 @@ PARSERS = {
     "fuzzy": fuzzy_parse,
     "phrase": phrase_parse,
     "tag": tag_parse,
+    "nested": nested_parse,
 }
 
 

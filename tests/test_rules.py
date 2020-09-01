@@ -261,15 +261,15 @@ class TestSpacy(object):
         assert rules[0] == {
             "label": "NUMBER_PATTERN",
             "pattern": [
-                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "+"},
+                {"LOWER": {"REGEX": "((\\d+[\\.,]\\d+)|(\\d+))"}, "OP": "+"},
                 {"IS_PUNCT": True, "OP": "?"},
                 {"LOWER": "-", "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
-                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "?"},
+                {"LOWER": {"REGEX": "((\\d+[\\.,]\\d+)|(\\d+))"}, "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
                 {"LOWER": "/", "OP": "?"},
                 {"IS_PUNCT": True, "OP": "?"},
-                {"LOWER": {"REGEX": "((\\d+)|(\\d+[\\.]\\d+))"}, "OP": "?"},
+                {"LOWER": {"REGEX": "((\\d+[\\.,]\\d+)|(\\d+))"}, "OP": "?"},
             ]
         }
 
@@ -319,19 +319,19 @@ class TestStandalone(object):
         rules = self.compiler('PUNCT->MARK("SOME_PUNCT")')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SOME_PUNCT>([.,!;?:]\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<SOME_PUNCT>(?P<s0>([.,!;?:]\s?)))", self.flags)
 
     def test_number(self):
         rules = self.compiler('NUM("42")->MARK("SOME_NUMBER")')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SOME_NUMBER>(42\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<SOME_NUMBER>(?P<s0>(42\s?)))", self.flags)
 
     def test_single_word(self):
         rules = self.compiler('WORD("Test")->MARK("SOME_LABEL")')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SOME_LABEL>(Test\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<SOME_LABEL>(?P<s0>(Test\s?)))", self.flags)
 
     def test_multiple_words(self):
         rules = self.compiler('''
@@ -340,7 +340,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(\b((test1|test2)\s?)))", self.flags)
+        assert rules[0] == re.compile(r"(?P<MULTI_LABEL>(?P<s0>(\b((test1|test2)\s?))))", self.flags)
 
     def test_simple_pattern(self):
         rules = self.compiler('''
@@ -348,7 +348,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<SIMPLE_PATTERN>(test1\s?)([.,!;?:]\s?)?(test2\s?))", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<SIMPLE_PATTERN>(?P<s0>(test1\s?))(?P<s1>([.,!;?:]\s?)?)(?P<s2>(test2\s?)))",
+            self.flags
+        )
 
     def test_or_branch(self):
         rules = self.compiler('''
@@ -356,8 +359,8 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 2
-        assert rules[0] == re.compile(r"(?P<SPLIT_LABEL>(test1\s?))", self.flags)
-        assert rules[1] == re.compile(r"(?P<SPLIT_LABEL>(test2\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<SPLIT_LABEL>(?P<s0>(test1\s?)))", self.flags)
+        assert rules[1] == re.compile(r"(?P<SPLIT_LABEL>(?P<s0>(test2\s?)))", self.flags)
 
     def test_or_branch_multi(self):
         rules = self.compiler('''
@@ -365,10 +368,25 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 4
-        assert rules[0] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?(test3\s?))", self.flags)
-        assert rules[1] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?(test3\s?))", self.flags)
-        assert rules[2] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?(test4\s?))", self.flags)
-        assert rules[3] == re.compile(r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?(test4\s?))", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test1\s?))(?P<s1>([.,!;?:]\s?)?)(?P<s2>(test3\s?)))",
+            self.flags
+        )
+
+        assert rules[1] == re.compile(
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test2\s?))(?P<s1>([.,!;?:]\s?)?)(?P<s2>(test3\s?)))",
+            self.flags
+        )
+
+        assert rules[2] == re.compile(
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test1\s?))(?P<s1>([.,!;?:]\s?)?)(?P<s2>(test4\s?)))",
+            self.flags
+        )
+
+        assert rules[3] == re.compile(
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test2\s?))(?P<s1>([.,!;?:]\s?)?)(?P<s2>(test4\s?)))",
+            self.flags
+        )
 
     def test_or_branch_multi_w_single(self):
         rules = self.compiler('''
@@ -378,19 +396,26 @@ class TestStandalone(object):
         print(rules)
         assert len(rules) == 4
         assert rules[0] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?(\b((three|one|two)\s?))([.,!;?:]\s?)?(test3\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test1\s?))(?P<s1>([.,!;?:]\s?)?)"
+            r"(?P<s2>(\b((three|one|two)\s?)))(?P<s3>([.,!;?:]\s?)?)(?P<s4>(test3\s?)))",
             self.flags
         )
+
         assert rules[1] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?(\b((three|one|two)\s?))([.,!;?:]\s?)?(test3\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test2\s?))(?P<s1>([.,!;?:]\s?)?)"
+            r"(?P<s2>(\b((three|one|two)\s?)))(?P<s3>([.,!;?:]\s?)?)(?P<s4>(test3\s?)))",
             self.flags
         )
+
         assert rules[2] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test1\s?)([.,!;?:]\s?)?(\b((three|one|two)\s?))([.,!;?:]\s?)?(test4\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test1\s?))(?P<s1>([.,!;?:]\s?)?)"
+            r"(?P<s2>(\b((three|one|two)\s?)))(?P<s3>([.,!;?:]\s?)?)(?P<s4>(test4\s?)))",
             self.flags
         )
+
         assert rules[3] == re.compile(
-            r"(?P<MULTI_SPLIT_LABEL>(test2\s?)([.,!;?:]\s?)?(\b((three|one|two)\s?))([.,!;?:]\s?)?(test4\s?))",
+            r"(?P<MULTI_SPLIT_LABEL>(?P<s0>(test2\s?))(?P<s1>([.,!;?:]\s?)?)"
+            r"(?P<s2>(\b((three|one|two)\s?)))(?P<s3>([.,!;?:]\s?)?)(?P<s4>(test4\s?)))",
             self.flags
         )
 
@@ -400,7 +425,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<TWO_WORDS>(\b((Sarunas|Šarūnas)\s?)))", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<TWO_WORDS>(?P<s0>(\b((Sarunas|Šarūnas)\s?))))",
+            self.flags
+        )
 
     def test_list_with_accent(self):
         rules = self.compiler('''
@@ -409,7 +437,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<EXTENDED_LIST>(\b((Sarunas|Šarūnas|Jurgis|Jonas)\s?)))", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<EXTENDED_LIST>(?P<s0>(\b((Sarunas|Šarūnas|Jurgis|Jonas)\s?))))",
+            self.flags
+        )
 
     def test_double_op(self):
         rules = self.compiler('''
@@ -417,7 +448,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<DOUBLE_OP>(((\w|['_-])+)\s?)+)", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<DOUBLE_OP>(?P<s0>(((\w|['_-])+)\s?)+))",
+            self.flags
+        )
 
     def test_prefix_on_word(self):
         rules = self.compiler('''
@@ -425,7 +459,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<META_WORD>(metaphysics\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<META_WORD>(?P<s0>(metaphysics\s?)))", self.flags)
 
     def test_prefix_on_list(self):
         rules = self.compiler('''
@@ -434,7 +468,10 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<META_LIST>(\b((metamathematics|metaphysics)\s?)))", self.flags)
+        assert rules[0] == re.compile(
+            r"(?P<META_LIST>(?P<s0>(\b((metamathematics|metaphysics)\s?))))",
+            self.flags
+        )
 
     def test_prefix_on_unknown_type(self):
         rules = self.compiler('''
@@ -442,7 +479,7 @@ class TestStandalone(object):
         ''')
         print(rules)
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<NOT_VALID>(.*\s?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<NOT_VALID>(?P<s0>(.*\s?)))", self.flags)
 
     def test_save_and_load_rules_from_file(self):
         rules = '''
@@ -464,7 +501,7 @@ class TestStandalone(object):
         print(rules)
 
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>(\b((one|two)\s?)?))", self.flags)
+        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>(?P<s0>(\b((one|two)\s?)?)))", self.flags)
 
     def test_complex_list(self):
         rules = self.compiler("""

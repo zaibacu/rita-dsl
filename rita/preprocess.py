@@ -3,7 +3,6 @@ import logging
 from functools import reduce
 
 from rita.utils import Node, deaccent
-from rita.macros import resolve_value
 
 logger = logging.getLogger(__name__)
 
@@ -231,11 +230,31 @@ def expand_patterns(rules, config):
                 if type(p) is tuple:
                     (k, other, op) = p
                     if k == "nested":
-                        fns = other[0][1]
-                        yield "nested", list([resolve_value(f, config)
-                                              for f in fns]), op
+                        fn = other[0][0]
+                        children = other[0][1]
+                        yield fn, children, op
                     else:
                         yield p
+                else:
+                    yield p
+
+        yield group_label, list(gen())
+
+
+def flatten_2nd_level_nested(rules, config):
+    """
+    1st level of nested: use PATTERN(...) inside of your rule
+    2nd level of nested: use PATTERN(...) which has PATTERN(...) and so on (recursively)
+
+    we want to resolve up to 1st level
+    """
+
+    for group_label, pattern in rules:
+        def gen():
+            for p in pattern:
+                if type(p) is list:
+                    for item in p:
+                        yield item
                 else:
                     yield p
 
@@ -249,7 +268,15 @@ def preprocess_rules(root, config):
              for doc in root
              if doc and doc()]
 
-    pipeline = [dummy, expand_patterns, handle_deaccent, handle_rule_branching, handle_multi_word, handle_prefix]
+    pipeline = [
+        dummy,
+        expand_patterns,
+        handle_deaccent,
+        handle_rule_branching,
+        flatten_2nd_level_nested,
+        handle_multi_word,
+        handle_prefix
+    ]
 
     if config.implicit_hyphon:
         logger.info("Adding implicit Hyphons")

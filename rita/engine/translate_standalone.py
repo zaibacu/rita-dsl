@@ -21,7 +21,7 @@ def apply_operator(syntax, op):
 
 
 def any_of_parse(lst, config, op=None):
-    clause = r"(^|\s)(({0})\s?)".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
+    clause = r"((^|\s)(({0})\s?))".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return apply_operator(clause, op)
 
 
@@ -67,7 +67,9 @@ def phrase_parse(value, config, op=None):
 
 
 def nested_parse(values, config, op=None):
-    (_, patterns) = rules_to_patterns("", values, config=config)
+    from rita.macros import resolve_value
+    (_, patterns) = rules_to_patterns("", [resolve_value(v, config=config)
+                                           for v in values], config=config)
     return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 

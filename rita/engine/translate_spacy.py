@@ -50,7 +50,7 @@ def generic_parse(tag, value, config, op=None):
 
 
 def punct_parse(_, config, op=None):
-    d = {}
+    d = dict()
     d["IS_PUNCT"] = True
     if op:
         d["OP"] = op
@@ -87,7 +87,9 @@ def tag_parse(r, config, op=None):
 
 
 def nested_parse(values, config, op=None):
-    results = rules_to_patterns("", values, config=config)
+    from rita.macros import resolve_value
+    results = rules_to_patterns("", [resolve_value(v, config=config)
+                                     for v in values], config=config)
     return results["pattern"]
 
 

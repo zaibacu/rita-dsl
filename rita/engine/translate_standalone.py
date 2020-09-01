@@ -67,7 +67,9 @@ def phrase_parse(value, config, op=None):
 
 
 def nested_parse(values, config, op=None):
-    (_, patterns) = rules_to_patterns("", values, config=config)
+    from rita.macros import resolve_value
+    (_, patterns) = rules_to_patterns("", [resolve_value(v, config=config)
+                                           for v in values], config=config)
     return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 

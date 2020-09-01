@@ -389,25 +389,9 @@ def test_complex_number_match(engine):
     fractions={"1 / 2", "3 / 4", "1 / 8", "3 / 8", "5 / 8", "7 / 8", "1 / 16", "3 / 16", "5 / 16", "7 / 16", "9 / 16",
     "11 / 16", "13 / 16", "15 / 16", "1 / 32", "3 / 32", "5 / 32", "7 / 32", "9 / 32", "11 / 32", "13 / 32", "15 / 32",
     "17 / 32", "19 / 32", "21 / 32", "23 / 32", "25 / 32", "27 / 32", "29 / 32", "31 / 32"}
-    complex_number = {NUM, WORD("-")?, IN_LIST(fractions)?}
-
-    {PATTERN(complex_number)}->MARK("NUMBER")
-    """)
-
-    results = parser('length 10 1 / 2 "')
-
-    print(results)
-    assert len(results) == 1
-    assert results[0] == ("10 1 / 2", "NUMBER")
-
-
-@pytest.mark.parametrize('engine', [standalone_engine])
-def test_complex_number_match_2(engine):
-    parser = engine("""
-    fractions={"1 / 2", "3 / 4", "1 / 8", "3 / 8", "5 / 8", "7 / 8", "1 / 16", "3 / 16", "5 / 16", "7 / 16", "9 / 16",
-    "11 / 16", "13 / 16", "15 / 16", "1 / 32", "3 / 32", "5 / 32", "7 / 32", "9 / 32", "11 / 32", "13 / 32", "15 / 32",
-    "17 / 32", "19 / 32", "21 / 32", "23 / 32", "25 / 32", "27 / 32", "29 / 32", "31 / 32"}
-    complex_number = {NUM, WORD("-")?, IN_LIST(fractions)?}
+    
+    num_with_fractions = {NUM, WORD("-")?, IN_LIST(fractions)}
+    complex_number = {NUM|PATTERN(num_with_fractions)}
 
     {WORD("length"), PATTERN(complex_number)}->MARK("NUMBER")
     """)

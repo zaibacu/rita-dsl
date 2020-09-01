@@ -501,7 +501,7 @@ class TestStandalone(object):
         print(rules)
 
         assert len(rules) == 1
-        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>(?P<s0>((^|\s)((one|two)\s?)?)))", self.flags)
+        assert rules[0] == re.compile(r"(?P<OPTIONAL_LIST>(?P<s0>((^|\s)((one|two)\s?))?))", self.flags)
 
     def test_complex_list(self):
         rules = self.compiler("""

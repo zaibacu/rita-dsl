@@ -412,11 +412,14 @@ def test_complex_number_match_2(engine):
     {WORD("length"), PATTERN(complex_number)}->MARK("NUMBER")
     """)
 
-    results = parser('length 10 1 / 2 "')
+    simple_number = parser("length 50 cm")
+    assert len(simple_number) == 1
+    assert ("length 50", "NUMBER") == simple_number[0]
 
-    print(results)
-    assert len(results) == 1
-    assert results[0] == ("length 10 1 / 2", "NUMBER")
+    complex_number = parser('length 10 1 / 2 "')
+
+    assert len(complex_number) == 1
+    assert ("length 10 1 / 2", "NUMBER") == complex_number[0]
 
 
 @pytest.mark.parametrize('engine', [standalone_engine])

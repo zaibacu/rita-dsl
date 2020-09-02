@@ -8,10 +8,11 @@ from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
 logger = logging.getLogger(__name__)
 
 
-class RangeResult(Structure):
+class NamedRangeResult(Structure):
     _fields_ = [
         ("start", c_long),
-        ("past", c_long)
+        ("end", c_long),
+        ("name", c_char_p),
     ]
 
 
@@ -50,7 +51,7 @@ def load_lib():
         lib.read_result.argtypes = [POINTER(Result), c_int]
         lib.read_result.restype = POINTER(ResultEntity)
         lib.read_submatch.argtypes = [POINTER(ResultEntity), c_int]
-        lib.read_submatch.restype = POINTER(RangeResult)
+        lib.read_submatch.restype = POINTER(NamedRangeResult)
         return lib
     except Exception as ex:
         logger.error("Failed to load rita-rust library, reason: {}\n\n"
@@ -72,8 +73,7 @@ class RustRuleExecutor(RuleExecutor):
     def _build_regex_str(label, rules):
         indexed_rules = ["(?P<s{}>{})".format(i, r) if not r.startswith("(?P<") else r
                          for i, r in enumerate(rules)]
-        output = r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
-        return output
+        return r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
 
     def compile(self):
         flag = 0 if self.config.ignore_case else 1
@@ -94,11 +94,17 @@ class RustRuleExecutor(RuleExecutor):
                 for j in range(0, k):
                     s = self.lib.read_submatch(match_ptr, j)[0]
                     start = s.start
-                    end = s.past
+                    end = s.end
+                    sub_text = text[start:end]
+
+                    if sub_text.strip() == "":
+                        continue
+
                     yield {
-                        "text": text[start:end],
+                        "text": sub_text.strip(),
                         "start": start,
-                        "end": end
+                        "end": end,
+                        "key": s.name.decode("UTF-8"),
                     }
 
             yield {

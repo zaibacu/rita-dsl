@@ -1,25 +1,32 @@
 import os
 import logging
 
-from ctypes import (c_char_p, c_size_t, c_uint, Structure, cdll, POINTER)
+from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
 
 logger = logging.getLogger(__name__)
 
 
-class ResultEntity(Structure):
+class RangeResult(Structure):
     _fields_ = [
-        ("label", c_char_p),
-        ("start", c_size_t),
-        ("end", c_size_t),
+        ("start", c_long),
+        ("past", c_long)
     ]
 
 
-class ResultsWrapper(Structure):
+class ResultEntity(Structure):
     _fields_ = [
-        ("count", c_uint),
-        ("results", (ResultEntity * 32))
+        ("label", c_char_p),
+        ("start", c_long),
+        ("end", c_long),
+        ("sub_count", c_uint),
+    ]
+
+
+class Result(Structure):
+    _fields_ = [
+        ("count", c_uint)
     ]
 
 
@@ -37,8 +44,13 @@ def load_lib():
             lib = cdll.LoadLibrary("librita_rust.so")
         lib.compile.restype = POINTER(Context)
         lib.execute.argtypes = [POINTER(Context), c_char_p]
-        lib.execute.restype = ResultsWrapper
+        lib.execute.restype = POINTER(Result)
         lib.clean_env.argtypes = [POINTER(Context)]
+        lib.clean_result.argtypes = [POINTER(Result)]
+        lib.read_result.argtypes = [POINTER(Result), c_int]
+        lib.read_result.restype = POINTER(ResultEntity)
+        lib.read_submatch.argtypes = [POINTER(ResultEntity), c_int]
+        lib.read_submatch.restype = POINTER(RangeResult)
         return lib
     except Exception as ex:
         logger.error("Failed to load rita-rust library, reason: {}\n\n"
@@ -58,7 +70,10 @@ class RustRuleExecutor(RuleExecutor):
 
     @staticmethod
     def _build_regex_str(label, rules):
-        return r"(?P<{0}>{1})".format(label, "".join(rules))
+        indexed_rules = ["(?P<s{}>{})".format(i, r) if not r.startswith("(?P<") else r
+                         for i, r in enumerate(rules)]
+        output = r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
+        return output
 
     def compile(self):
         flag = 0 if self.config.ignore_case else 1
@@ -66,16 +81,32 @@ class RustRuleExecutor(RuleExecutor):
         self.context = self.lib.compile(c_array, len(c_array), flag)
         return self.context
 
-    def execute(self, text):
-        raw = self.lib.execute(self.context, text.encode("UTF-8"))
-        for i in range(0, raw.count):
-            match = raw.results[i]
+    def execute(self, text, include_submatches=True):
+        result_ptr = self.lib.execute(self.context, text.encode("UTF-8"))
+        count = result_ptr[0].count
+        for i in range(0, count):
+            match_ptr = self.lib.read_result(result_ptr, i)
+            match = match_ptr[0]
             matched_text = text[match.start:match.end].strip()
+
+            def parse_subs():
+                k = match.sub_count
+                for j in range(0, k):
+                    s = self.lib.read_submatch(match_ptr, j)[0]
+                    start = s.start
+                    end = s.past
+                    yield {
+                        "text": text[start:end],
+                        "start": start,
+                        "end": end
+                    }
+
             yield {
                 "start": match.start,
                 "end": match.end,
                 "text": matched_text,
                 "label": match.label.decode("UTF-8"),
+                "submatches": list(parse_subs()) if include_submatches else []
             }
 
     def clean_context(self):

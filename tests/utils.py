@@ -29,7 +29,7 @@ def standalone_engine(rules, **kwargs):
     print(parser.patterns)
 
     def parse(text):
-        results = list(parser.execute(text))
+        results = list(parser.execute(text, include_submatches=False))
         return list([(r["text"], r["label"]) for r in results])
     return parse
 
@@ -44,7 +44,7 @@ def rust_engine(rules, **kwargs):
     print(parser.patterns)
 
     def parse(text):
-        results = list(parser.execute(text))
+        results = list(parser.execute(text, include_submatches=False))
         return list([(r["text"], r["label"]) for r in results])
     return parse
 

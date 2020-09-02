@@ -130,7 +130,7 @@ class RuleExecutor(object):
             logger.exception("Failed to compile: '{0}', Reason: \n{1}".format(regex_str, str(ex)))
             return None
 
-    def _results(self, text):
+    def _results(self, text, include_submatches):
         for p in self.patterns:
             for match in p.finditer(text):
                 def submatches():
@@ -149,11 +149,11 @@ class RuleExecutor(object):
                     "end": match.end(),
                     "text": match.group().strip(),
                     "label": match.lastgroup,
-                    "submatches": sorted(list(submatches()), key=lambda x: x["start"])
+                    "submatches": sorted(list(submatches()), key=lambda x: x["start"]) if include_submatches else []
                 }
 
-    def execute(self, text):
-        results = sorted(list(self._results(text)), key=lambda x: x["start"])
+    def execute(self, text, include_submatches=True):
+        results = sorted(list(self._results(text, include_submatches)), key=lambda x: x["start"])
         for k, g in groupby(results, lambda x: x["start"]):
             group = list(g)
             if len(group) == 1:

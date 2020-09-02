@@ -203,12 +203,13 @@ def test_prefix(engine):
     assert results[1] == ("pseudoscience", "PSEUDO_SCIENCE")
 
 
-def test_compile_context():
+@pytest.mark.parametrize('engine', ["standalone", "rust"])
+def test_compile_context(engine):
     rules = """
 
     {WORD*, IN_LIST(companies), WORD*}->MARK("SUSPISCIOUS_COMPANY")
     """
-    parser = rita.compile_string(rules, use_engine="standalone", companies=["CompanyA", "CompanyB"])
+    parser = rita.compile_string(rules, use_engine=engine, companies=["CompanyA", "CompanyB"])
     print(parser.patterns)
 
     results = list(parser.execute("CompanyB is doing it's dirty work."))

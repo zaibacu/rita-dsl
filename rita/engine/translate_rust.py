@@ -1,5 +1,6 @@
-import os
 import logging
+
+from platform import system
 
 from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
 
@@ -37,9 +38,10 @@ class Context(Structure):
 
 def load_lib():
     try:
-        if "nt" in os.name:
+        os_name = system()
+        if os_name == "Windows":
             lib = cdll.LoadLibrary("rita_rust.dll")
-        elif os.name == "posix":
+        elif os_name == "Darwin":
             lib = cdll.LoadLibrary("librita_rust.dylib")
         else:
             lib = cdll.LoadLibrary("librita_rust.so")

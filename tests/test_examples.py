@@ -205,6 +205,11 @@ def test_prefix(engine):
 
 @pytest.mark.parametrize('engine', ["standalone", "rust"])
 def test_compile_context(engine):
+    if engine == "rust":
+        from rita.engine.translate_rust import load_lib
+        lib = load_lib()
+        if lib is None:
+            pytest.skip("Missing rita-rust dynamic lib, skipping related tests")
     rules = """
 
     {WORD*, IN_LIST(companies), WORD*}->MARK("SUSPISCIOUS_COMPANY")

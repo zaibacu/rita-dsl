@@ -17,6 +17,7 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 - [Live Demo](https://rita-demo.herokuapp.com/)
 - [Documentation](http://rita-dsl.readthedocs.io/)
 - [QuickStart](https://rita-dsl.readthedocs.io/en/latest/quickstart/)
+- [Language Syntax Plugin for IntelijJ based IDEs](https://plugins.jetbrains.com/plugin/15011-rita-language) 
 
 ## Support
 

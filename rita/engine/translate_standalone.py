@@ -163,13 +163,13 @@ class RuleExecutor(object):
                 yield data[0]
 
     @staticmethod
-    def load(path):
+    def load(path, regex_impl=re):
         from rita.config import SessionConfig
         config = SessionConfig()
         with open(path, "r") as f:
             patterns = [(obj["label"], obj["rules"])
                         for obj in map(json.loads, f.readlines())]
-            return RuleExecutor(patterns, config)
+            return RuleExecutor(patterns, config, regex_impl=regex_impl)
 
     def save(self, path):
         with open(path, "w") as f:

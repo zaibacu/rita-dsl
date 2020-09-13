@@ -47,7 +47,7 @@ directory = "changes"
 package = "rita"
 filename = "CHANGELOG.md"
 underlines = ["*", "-"]
-template = "templates/changes.md"
+template = "changes_template.md"
 title_format = "{name} {version} ({project_date})"
 
 [[tool.towncrier.type]]

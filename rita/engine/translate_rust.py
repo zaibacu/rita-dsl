@@ -1,3 +1,4 @@
+import json
 import logging
 
 from platform import system
@@ -119,6 +120,15 @@ class RustRuleExecutor(RuleExecutor):
 
     def clean_context(self):
         self.lib.clean_env(self.context)
+
+    @staticmethod
+    def load(path):
+        from rita.config import SessionConfig
+        config = SessionConfig()
+        with open(path, "r") as f:
+            patterns = [(obj["label"], obj["rules"])
+                        for obj in map(json.loads, f.readlines())]
+            return RustRuleExecutor(patterns, config)
 
 
 def compile_rules(rules, config, **kwargs):

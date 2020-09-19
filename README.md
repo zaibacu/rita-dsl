@@ -1,3 +1,5 @@
+![Rita Logo](docs/assets/logo-2.png)
+
 # RITA DSL
 
 [![Documentation Status](https://readthedocs.org/projects/rita-dsl/badge/?version=latest)](http://rita-dsl.readthedocs.io/?badge=latest)

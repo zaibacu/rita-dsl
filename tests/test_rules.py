@@ -333,6 +333,31 @@ class TestSpacy(object):
             "pattern": [{"LOWER": {"REGEX": "^(perceived|proposed)$"}, "TAG": {"REGEX": "^VB"}}]
         }
 
+    def test_tags_case_sensitive(self):
+        rules = self.compiler("""
+        !CONFIG("ignore_case", "F")
+        !IMPORT("rita.modules.tag")
+
+        words = {"perceived", "proposed"}
+        TAG_WORD("^VB", "proposed")->MARK("TEST_TAG")
+        {TAG_WORD("^VB", words)}->MARK("TEST_TAG")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 2
+        assert rules == [
+            {
+                "label": "TEST_TAG",
+                "pattern": [{"TEXT": "proposed", "TAG": {"REGEX": "^VB"}}]
+            },
+            {
+                "label": "TEST_TAG",
+                "pattern": [{"TEXT": {"REGEX": "^(perceived|proposed)$"}, "TAG": {"REGEX": "^VB"}}]
+            }
+        ]
+
+
 
 class TestStandalone(object):
     @property

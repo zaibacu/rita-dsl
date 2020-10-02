@@ -339,6 +339,26 @@ def test_pluralize(engine):
     assert {"7 cars", "2 motorbikes", "1 ship", "1 bicycle", "9 planes"} == results
 
 
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("^a")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+
+    print(results)
+    assert len(results) == 2
+
+
 @pytest.mark.parametrize('engine', [standalone_engine])
 def test_custom_regex_impl(engine):
     import re

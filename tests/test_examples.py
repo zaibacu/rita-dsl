@@ -350,13 +350,98 @@ def test_orth_example(engine):
     text = """
     it should match IEEE, but should ignore ieee
     """
+    
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+    
+    print(results)
+    assert len(results) == 1
+    assert {"IEEE"} == results
+ 
+
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module_start(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("^a")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
 
     results = set([text
                    for text, label in parser(text)
                    if label == "TAGGED_MATCH"])
+
+    print(results)
+    assert len(results) == 2
+    assert {"are", "alphabet"} == results
+
+
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module_end(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("e$")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+
+    print(results)
+    assert len(results) == 3
+    assert {"there", "are", "the"} == results
+
+
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module_middle(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("et")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+
+    print(results)
+    assert len(results) == 2
+    assert {"letters", "alphabet"} == results
+
+
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module_strict(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("^the$")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+
     print(results)
     assert len(results) == 1
-    assert {"IEEE"} == results
+    assert {"the"} == results
 
 
 @pytest.mark.parametrize('engine', [standalone_engine])

@@ -105,6 +105,7 @@ PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
     "regex": regex_parse,
+    "local_regex": regex_parse,
     "entity": partial(generic_parse, "ENT_TYPE"),
     "lemma": partial(generic_parse, "LEMMA"),
     "pos": partial(generic_parse, "POS"),

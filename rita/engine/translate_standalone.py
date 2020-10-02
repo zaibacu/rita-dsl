@@ -30,6 +30,20 @@ def regex_parse(r, config, op=None):
     return apply_operator(initial, op)
 
 
+def local_regex_parse(r, config, op=None):
+    if r[0] == "^" and r[-1] == "$":  # Fully strictly defined string?
+        pattern = r[1:-1]
+    elif r[0] == "^":  # We define start of the string
+        pattern = r[1:] + r"\w*"
+    elif r[-1] == "$":  # We define end of string
+        pattern = r"\w*" + r[:-1]
+    else:  # We define string inside word
+        pattern = r"\w*" + r + r"\w*"
+
+    initial = "(" + r"\b" + pattern + r"\b" + r"\s?" + ")"
+    return apply_operator(initial, op)
+
+
 def not_supported(key, *args, **kwargs):
     raise RuntimeError(
         "Rule '{0}' is not supported in standalone mode"
@@ -77,6 +91,7 @@ PARSERS = {
     "any_of": any_of_parse,
     "value": word_parse,
     "regex": regex_parse,
+    "local_regex": local_regex_parse,
     "entity": entity_parse,
     "lemma": partial(not_supported, "LEMMA"),
     "pos": partial(not_supported, "POS"),

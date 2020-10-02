@@ -339,6 +339,26 @@ def test_pluralize(engine):
     assert {"7 cars", "2 motorbikes", "1 ship", "1 bicycle", "9 planes"} == results
 
 
+@pytest.mark.parametrize('engine', [spacy_engine])
+def test_orth_example(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.orth")
+
+    {ORTH("IEEE")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    it should match IEEE, but should ignore ieee
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+    print(results)
+    assert len(results) == 1
+    assert {"IEEE"} == results
+
+
 @pytest.mark.parametrize('engine', [standalone_engine])
 def test_custom_regex_impl(engine):
     import re

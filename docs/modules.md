@@ -55,6 +55,22 @@ Usage:
 {WORD*, TAG("^NN|^JJ")}->MARK("TAGGED_MATCH")
 ```
 
+## Orth
+
+Ignores case-insensitive configuration and checks words as written
+that means case-sensitive even if configuration is case-insensitive.
+Especially useful for acronyms and proper names. 
+
+Works only with spaCy engine
+
+Usage:
+
+```
+!IMPORT("rita.modules.orth")
+
+{ORTH("IEEE")}->MARK("TAGGED_MATCH")
+```
+
 ## Regex
 
 Matches words based on a Regex pattern

@@ -93,6 +93,14 @@ def nested_parse(values, config, op=None):
     return results["pattern"]
 
 
+def orth_parse(value, config, op=None):
+    d = {}
+    d["ORTH"] = value
+    if op:
+        d["OP"] = op
+    yield d
+
+
 PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
@@ -106,6 +114,7 @@ PARSERS = {
     "phrase": phrase_parse,
     "tag": tag_parse,
     "nested": nested_parse,
+    "orth": orth_parse,
 }
 
 

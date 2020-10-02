@@ -42,8 +42,11 @@ vehicles={"car", "motorbike", "bicycle", "ship", "plane"}
 
 ## Tag
 
-Is used or generating POS/TAG patterns based on a Regex
-e.g. TAG("^NN|^JJ") for nouns or adjectives.
+This module offers two new macros: `TAG` and `TAG_WORD`.
+
+
+`TAG` is used for generating POS/TAG patterns based on a Regex
+e.g. `TAG("^NN|^JJ")` for nouns or adjectives.
 
 Works only with spaCy engine
 
@@ -53,6 +56,25 @@ Usage:
 !IMPORT("rita.modules.tag")
 
 {WORD*, TAG("^NN|^JJ")}->MARK("TAGGED_MATCH")
+```
+
+`TAG_WORD` is for generating TAG patterns with a word or a list.
+
+e.g. match only "proposed" when it is in the sentence a verb (and not an adjective):
+
+```
+!IMPORT("rita.modules.tag")
+
+TAG_WORD("^VB", "proposed")
+```
+
+or e.g. match a list of words only to verbs
+
+```
+!IMPORT("rita.modules.tag")
+
+words = {"percived", "proposed"}
+{TAG_WORD("^VB", words)?}->MARK("LABEL")
 ```
 
 ## Orth

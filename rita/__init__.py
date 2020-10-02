@@ -10,7 +10,7 @@ from rita.precompile import precompile
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 6, 9, os.getenv("VERSION_PATCH"))
+__version__ = (0, 6, 10, os.getenv("VERSION_PATCH"))
 
 
 def get_version():

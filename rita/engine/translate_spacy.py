@@ -74,13 +74,26 @@ def phrase_parse(value, config, op=None):
         yield generic_parse("ORTH", value, config=config, op=None)
 
 
-def tag_parse(r, config, op=None):
+def tag_parse(values, config, op=None):
     """
     For generating POS/TAG patterns based on a Regex
     e.g. TAG("^NN|^JJ") for adjectives or nouns
+    also deals with TAG_WORD for tag and word or tag and list
     """
-    d = {"TAG": {"REGEX": r}}
-
+    d = {"TAG": {"REGEX": values["tag"]}}
+    if "word" in values:
+        if config.ignore_case:
+            d["LOWER"] = values["word"].lower()
+        else:
+            d["TEXT"] = values["word"]
+    elif "list" in values:
+        lst = values["list"]
+        if config.ignore_case:
+            normalized = sorted([item.lower()
+                                 for item in lst])
+            d["LOWER"] = {"REGEX": r"^({0})$".format("|".join(normalized))}
+        else:
+            d["TEXT"] = {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}
     if op:
         d["OP"] = op
     yield d

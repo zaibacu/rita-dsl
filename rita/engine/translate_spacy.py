@@ -91,7 +91,7 @@ def tag_parse(values, config, op=None):
         if config.ignore_case:
             normalized = sorted([item.lower()
                                  for item in lst])
-            d["LOWER"] =  {"REGEX": r"^({0})$".format("|".join(normalized))}
+            d["LOWER"] = {"REGEX": r"^({0})$".format("|".join(normalized))}
         else:
             d["TEXT"] = {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}
     if op:

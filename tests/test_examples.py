@@ -350,7 +350,6 @@ def test_orth_example(engine):
 
     text = """
     it should match IEEE or ISO, but should ignore ieee.
-    
     """
 
     results = set([text

@@ -302,6 +302,37 @@ class TestSpacy(object):
             "pattern": [{"TAG": {"REGEX": "^NN|^JJ"}}]
         }
 
+    def test_tag_word(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.tag")
+
+        TAG_WORD("^VB", "proposed")->MARK("TEST_TAG")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "TEST_TAG",
+            "pattern": [{"LOWER": "proposed", "TAG": {"REGEX": "^VB"}}]
+        }
+
+    def test_tag_list(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.tag")
+
+        words = {"perceived", "proposed"}
+        {TAG_WORD("^VB", words)}->MARK("TEST_TAG")
+        """)
+
+        print(rules)
+
+        assert len(rules) == 1
+        assert rules[0] == {
+            "label": "TEST_TAG",
+            "pattern": [{"LOWER": {"REGEX": "^(perceived|proposed)$"}, "TAG": {"REGEX": "^VB"}}]
+        }
+
 
 class TestStandalone(object):
     @property

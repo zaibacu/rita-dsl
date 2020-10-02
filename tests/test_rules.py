@@ -358,7 +358,6 @@ class TestSpacy(object):
         ]
 
 
-
 class TestStandalone(object):
     @property
     def punct(self):

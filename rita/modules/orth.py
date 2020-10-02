@@ -1,6 +1,3 @@
-from rita.macros import resolve_value
-
-
 def ORTH(value, config, op=None):
     """
     Ignores case-insensitive configuration and checks words as written

@@ -402,6 +402,27 @@ def test_regex_module_middle(engine):
     assert {"letters", "alphabet"} == results
 
 
+@pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
+def test_regex_module_strict(engine):
+    parser = engine("""
+    !IMPORT("rita.modules.regex")
+
+    {REGEX("^the$")}->MARK("TAGGED_MATCH")
+    """)
+
+    text = """
+    there are many letters in the alphabet
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "TAGGED_MATCH"])
+
+    print(results)
+    assert len(results) == 1
+    assert {"the"} == results
+
+
 @pytest.mark.parametrize('engine', [standalone_engine])
 def test_custom_regex_impl(engine):
     import re

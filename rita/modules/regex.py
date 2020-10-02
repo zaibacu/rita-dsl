@@ -4,4 +4,4 @@ def REGEX(regex_pattern, config, op=None):
     e.g. all words that start with an 'a' would be
     REGEX("^a")
     """
-    return "regex", regex_pattern, op
+    return "local_regex", regex_pattern, op

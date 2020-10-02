@@ -70,3 +70,15 @@ Usage:
 
 {ORTH("IEEE")}->MARK("TAGGED_MATCH")
 ```
+
+## Regex
+
+Matches words based on a Regex pattern
+e.g. all words that start with an 'a' would be
+`REGEX("^a")`
+
+```
+!IMPORT("rita.modules.regex")
+
+{REGEX("^a")}->MARK("TAGGED_MATCH")
+```

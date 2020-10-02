@@ -1,0 +1,3 @@
+Regex module which allows to specify word pattern, eg. `REGEX(^a)` means word must start with letter "a"
+
+Implemented by: Roland M. Mueller (https://github.com/rolandmueller)

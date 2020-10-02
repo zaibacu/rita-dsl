@@ -345,10 +345,12 @@ def test_orth_example(engine):
     !IMPORT("rita.modules.orth")
 
     {ORTH("IEEE")}->MARK("TAGGED_MATCH")
+    {ORTH("ISO")?}->MARK("TAGGED_MATCH")
     """)
 
     text = """
-    it should match IEEE, but should ignore ieee
+    it should match IEEE or ISO, but should ignore ieee.
+    
     """
 
     results = set([text
@@ -356,8 +358,8 @@ def test_orth_example(engine):
                    if label == "TAGGED_MATCH"])
 
     print(results)
-    assert len(results) == 1
-    assert {"IEEE"} == results
+    assert len(results) == 2
+    assert {"IEEE", "ISO"} == results
 
 
 @pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])

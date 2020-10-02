@@ -76,3 +76,31 @@ or e.g. match a list of words only to verbs
 words = {"percived", "proposed"}
 {TAG_WORD("^VB", words)?}->MARK("LABEL")
 ```
+
+## Orth
+
+Ignores case-insensitive configuration and checks words as written
+that means case-sensitive even if configuration is case-insensitive.
+Especially useful for acronyms and proper names. 
+
+Works only with spaCy engine
+
+Usage:
+
+```
+!IMPORT("rita.modules.orth")
+
+{ORTH("IEEE")}->MARK("TAGGED_MATCH")
+```
+
+## Regex
+
+Matches words based on a Regex pattern
+e.g. all words that start with an 'a' would be
+`REGEX("^a")`
+
+```
+!IMPORT("rita.modules.regex")
+
+{REGEX("^a")}->MARK("TAGGED_MATCH")
+```

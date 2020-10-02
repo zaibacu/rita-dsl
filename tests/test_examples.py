@@ -350,15 +350,15 @@ def test_orth_example(engine):
     text = """
     it should match IEEE, but should ignore ieee
     """
-    
+
     results = set([text
                    for text, label in parser(text)
                    if label == "TAGGED_MATCH"])
-    
+
     print(results)
     assert len(results) == 1
     assert {"IEEE"} == results
- 
+
 
 @pytest.mark.parametrize('engine', [standalone_engine, spacy_engine, rust_engine])
 def test_regex_module_start(engine):

@@ -5,8 +5,6 @@ import json
 from functools import partial
 from itertools import groupby
 
-from rita.utils import ExtendedOp
-
 logger = logging.getLogger(__name__)
 
 

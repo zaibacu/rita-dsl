@@ -153,4 +153,3 @@ class ExtendedOp(object):
             self.case_sensitive_override == other.case_sensitive_override and
             self.local_regex_override == other.local_regex_override
         )
-

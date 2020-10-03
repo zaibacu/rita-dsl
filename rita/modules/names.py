@@ -11,7 +11,7 @@ STOP_NAMES = {"von", "van", "de", "dos"}
 
 def trim_name(name):
     if name in STOP_NAMES:
-        return ""
+        return name
     return name[0] + r"\."
 
 

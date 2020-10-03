@@ -170,7 +170,8 @@ def branch_pattern(pattern, config):
             current.add_next(n)
             current = n
             current.depth = depth
-            current.add_child(("any_of", simple, p[2]))
+            if len(simple) > 0:
+                current.add_child(("any_of", simple, p[2]))
             for c in sorted(_complex):
                 current.add_child(("phrase", c, p[2]))
                 depth += 1

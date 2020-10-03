@@ -1,7 +1,9 @@
 import logging
 
+from contextlib import contextmanager
 from unicodedata import normalize, category
 from itertools import cycle, chain
+from time import time
 
 logger = logging.getLogger(__name__)
 
@@ -153,3 +155,26 @@ class ExtendedOp(object):
             self.case_sensitive_override == other.case_sensitive_override and
             self.local_regex_override == other.local_regex_override
         )
+
+
+class Timer(object):
+    def __init__(self, title):
+        self.title = title
+        self.ts = time()
+
+    def stop(self, debug=True):
+        now = time()
+        delta = int(now - self.ts) * 1000
+        msg = "{} took {}ms".format(self.title, delta)
+        if debug:
+            logger.debug(msg)
+        else:
+            logger.info(msg)
+        return delta
+
+
+@contextmanager
+def timer(title):
+    t = Timer(title)
+    yield
+    t.stop()

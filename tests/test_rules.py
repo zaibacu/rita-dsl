@@ -361,7 +361,7 @@ class TestSpacy(object):
         rules = self.compiler("""
         !IMPORT("rita.modules.names")
 
-        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "John Jones"}
+        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
         NAMES(names)->MARK("NAME_MATCH")
         """)
 

@@ -60,7 +60,7 @@ def PATTERN(*args, config, op=None):
     for arg in args:
         result = resolve_value(arg, config=config)
         if isinstance(result, list):
-            context.append(NESTED(result, config, ExtendedOp(op)))
+            context.append(NESTED(result, config, op))
         else:
             context.append(result)
 
@@ -68,7 +68,7 @@ def PATTERN(*args, config, op=None):
 
 
 def NESTED(children, config, op=None):
-    return "nested", children, ExtendedOp(op)
+    return "nested", children, op
 
 
 def WORD(*args, config, op=None):

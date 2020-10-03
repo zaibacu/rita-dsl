@@ -3,6 +3,7 @@ import pytest
 
 from rita.parser import RitaParser
 from rita.config import SessionConfig
+from rita.utils import ExtendedOp
 
 
 @pytest.fixture
@@ -59,7 +60,7 @@ def test_parser_assign_literal_and_ignore_it(config):
     rules = results[1]()
 
     print(rules)
-    assert {"label": "TEST", "data": [("value", "something", None)]} == rules
+    assert {"label": "TEST", "data": [("value", "something", ExtendedOp())]} == rules
 
 
 def test_parser_assign_literal_and_use_it(config):
@@ -78,7 +79,7 @@ def test_parser_assign_literal_and_use_it(config):
     rules = results[1]()
 
     print(rules)
-    assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
+    assert {"label": "TEST", "data": [("value", "Test", ExtendedOp())]} == rules
 
 
 def test_parser_just_assign_macro(config):
@@ -122,7 +123,7 @@ def test_parser_assign_macro_and_use_it(config):
     rules = results[1]()
 
     print(rules)
-    assert {"label": "TEST", "data": [("value", "Test", None)]} == rules
+    assert {"label": "TEST", "data": [("value", "Test", ExtendedOp())]} == rules
 
 
 def test_parser_import_module(config):
@@ -242,4 +243,4 @@ def test_pattern_with_escaped_characters(config):
 
     rules = results[1]()
 
-    assert {"label": "TEST", "data": [("any_of", ["\"", "*", "-"], None)]} == rules
+    assert {"label": "TEST", "data": [("any_of", ["\"", "*", "-"], ExtendedOp())]} == rules

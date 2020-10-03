@@ -142,10 +142,15 @@ class ExtendedOp(object):
     def __str__(self):
         if self.op:
             return self.op
-        return None
+        return "Empty Op"
 
     def __repr__(self):
-        if self.op:
-            return str(self)
-        return "Empty Op"
+        return str(self)
+
+    def __eq__(self, other):
+        return (
+            self.op == other.op and
+            self.case_sensitive_override == other.case_sensitive_override and
+            self.local_regex_override == other.local_regex_override
+        )
 

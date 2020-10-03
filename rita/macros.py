@@ -1,7 +1,7 @@
 import logging
 import types
 
-from rita.utils import flatten
+from rita.utils import flatten, ExtendedOp
 
 logger = logging.getLogger(__name__)
 
@@ -19,17 +19,17 @@ def resolve_value(obj, config):
         return obj
 
     elif isinstance(obj, types.GeneratorType):
-        return "either", list(obj), None
+        return "either", list(obj), ExtendedOp(None)
 
     return obj(config=config)
 
 
 def ANY(config, op=None):
-    return "regex", r".*", op
+    return "regex", r".*", ExtendedOp(op)
 
 
 def PUNCT(config, op=None):
-    return "punct", None, op
+    return "punct", None, ExtendedOp(op)
 
 
 def MARK(type_, obj, config, op=None):
@@ -52,7 +52,7 @@ def ASSIGN(k, v, config, op=None):
 
 def IN_LIST(*args, config, op=None):
     return "any_of", [resolve_value(arg, config=config)
-                      for arg in flatten(args)], op
+                      for arg in flatten(args)], ExtendedOp(op)
 
 
 def PATTERN(*args, config, op=None):
@@ -60,7 +60,7 @@ def PATTERN(*args, config, op=None):
     for arg in args:
         result = resolve_value(arg, config=config)
         if isinstance(result, list):
-            context.append(NESTED(result, config, op))
+            context.append(NESTED(result, config, ExtendedOp(op)))
         else:
             context.append(result)
 
@@ -68,39 +68,39 @@ def PATTERN(*args, config, op=None):
 
 
 def NESTED(children, config, op=None):
-    return "nested", children, op
+    return "nested", children, ExtendedOp(op)
 
 
 def WORD(*args, config, op=None):
     if len(args) == 1:
         literal = resolve_value(args[0], config=config)
-        return "value", literal, op
+        return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
-        return "regex", r"((\w|['_-])+)", op
+        return "regex", r"((\w|['_-])+)", ExtendedOp(op)
 
 
 def NUM(*args, config, op=None):
     if len(args) == 1:
         literal = resolve_value(args[0], config=config)
-        return "value", literal, op
+        return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
-        return "regex", r"((\d+[\.,]\d+)|(\d+))", op
+        return "regex", r"((\d+[\.,]\d+)|(\d+))", ExtendedOp(op)
 
 
 def POS(name, config, op=None):
-    return "pos", resolve_value(name, config=config), op
+    return "pos", resolve_value(name, config=config), ExtendedOp(op)
 
 
 def LEMMA(name, config, op=None):
-    return "lemma", resolve_value(name, config=config), op
+    return "lemma", resolve_value(name, config=config), ExtendedOp(op)
 
 
 def ENTITY(name, config, op=None):
-    return "entity", resolve_value(name, config=config), op
+    return "entity", resolve_value(name, config=config), ExtendedOp(op)
 
 
 def PREFIX(name, config, op=None):
-    return "prefix", resolve_value(name, config=config), op
+    return "prefix", resolve_value(name, config=config), ExtendedOp(op)
 
 
 def IMPORT(module, config):

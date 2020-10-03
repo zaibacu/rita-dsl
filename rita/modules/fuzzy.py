@@ -2,6 +2,7 @@ import re
 import string
 
 from rita.macros import resolve_value
+from rita.utils import ExtendedOp
 
 
 char_translation = dict(
@@ -36,4 +37,4 @@ def premutations(initial):
 
 def FUZZY(name, config, op=None):
     initial = resolve_value(name, config=config)
-    return ("fuzzy", list(premutations(initial.lower())), op)
+    return "fuzzy", list(premutations(initial.lower())), ExtendedOp(op)

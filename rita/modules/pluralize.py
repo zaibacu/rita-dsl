@@ -10,7 +10,7 @@ except ImportError:
     sys.exit(1)
 
 from rita.macros import resolve_value
-from rita.utils import flatten
+from rita.utils import flatten, ExtendedOp
 
 
 def pluralizing(initial_list):
@@ -38,4 +38,4 @@ def PLURALIZE(*args, config, op=None):
                         for arg in flatten(args)]
     else:
         initial_list = [args[0]]
-    return "any_of", pluralizing(initial_list), op
+    return "any_of", pluralizing(initial_list), ExtendedOp(op)

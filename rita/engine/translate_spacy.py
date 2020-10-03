@@ -2,62 +2,64 @@ import logging
 
 from functools import partial
 
+from rita.utils import ExtendedOp
+
 logger = logging.getLogger(__name__)
 
 
-def any_of_parse(lst, config, op=None):
-    if config.ignore_case:
+def any_of_parse(lst, config, op):
+    if op.ignore_case(config):
         normalized = sorted([item.lower()
                              for item in lst])
         base = {"LOWER": {"REGEX": r"^({0})$".format("|".join(normalized))}}
     else:
         base = {"TEXT": {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}}
 
-    if op:
-        base["OP"] = op
+    if not op.empty():
+        base["OP"] = op.value
     yield base
 
 
-def regex_parse(r, config, op=None):
-    if config.ignore_case:
+def regex_parse(r, config, op):
+    if op.ignore_case(config):
         d = {"LOWER": {"REGEX": r.lower()}}
     else:
         d = {"TEXT": {"REGEX": r}}
 
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
-def fuzzy_parse(r, config, op=None):
+def fuzzy_parse(r, config, op):
     # TODO: build premutations
     d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
-def generic_parse(tag, value, config, op=None):
+def generic_parse(tag, value, config, op):
     d = {}
-    if tag == "ORTH" and config.ignore_case:
+    if tag == "ORTH" and op.ignore_case(config):
         d["LOWER"] = value.lower()
     else:
         d[tag] = value
 
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
 def punct_parse(_, config, op=None):
     d = dict()
     d["IS_PUNCT"] = True
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
-def phrase_parse(value, config, op=None):
+def phrase_parse(value, config, op):
     """
     TODO: Does not support operators
     """
@@ -65,16 +67,16 @@ def phrase_parse(value, config, op=None):
                      if s in value), None)
     if splitter:
         buff = value.split(splitter)
-        yield next(generic_parse("ORTH", buff[0], config=config, op=None))
+        yield next(generic_parse("ORTH", buff[0], config=config, op=ExtendedOp()))
         for b in buff[1:]:
             if splitter != " ":
-                yield next(generic_parse("ORTH", splitter, config=config, op=None))
-            yield next(generic_parse("ORTH", b, config=config, op=None))
+                yield next(generic_parse("ORTH", splitter, config=config, op=ExtendedOp()))
+            yield next(generic_parse("ORTH", b, config=config, op=ExtendedOp()))
     else:
-        yield generic_parse("ORTH", value, config=config, op=None)
+        yield generic_parse("ORTH", value, config=config, op=ExtendedOp())
 
 
-def tag_parse(values, config, op=None):
+def tag_parse(values, config, op):
     """
     For generating POS/TAG patterns based on a Regex
     e.g. TAG("^NN|^JJ") for adjectives or nouns
@@ -82,35 +84,35 @@ def tag_parse(values, config, op=None):
     """
     d = {"TAG": {"REGEX": values["tag"]}}
     if "word" in values:
-        if config.ignore_case:
+        if op.ignore_case(config):
             d["LOWER"] = values["word"].lower()
         else:
             d["TEXT"] = values["word"]
     elif "list" in values:
         lst = values["list"]
-        if config.ignore_case:
+        if op.ignore_case(config):
             normalized = sorted([item.lower()
                                  for item in lst])
             d["LOWER"] = {"REGEX": r"^({0})$".format("|".join(normalized))}
         else:
             d["TEXT"] = {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
-def nested_parse(values, config, op=None):
+def nested_parse(values, config, op):
     from rita.macros import resolve_value
     results = rules_to_patterns("", [resolve_value(v, config=config)
                                      for v in values], config=config)
     return results["pattern"]
 
 
-def orth_parse(value, config, op=None):
+def orth_parse(value, config, op):
     d = {}
     d["ORTH"] = value
-    if op:
-        d["OP"] = op
+    if not op.empty():
+        d["OP"] = op.value
     yield d
 
 
@@ -118,7 +120,6 @@ PARSERS = {
     "any_of": any_of_parse,
     "value": partial(generic_parse, "ORTH"),
     "regex": regex_parse,
-    "local_regex": regex_parse,
     "entity": partial(generic_parse, "ENT_TYPE"),
     "lemma": partial(generic_parse, "LEMMA"),
     "pos": partial(generic_parse, "POS"),

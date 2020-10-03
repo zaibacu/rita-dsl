@@ -2,7 +2,7 @@ import logging
 
 from functools import reduce
 
-from rita.utils import Node, deaccent
+from rita.utils import Node, deaccent, ExtendedOp
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ def add_implicit_punct(rules, config):
         def gen():
             for p in pattern:
                 yield p
-                yield "punct", None, "?"
+                yield "punct", None, ExtendedOp("?")
 
         if len(pattern) == 1:
             yield group_label, pattern
@@ -98,7 +98,7 @@ def add_implicit_hyphon(rules, config):
         def gen():
             for p in pattern:
                 yield p
-                yield "value", "-", "?"
+                yield "value", "-", ExtendedOp("?")
 
         if len(pattern) == 1:
             yield group_label, pattern

@@ -1,7 +1,7 @@
 import logging
 
 from rita.macros import resolve_value
-from rita.utils import flatten
+from rita.utils import flatten, ExtendedOp
 
 logger = logging.getLogger(__name__)
 
@@ -58,4 +58,6 @@ def NAMES(*args, config, op=None):
                   for names in generate_names(initial_list)])
     print(names)
     logger.debug("Generated list of names: {}".format(names))
-    return "any_of", names, op
+    new_op = ExtendedOp(op)
+    new_op.case_sensitive_override = True
+    return "any_of", names, new_op

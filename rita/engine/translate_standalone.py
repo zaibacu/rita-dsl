@@ -3,7 +3,8 @@ import re
 import json
 
 from functools import partial
-from itertools import groupby
+from itertools import groupby, chain
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
 
@@ -126,12 +127,13 @@ def rules_to_patterns(label, data, config):
 
 
 class RuleExecutor(object):
-    def __init__(self, patterns, config, regex_impl=re):
+    def __init__(self, patterns, config, regex_impl=re, max_workers=4):
         self.config = config
         self.regex_impl = regex_impl
         self.patterns = [self.compile(label, rules)
                          for label, rules in patterns]
         self.raw_patterns = patterns
+        self.max_workers = max_workers
 
     def compile(self, label, rules):
         flags = self.regex_impl.DOTALL
@@ -147,9 +149,9 @@ class RuleExecutor(object):
             logger.exception("Failed to compile: '{0}', Reason: \n{1}".format(regex_str, str(ex)))
             return None
 
-    def _results(self, text, include_submatches):
-        for p in self.patterns:
-            for match in p.finditer(text):
+    def _match_task(self, pattern, text, include_submatches):
+        def gen():
+            for match in pattern.finditer(text):
                 def submatches():
                     for k, v in match.groupdict().items():
                         if not v or v.strip() == "":
@@ -168,9 +170,17 @@ class RuleExecutor(object):
                     "label": match.lastgroup,
                     "submatches": sorted(list(submatches()), key=lambda x: x["start"]) if include_submatches else []
                 }
+        return list(gen())
+
+    def _results(self, text, include_submatches):
+        with ThreadPoolExecutor(self.max_workers) as executor:
+            tasks = [executor.submit(self._match_task, p, text, include_submatches)
+                     for p in self.patterns]
+            for future in as_completed(tasks):
+                yield future.result(timeout=1)
 
     def execute(self, text, include_submatches=True):
-        results = sorted(list(self._results(text, include_submatches)), key=lambda x: x["start"])
+        results = sorted(chain(*self._results(text, include_submatches)), key=lambda x: x["start"])
         for k, g in groupby(results, lambda x: x["start"]):
             group = list(g)
             if len(group) == 1:

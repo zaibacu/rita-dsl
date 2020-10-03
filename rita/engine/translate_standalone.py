@@ -9,28 +9,31 @@ logger = logging.getLogger(__name__)
 
 
 def apply_operator(syntax, op):
-    if not op:
+    if op.empty():
         return syntax
 
-    elif op == "!":  # A bit complicated one
+    elif str(op) == "!":  # A bit complicated one
         return (r"((?!{})\w+)".format(syntax
                                       .rstrip(")")
                                       .lstrip("(")))
     else:
-        return syntax + op
+        return syntax + str(op)
 
 
-def any_of_parse(lst, config, op=None):
+def any_of_parse(lst, config, op):
     clause = r"((^|\s)(({0})\s?))".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return apply_operator(clause, op)
 
 
-def regex_parse(r, config, op=None):
-    initial = "(" + r + r"\s?" + ")"
-    return apply_operator(initial, op)
+def regex_parse(r, config, op):
+    if op.local_regex_override:
+        return local_regex_parse(r, config, op)
+    else:
+        initial = "(" + r + r"\s?" + ")"
+        return apply_operator(initial, op)
 
 
-def local_regex_parse(r, config, op=None):
+def local_regex_parse(r, config, op):
     if r[0] == "^" and r[-1] == "$":  # Fully strictly defined string?
         pattern = r[1:-1]
     elif r[0] == "^":  # We define start of the string
@@ -51,36 +54,36 @@ def not_supported(key, *args, **kwargs):
     )
 
 
-def person_parse(config, op=None):
+def person_parse(config, op):
     return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
-def entity_parse(value, config, op=None):
+def entity_parse(value, config, op):
     if value == "PERSON":
         return person_parse(config, op=op)
     else:
         return not_supported(value)
 
 
-def punct_parse(_, config, op=None):
+def punct_parse(_, config, op):
     return apply_operator(r"([.,!;?:]\s?)", op)
 
 
-def word_parse(value, config, op=None):
+def word_parse(value, config, op):
     initial = r"({}\s?)".format(value)
     return apply_operator(initial, op)
 
 
-def fuzzy_parse(r, config, op=None):
+def fuzzy_parse(r, config, op):
     # TODO: build premutations
     return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
 
 
-def phrase_parse(value, config, op=None):
+def phrase_parse(value, config, op):
     return apply_operator(r"({}\s?)".format(value), op)
 
 
-def nested_parse(values, config, op=None):
+def nested_parse(values, config, op):
     from rita.macros import resolve_value
     (_, patterns) = rules_to_patterns("", [resolve_value(v, config=config)
                                            for v in values], config=config)
@@ -91,7 +94,6 @@ PARSERS = {
     "any_of": any_of_parse,
     "value": word_parse,
     "regex": regex_parse,
-    "local_regex": local_regex_parse,
     "entity": entity_parse,
     "lemma": partial(not_supported, "LEMMA"),
     "pos": partial(not_supported, "POS"),

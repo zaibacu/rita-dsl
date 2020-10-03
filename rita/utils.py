@@ -117,3 +117,39 @@ def flatten(lst, shallow=False):
         return new_lst
     else:
         return chain(*new_lst)
+
+
+class ExtendedOp(object):
+    case_sensitive_override = False
+    local_regex_override = False
+
+    def __init__(self, op=None):
+        self.op = op
+
+    @property
+    def value(self):
+        return self.op
+
+    def empty(self):
+        return self.op is None
+
+    def ignore_case(self, config):
+        if self.case_sensitive_override:
+            return False
+        else:
+            return config.ignore_case
+
+    def __str__(self):
+        if self.op:
+            return self.op
+        return "Empty Op"
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        return (
+            self.op == other.op and
+            self.case_sensitive_override == other.case_sensitive_override and
+            self.local_regex_override == other.local_regex_override
+        )

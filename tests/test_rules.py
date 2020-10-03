@@ -357,6 +357,18 @@ class TestSpacy(object):
             }
         ]
 
+    def test_generate_names(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.names")
+
+        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
+        NAMES(names)->MARK("NAME_MATCH")
+        NAMES("Kazushi Sakuraba")->MARK("NAME_MATCH")
+        """)
+
+        print(rules)
+        assert len(rules) == 10
+
 
 class TestStandalone(object):
     @property
@@ -571,3 +583,15 @@ class TestStandalone(object):
         print(rules)
 
         assert len(rules) == 1
+
+    def test_generate_names(self):
+        rules = self.compiler("""
+        !IMPORT("rita.modules.names")
+
+        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
+        NAMES(names)->MARK("NAME_MATCH")
+        NAMES("Kazushi Sakuraba")->MARK("NAME_MATCH")
+        """)
+
+        print(rules)
+        assert len(rules) == 2

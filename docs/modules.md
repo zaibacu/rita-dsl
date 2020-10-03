@@ -104,3 +104,17 @@ e.g. all words that start with an 'a' would be
 
 {REGEX("^a")}->MARK("TAGGED_MATCH")
 ```
+
+## Names
+
+Takes list of full person names (First + Last, or First Middle Last) and generates shortened variations,
+eg. F. Last, First M. Last, F. M. Last etc.
+
+```
+!IMPORT("rita.modules.names")
+
+names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
+NAMES(names)->MARK("NAME_MATCH")
+```
+
+Useful when matching against fixed set of names

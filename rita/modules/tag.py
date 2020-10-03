@@ -1,10 +1,13 @@
+from rita.utils import ExtendedOp
+
+
 def TAG(tag, config, op=None):
     """
     For generating POS/TAG patterns based on a Regex
     e.g. TAG("^NN|^JJ") for nouns or adjectives
     """
     values = {"tag": tag}
-    return "tag", values, op
+    return "tag", values, ExtendedOp(op)
 
 
 def TAG_WORD(tag, value, config, op=None):
@@ -21,4 +24,4 @@ def TAG_WORD(tag, value, config, op=None):
         values["list"] = value
     else:
         values["word"] = value
-    return "tag", values, op
+    return "tag", values, ExtendedOp(op)

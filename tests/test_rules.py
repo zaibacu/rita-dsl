@@ -363,10 +363,11 @@ class TestSpacy(object):
 
         names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
         NAMES(names)->MARK("NAME_MATCH")
+        NAMES("Kazushi Sakuraba")->MARK("NAME_MATCH")
         """)
 
         print(rules)
-        assert len(rules) == 8
+        assert len(rules) == 10
 
 
 class TestStandalone(object):
@@ -587,9 +588,10 @@ class TestStandalone(object):
         rules = self.compiler("""
         !IMPORT("rita.modules.names")
 
-        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "John Jones"}
+        names = {"Roy Jones junior", "Roy Jones senior", "Juan-Claude van Damme", "Jon Jones"}
         NAMES(names)->MARK("NAME_MATCH")
+        NAMES("Kazushi Sakuraba")->MARK("NAME_MATCH")
         """)
 
         print(rules)
-        assert len(rules) == 1
+        assert len(rules) == 2

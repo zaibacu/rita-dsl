@@ -16,6 +16,7 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 [![Intro](https://img.youtube.com/vi/GScerMeWz68/0.jpg)](https://www.youtube.com/watch?v=GScerMeWz68)
 
 ## Links
+- [Website](https://rita-dsl.io/)
 - [Live Demo](https://rita-dsl.io/#demo)
 - [Simple Chat bot example](https://repl.it/talk/share/Simple-chatbot-done-with-Rita/53471)
 - [Documentation](http://rita-dsl.readthedocs.io/)

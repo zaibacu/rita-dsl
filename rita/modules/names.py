@@ -56,7 +56,6 @@ def NAMES(*args, config, op=None):
 
     names = list([" ".join(filter(remove_empty, names))
                   for names in generate_names(initial_list)])
-    print(names)
     logger.debug("Generated list of names: {}".format(names))
     new_op = ExtendedOp(op)
     new_op.case_sensitive_override = True

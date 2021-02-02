@@ -1,1 +1,0 @@
-Added `names` module which allows to generate person names variations

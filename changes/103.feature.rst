@@ -1,3 +1,0 @@
-Additional macro for `tag` module, allowing to tag specific word/list of words
-
-Implemented by: Roland M. Mueller (https://github.com/rolandmueller)

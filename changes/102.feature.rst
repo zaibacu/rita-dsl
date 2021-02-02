@@ -1,3 +1,0 @@
-ORTH module which allows you to specify case sensitive entry while rest of the rules ignores case. Used for acronyms and proper names
-
-Implemented by: Roland M. Mueller (https://github.com/rolandmueller)

@@ -27,7 +27,7 @@ Now you can compile these rules `rita -f <your-file>.rita output.jsonl`
 import spacy
 from rita.shortcuts import setup_spacy
 
-nlp = spacy.load("en")
+nlp = spacy.load("en_core_web_sm")
 setup_spacy(nlp, ...)
 ```
 
@@ -43,7 +43,7 @@ If loading from spaCy compiled rules:
 import spacy
 from spacy.pipeline import EntityRuler
 
-nlp = spacy.load("en")
+nlp = spacy.load("en_core_web_sm")
 ruler = EntityRuler(nlp, overwrite_ents=True)
 ruler.from_disk("output.jsonl")
 nlp.add_pipe(ruler)
@@ -74,7 +74,7 @@ import rita
 import spacy
 from spacy.pipeline import EntityRuler
 
-nlp = spacy.load("en")
+nlp = spacy.load("en_core_web_sm")
 ruler = EntityRuler(nlp, overwrite_ents=True)
 
 patterns = rita.compile("examples/color-car.rita")

@@ -58,7 +58,7 @@ def test_simple_standalone_compile(mocker):
 
 def test_shortcuts_spacy_inline():
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    nlp = spacy.load("en")
+    nlp = spacy.load("en_core_web_sm")
     rules = """
     {WORD("TEST")}->MARK("TEST")
     """
@@ -67,13 +67,13 @@ def test_shortcuts_spacy_inline():
 
 def test_shortcuts_spacy_file():
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    nlp = spacy.load("en")
+    nlp = spacy.load("en_core_web_sm")
     setup_spacy(nlp, rules_path="examples/color-car.rita")
 
 
 def test_shortcuts_spacy_compiled():
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    nlp = spacy.load("en")
+    nlp = spacy.load("en_core_web_sm")
     tmp = tempfile.NamedTemporaryFile(mode="w", encoding="UTF-8", suffix=".jsonl", delete=False)
     patterns = rita.compile("examples/color-car.rita")
     for pattern in patterns:
@@ -86,6 +86,6 @@ def test_shortcuts_spacy_compiled():
 
 def test_shortcuts_spacy_giving_no_rules():
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    nlp = spacy.load("en")
+    nlp = spacy.load("en_core_web_sm")
     with pytest.raises(RuntimeError):
         setup_spacy(nlp)

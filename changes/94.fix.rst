@@ -1,1 +1,0 @@
-revert #91 changes. Keep old way for word boundary

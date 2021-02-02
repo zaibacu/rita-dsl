@@ -1,3 +1,60 @@
+0.7.0 (2021-02-02)
+****************************
+
+Features
+--------
+
+- `standalone` engine now will return submatches list containing start and end for each part of match
+  #93
+- Partially covered https://github.com/zaibacu/rita-dsl/issues/70
+
+  Allow nested patterns, like:
+
+  .. code-block::
+
+      num_with_fractions = {NUM, WORD("-")?, IN_LIST(fractions)}
+      complex_number = {NUM|PATTERN(num_with_fractions)}
+
+      {PATTERN(complex_number)}->MARK("NUMBER")
+  #95
+- Submatches for rita-rust engine
+  #96
+- Regex module which allows to specify word pattern, eg. `REGEX(^a)` means word must start with letter "a"
+
+  Implemented by: Roland M. Mueller (https://github.com/rolandmueller)
+  #101
+- ORTH module which allows you to specify case sensitive entry while rest of the rules ignores case. Used for acronyms and proper names
+
+  Implemented by: Roland M. Mueller (https://github.com/rolandmueller)
+  #102
+- Additional macro for `tag` module, allowing to tag specific word/list of words
+
+  Implemented by: Roland M. Mueller (https://github.com/rolandmueller)
+  #103
+- Added `names` module which allows to generate person names variations
+  #105
+- spaCy v3 Support
+  #109
+
+Fix
+---
+
+- Optimizations for Rust Engine
+
+  - No need for passing text forward and backward, we can calculate from text[start:end]
+
+  - Grouping and sorting logic can be done in binary code
+  #88
+- Fix NUM parsing bug
+  #90
+- Switch from `(^\s)` to `\b` when doing `IN_LIST`. Should solve several corner cases
+  #91
+- Fix floating point number matching
+  #92
+- revert #91 changes. Keep old way for word boundary
+  #94
+
+
 0.6.0 (2020-08-29)
 ****************************
 

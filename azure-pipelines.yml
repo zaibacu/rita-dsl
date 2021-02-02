@@ -23,7 +23,7 @@ strategy:
       python.version: '3.9'
       tox.env: py39
     Spacy3:
-      python.version: '3.8'
+      python.version: '3.9'
       tox.env: spacy3
 
     CoverageReport:

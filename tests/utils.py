@@ -12,7 +12,7 @@ def load_rules(rules_path):
 def spacy_engine(rules, **kwargs):
     spacy = pytest.importorskip("spacy", minversion="2.1")
     patterns = rita.compile_string(rules, **kwargs)
-    nlp = spacy.load("en")
+    nlp = spacy.load("en_core_web_sm")
     ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
     print(patterns)
     ruler.add_patterns(patterns)

@@ -3,6 +3,8 @@ import re
 import pytest
 import rita
 
+from rita.shortcuts import setup_spacy
+
 
 def load_rules(rules_path):
     with open(rules_path, "r") as f:
@@ -11,12 +13,10 @@ def load_rules(rules_path):
 
 def spacy_engine(rules, **kwargs):
     spacy = pytest.importorskip("spacy", minversion="2.1")
-    patterns = rita.compile_string(rules, **kwargs)
     nlp = spacy.load("en_core_web_sm")
-    ruler = spacy.pipeline.EntityRuler(nlp, overwrite_ents=True)
+    setup_spacy(nlp, rules_string=rules, override_ents=True, **kwargs)
+    patterns = rita.compile_string(rules, **kwargs)
     print(patterns)
-    ruler.add_patterns(patterns)
-    nlp.add_pipe(ruler)
 
     def parse(text):
         doc = nlp(text)

@@ -32,7 +32,7 @@ def _spacy_v2(model, patterns=None, rules_path=None, rules_string=None, override
 
 
 def _spacy_v3(model, patterns=None, rules_path=None, rules_string=None, override_ents=True):
-    ruler = model.add_pipe("entity_ruler", config={"override_ents": override_ents})
+    ruler = model.add_pipe("entity_ruler", config={"overwrite_ents": override_ents, "validate": True})
     if not patterns:
         if rules_path:
             patterns = rita.compile(rules_path, use_engine="spacy")

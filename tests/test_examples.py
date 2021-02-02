@@ -99,13 +99,13 @@ def test_exclude_word(engine):
     # Rust engine doesn't work here, because Re2 doesn't support backtracking operator
     parser = engine(load_rules("examples/excluding-word.rita"))
 
-    t1 = "Weather is awesome"
-    t2 = "Weather is cold"
+    t1 = "weather is awesome"
+    t2 = "weather is cold"
 
     r1 = parser(t1)
     r2 = parser(t2)
 
-    assert r1[0] == ("Weather is awesome", "GOOD_WEATHER")
+    assert r1[0] == ("weather is awesome", "GOOD_WEATHER")
     assert len(r2) == 0
 
 

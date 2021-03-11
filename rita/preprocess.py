@@ -2,14 +2,15 @@ import logging
 
 from functools import reduce
 from collections.abc import Callable
+from collections.abc import Mapping
+from typing import Any
 
 from rita.utils import Node, deaccent, ExtendedOp
 from rita.config import SessionConfig
+from rita.types import Rule, Rules
 
 logger = logging.getLogger(__name__)
 
-Rule = tuple[str, str]
-Rules = list[Rule]
 Pipeline = Callable[[Rules, SessionConfig], Rules]
 
 
@@ -222,7 +223,7 @@ def dummy(rules: Rules, config: SessionConfig):
     return rules
 
 
-def rule_tuple(d):
+def rule_tuple(d: Mapping[str, Any]) -> Rule:
     return d["label"], d["data"]
 
 
@@ -268,7 +269,7 @@ def flatten_2nd_level_nested(rules: Rules, config: SessionConfig):
         yield group_label, list(gen())
 
 
-def preprocess_rules(root, config: SessionConfig):
+def preprocess_rules(root, config: SessionConfig) -> Rules:
     logger.info("Preprocessing rules")
 
     rules = [rule_tuple(doc())

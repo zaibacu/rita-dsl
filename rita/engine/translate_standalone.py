@@ -5,11 +5,23 @@ import json
 from functools import partial
 from itertools import groupby, chain
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, TYPE_CHECKING
+from collections.abc import Mapping, Callable
+
+from rita.utils import ExtendedOp
+from rita.types import Rules, Patterns
 
 logger = logging.getLogger(__name__)
 
+ParseFn = Callable[[Any, "SessionConfig", ExtendedOp], str]
 
-def apply_operator(syntax, op):
+
+if TYPE_CHECKING:
+    # We cannot simply import SessionConfig because of cyclic imports
+    from rita.config import SessionConfig
+
+
+def apply_operator(syntax, op: ExtendedOp) -> str:
     if op.empty():
         return syntax
 
@@ -21,12 +33,12 @@ def apply_operator(syntax, op):
         return syntax + str(op)
 
 
-def any_of_parse(lst, config, op):
+def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> str:
     clause = r"((^|\s)(({0})\s?))".format("|".join(sorted(lst, key=lambda x: (-len(x), x))))
     return apply_operator(clause, op)
 
 
-def regex_parse(r, config, op):
+def regex_parse(r, config: "SessionConfig", op: ExtendedOp) -> str:
     if op.local_regex_override:
         return local_regex_parse(r, config, op)
     else:
@@ -34,7 +46,7 @@ def regex_parse(r, config, op):
         return apply_operator(initial, op)
 
 
-def local_regex_parse(r, config, op):
+def local_regex_parse(r, config: "SessionConfig", op: ExtendedOp) -> str:
     if r[0] == "^" and r[-1] == "$":  # Fully strictly defined string?
         pattern = r[1:-1]
     elif r[0] == "^":  # We define start of the string
@@ -48,50 +60,50 @@ def local_regex_parse(r, config, op):
     return apply_operator(initial, op)
 
 
-def not_supported(key, *args, **kwargs):
+def not_supported(key, *args, **kwargs) -> str:
     raise RuntimeError(
         "Rule '{0}' is not supported in standalone mode"
         .format(key)
     )
 
 
-def person_parse(config, op):
+def person_parse(config: "SessionConfig", op: ExtendedOp) -> str:
     return apply_operator(r"([A-Z]\w+\s?)", op)
 
 
-def entity_parse(value, config, op):
+def entity_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
     if value == "PERSON":
         return person_parse(config, op=op)
     else:
         return not_supported(value)
 
 
-def punct_parse(_, config, op):
+def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> str:
     return apply_operator(r"([.,!;?:]\s?)", op)
 
 
-def word_parse(value, config, op):
+def word_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
     initial = r"({}\s?)".format(value)
     return apply_operator(initial, op)
 
 
-def fuzzy_parse(r, config, op):
+def fuzzy_parse(r, config: "SessionConfig", op: ExtendedOp) -> str:
     # TODO: build premutations
     return apply_operator(r"({0})[.,?;!]?".format("|".join(r)), op)
 
 
-def phrase_parse(value, config, op):
+def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
     return apply_operator(r"({}\s?)".format(value), op)
 
 
-def nested_parse(values, config, op):
+def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> str:
     from rita.macros import resolve_value
     (_, patterns) = rules_to_patterns("", [resolve_value(v, config=config)
                                            for v in values], config=config)
     return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 
-PARSERS = {
+PARSERS: Mapping[str, ParseFn] = {
     "any_of": any_of_parse,
     "value": word_parse,
     "regex": regex_parse,
@@ -105,7 +117,7 @@ PARSERS = {
 }
 
 
-def rules_to_patterns(label, data, config):
+def rules_to_patterns(label: str, data: Patterns, config: "SessionConfig"):
     logger.debug("data: {}".format(data))
 
     def gen():
@@ -122,7 +134,7 @@ def rules_to_patterns(label, data, config):
 
     return (
         label,
-        [PARSERS[t](d, op=op, config=config) for (t, d, op) in gen()],
+        [PARSERS[t](d, config, op) for (t, d, op) in gen()],
     )
 
 
@@ -208,7 +220,7 @@ class RuleExecutor(object):
             yield {"label": label, "rules": rules}
 
 
-def compile_rules(rules, config, regex_impl=re, **kwargs):
+def compile_rules(rules: Rules, config: "SessionConfig", regex_impl=re, **kwargs) -> RuleExecutor:
     logger.info("Using standalone rule implementation")
     patterns = [rules_to_patterns(*group, config=config) for group in rules]
     executor = RuleExecutor(patterns, config, regex_impl=regex_impl)

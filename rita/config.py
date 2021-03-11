@@ -2,7 +2,7 @@ import operator
 import logging
 from importlib import import_module
 from collections.abc import Callable
-from typing import Any, Type
+from typing import Any
 
 try:
     from rita.engine.translate_spacy import compile_rules as spacy_engine

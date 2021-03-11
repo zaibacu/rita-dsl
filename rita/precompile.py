@@ -2,6 +2,7 @@ import re
 import logging
 
 from functools import partial
+from typing import Match
 
 
 logger = logging.getLogger(__name__)
@@ -11,14 +12,14 @@ MAX_DEPTH = 5
 ALIAS_PATTERN = re.compile(r"@alias\s+(?P<original>(\w|[_])+)\s+(?P<alias>(\w|[_])+)")
 
 
-def handle_import(m, depth=0):
+def handle_import(m: Match, depth: int = 0) -> str:
     path = m.group("path")
     logger.debug("Importing: {}".format(path))
     with open(path, "r") as f:
         return precompile(f.read(), depth+1)
 
 
-def precompile(raw, depth=0):
+def precompile(raw: str, depth: int = 0) -> str:
     if depth > MAX_DEPTH:
         raise RuntimeError(
             "Maximum depth limit has been reached. "

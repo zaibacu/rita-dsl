@@ -1,13 +1,18 @@
 import logging
 
 from functools import reduce
+from typing import Any, Mapping, Callable, List
 
 from rita.utils import Node, deaccent, ExtendedOp
+from rita.types import RuleGroup, Rules
+from rita.config import SessionConfig
 
 logger = logging.getLogger(__name__)
 
+Pipeline = Callable[[Rules, "SessionConfig"], Rules]
 
-def handle_prefix(rules, config):
+
+def handle_prefix(rules: Rules, config: SessionConfig):
     """
     If we have a prefix and rule following it, we apply this prefix on that rule
     """
@@ -38,7 +43,7 @@ def handle_prefix(rules, config):
         yield group_label, list(gen())
 
 
-def handle_deaccent(rules, config):
+def handle_deaccent(rules: Rules, config: SessionConfig):
     """
     If we get accented word, eg: {WORD("naïve"), WORD("bayes")}
     In case of word, it should become list => {IN_LIST({"naïve", "naive"}), WORD("bayes")}
@@ -71,7 +76,7 @@ def handle_deaccent(rules, config):
         yield group_label, list(gen())
 
 
-def add_implicit_punct(rules, config):
+def add_implicit_punct(rules: Rules, config: SessionConfig):
     """
     When writing rule,
     user usually doesn't care about some punct characters between words.
@@ -89,7 +94,7 @@ def add_implicit_punct(rules, config):
             yield group_label, list(gen())[:-1]
 
 
-def add_implicit_hyphon(rules, config):
+def add_implicit_hyphon(rules: Rules, config: SessionConfig):
     """
     When writing rule,
     user usually doesn't care about hyphon characters - between words.
@@ -106,7 +111,7 @@ def add_implicit_hyphon(rules, config):
             yield group_label, list(gen())[:-1]
 
 
-def handle_multi_word(rules, config):
+def handle_multi_word(rules: Rules, config: SessionConfig):
     """
     spaCy splits everything in tokens.
     Words with dash ends up in different tokens.
@@ -128,7 +133,7 @@ def handle_multi_word(rules, config):
         yield group_label, list(gen())
 
 
-def is_complex(arg):
+def is_complex(arg: str) -> bool:
     # if we want to use `-` as a word
     if arg.strip() == "-":
         return False
@@ -138,7 +143,7 @@ def is_complex(arg):
                 for s in splitters])
 
 
-def has_complex(args):
+def has_complex(args: List[str]) -> bool:
     """
     Tells if any of arguments will be impacted by tokenizer
     """
@@ -146,7 +151,7 @@ def has_complex(args):
                 for a in args])
 
 
-def branch_pattern(pattern, config):
+def branch_pattern(pattern, config: SessionConfig):
     """
     Creates multiple lists for each possible permutation
     """
@@ -185,7 +190,7 @@ def branch_pattern(pattern, config):
         yield p
 
 
-def handle_rule_branching(rules, config):
+def handle_rule_branching(rules: Rules, config: SessionConfig):
     """
     If we have an OR statement, eg. `WORD(w1)|WORD(w2)`,
     Generic approach is to clone rules and use w1 in one, w2 in other.
@@ -208,7 +213,7 @@ def handle_rule_branching(rules, config):
             yield group_label, pattern
 
 
-def dummy(rules, config):
+def dummy(rules: Rules, config: SessionConfig):
     """
     Placeholder which does nothing
     """
@@ -216,11 +221,11 @@ def dummy(rules, config):
     return rules
 
 
-def rule_tuple(d):
+def rule_tuple(d: Mapping[str, Any]) -> RuleGroup:
     return d["label"], d["data"]
 
 
-def expand_patterns(rules, config):
+def expand_patterns(rules: Rules, config: SessionConfig):
     """
     We can have situations where inside pattern we have another pattern (via Variable).
     We want to expand this inner pattern and prepend to outer pattern
@@ -242,7 +247,7 @@ def expand_patterns(rules, config):
         yield group_label, list(gen())
 
 
-def flatten_2nd_level_nested(rules, config):
+def flatten_2nd_level_nested(rules: Rules, config: SessionConfig):
     """
     1st level of nested: use PATTERN(...) inside of your rule
     2nd level of nested: use PATTERN(...) which has PATTERN(...) and so on (recursively)
@@ -262,7 +267,7 @@ def flatten_2nd_level_nested(rules, config):
         yield group_label, list(gen())
 
 
-def preprocess_rules(root, config):
+def preprocess_rules(root, config: SessionConfig) -> Rules:
     logger.info("Preprocessing rules")
 
     rules = [rule_tuple(doc())

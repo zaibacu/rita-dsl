@@ -1,7 +1,7 @@
 import os
 
 import logging
-import types
+from types import GeneratorType
 
 from rita.config import with_config
 from rita.preprocess import preprocess_rules
@@ -11,7 +11,7 @@ from rita.utils import timer, Timer
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 7, 0, os.getenv("VERSION_PATCH"))
+__version__ = (0, 7, 1, os.getenv("VERSION_PATCH"))
 
 
 def get_version():
@@ -46,7 +46,7 @@ def compile_string(raw, config, use_engine=None, **kwargs):
     with timer("Compiling"):
         result = compile_rules(rules, config, **kwargs)
 
-    if isinstance(result, types.GeneratorType):
+    if isinstance(result, GeneratorType):
         patterns = list(result)
         t.stop(debug=False)
         return patterns

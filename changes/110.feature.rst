@@ -1,0 +1,1 @@
+Type Hints for core to improve robustness. Extra CI step to check for errors is added as well

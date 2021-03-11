@@ -13,12 +13,11 @@ from rita.engine.translate_standalone import compile_rules as standalone_engine
 from rita.engine.translate_rust import compile_rules as rust_engine
 
 from rita.utils import SingletonMixin
-from rita.types import opts
+from rita.types import opts, Rules
 
 
 logger = logging.getLogger(__name__)
 
-Rules = list[str]
 CompileFN = Callable[[Rules, "Config", opts], Any]
 
 

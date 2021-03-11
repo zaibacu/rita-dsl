@@ -1,7 +1,7 @@
-from typing import Any, Mapping
+from typing import Any, Mapping, Tuple, List, AnyStr
 
 opts = Mapping[Any, Any]
-RuleData = tuple[str, list[Any], str]
-Patterns = list[RuleData]
-RuleGroup = tuple[str, Patterns]
-Rules = list[RuleGroup]
+RuleData = Tuple[AnyStr, List[Any], AnyStr]
+Patterns = List[RuleData]
+RuleGroup = Tuple[AnyStr, Patterns]
+Rules = List[RuleGroup]

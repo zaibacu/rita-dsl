@@ -27,14 +27,18 @@ strategy:
       tox.env: spacy3
 
     CoverageReport:
-      python.version: '3.8'
+      python.version: '3.9'
       tox.env: codecoverage-report
     ChangeLog:
-      python.version: '3.8'
+      python.version: '3.9'
       tox.env: changelog
     Lint:
-      python.version: '3.8'
+      python.version: '3.9'
       tox.env: lint
+    Mypy:
+      python.version: '3.9'
+      tox.env: mypy
+
 
 steps:
 - task: UsePythonVersion@0

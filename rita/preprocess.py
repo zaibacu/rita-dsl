@@ -1,7 +1,7 @@
 import logging
 
 from functools import reduce
-from typing import Any, Mapping, Callable, List, AnyStr
+from typing import Any, Mapping, Callable, List
 
 from rita.utils import Node, deaccent, ExtendedOp
 from rita.types import RuleGroup, Rules

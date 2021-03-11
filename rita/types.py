@@ -3,5 +3,6 @@ from typing import Any
 
 opts = Mapping[Any, Any]
 RuleData = tuple[str, list[Any], str]
-Rule = tuple[str, RuleData]
-Rules = list[Rule]
+Patterns = list[RuleData]
+RuleGroup = tuple[str, Patterns]
+Rules = list[RuleGroup]

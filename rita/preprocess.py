@@ -7,7 +7,7 @@ from typing import Any
 
 from rita.utils import Node, deaccent, ExtendedOp
 from rita.config import SessionConfig
-from rita.types import Rule, Rules
+from rita.types import RuleGroup, Rules
 
 logger = logging.getLogger(__name__)
 
@@ -223,7 +223,7 @@ def dummy(rules: Rules, config: SessionConfig):
     return rules
 
 
-def rule_tuple(d: Mapping[str, Any]) -> Rule:
+def rule_tuple(d: Mapping[str, Any]) -> RuleGroup:
     return d["label"], d["data"]
 
 

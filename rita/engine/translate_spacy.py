@@ -1,8 +1,7 @@
 import logging
 
 from functools import partial
-from collections.abc import Mapping, Callable, Generator
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Mapping, Callable, Generator
 
 from rita.utils import ExtendedOp
 from rita.types import Rules, Patterns

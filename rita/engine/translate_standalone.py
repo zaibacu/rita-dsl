@@ -5,8 +5,7 @@ import json
 from functools import partial
 from itertools import groupby, chain
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, TYPE_CHECKING
-from collections.abc import Mapping, Callable
+from typing import Any, TYPE_CHECKING, Mapping, Callable
 
 from rita.utils import ExtendedOp
 from rita.types import Rules, Patterns

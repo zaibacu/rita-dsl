@@ -1,5 +1,4 @@
-from collections.abc import Mapping
-from typing import Any
+from typing import Any, Mapping
 
 opts = Mapping[Any, Any]
 RuleData = tuple[str, list[Any], str]

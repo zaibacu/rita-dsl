@@ -1,8 +1,7 @@
 import operator
 import logging
 from importlib import import_module
-from collections.abc import Callable
-from typing import Any
+from typing import Any, Callable
 
 try:
     from rita.engine.translate_spacy import compile_rules as spacy_engine

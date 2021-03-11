@@ -151,6 +151,9 @@ class ExtendedOp(object):
         return str(self)
 
     def __eq__(self, other):
+        if type(other) == str:
+            return self.op == other
+
         return (
             self.op == other.op and
             self.case_sensitive_override == other.case_sensitive_override and

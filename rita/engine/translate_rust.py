@@ -4,10 +4,14 @@ import logging
 from platform import system
 
 from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
+from typing import Any
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
 
 logger = logging.getLogger(__name__)
+
+field = tuple[str, Any]
+fields = list[field]
 
 
 class NamedRangeResult(Structure):
@@ -34,7 +38,7 @@ class Result(Structure):
 
 
 class Context(Structure):
-    _fields_ = []
+    _fields_: fields = []
 
 
 def load_lib():

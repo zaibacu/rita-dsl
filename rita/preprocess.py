@@ -6,12 +6,12 @@ from collections.abc import Mapping
 from typing import Any
 
 from rita.utils import Node, deaccent, ExtendedOp
-from rita.config import SessionConfig
 from rita.types import RuleGroup, Rules
+from rita.config import SessionConfig
 
 logger = logging.getLogger(__name__)
 
-Pipeline = Callable[[Rules, SessionConfig], Rules]
+Pipeline = Callable[[Rules, "SessionConfig"], Rules]
 
 
 def handle_prefix(rules: Rules, config: SessionConfig):

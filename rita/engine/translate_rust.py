@@ -4,14 +4,19 @@ import logging
 from platform import system
 
 from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
+from rita.types import Rules
 
 logger = logging.getLogger(__name__)
 
 field = tuple[str, Any]
 fields = list[field]
+
+if TYPE_CHECKING:
+    # We cannot simply import SessionConfig because of cyclic imports
+    from rita.config import SessionConfig
 
 
 class NamedRangeResult(Structure):
@@ -66,7 +71,7 @@ def load_lib():
 
 
 class RustRuleExecutor(RuleExecutor):
-    def __init__(self, patterns, config):
+    def __init__(self, patterns, config: "SessionConfig"):
         self.config = config
         self.context = None
 
@@ -135,7 +140,7 @@ class RustRuleExecutor(RuleExecutor):
             return RustRuleExecutor(patterns, config)
 
 
-def compile_rules(rules, config, **kwargs):
+def compile_rules(rules: Rules, config: "SessionConfig", **kwargs) -> RustRuleExecutor:
     logger.info("Using rita-rust rule implementation")
     patterns = [rules_to_patterns(*group, config=config) for group in rules]
     executor = RustRuleExecutor(patterns, config)

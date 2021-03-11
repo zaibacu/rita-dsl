@@ -2,19 +2,22 @@ import logging
 
 from functools import partial
 from collections.abc import Mapping, Callable, Generator
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from rita.utils import ExtendedOp
 from rita.types import Rules, Patterns
-from rita.config import SessionConfig
 
 logger = logging.getLogger(__name__)
 
 SpacyPattern = Generator[Mapping[str, Any], None, None]
-ParseFn = Callable[[Any, SessionConfig, ExtendedOp], SpacyPattern]
+ParseFn = Callable[[Any, "SessionConfig", ExtendedOp], SpacyPattern]
+
+if TYPE_CHECKING:
+    # We cannot simply import SessionConfig because of cyclic imports
+    from rita.config import SessionConfig
 
 
-def any_of_parse(lst, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     if op.ignore_case(config):
         normalized = sorted([item.lower()
                              for item in lst])
@@ -27,7 +30,7 @@ def any_of_parse(lst, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
     yield base
 
 
-def regex_parse(r, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def regex_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     if op.ignore_case(config):
         d = {"LOWER": {"REGEX": r.lower()}}
     else:
@@ -38,7 +41,7 @@ def regex_parse(r, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
     yield d
 
 
-def fuzzy_parse(r, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def fuzzy_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     # TODO: build premutations
     d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
     if not op.empty():
@@ -46,7 +49,7 @@ def fuzzy_parse(r, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
     yield d
 
 
-def generic_parse(tag, value, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def generic_parse(tag, value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = {}
     if tag == "ORTH" and op.ignore_case(config):
         d["LOWER"] = value.lower()
@@ -58,7 +61,7 @@ def generic_parse(tag, value, config: SessionConfig, op: ExtendedOp) -> SpacyPat
     yield d
 
 
-def punct_parse(_, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = dict()
     d["IS_PUNCT"] = True
     if not op.empty():
@@ -66,7 +69,7 @@ def punct_parse(_, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
     yield d
 
 
-def phrase_parse(value, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     """
     TODO: Does not support operators
     """
@@ -83,7 +86,7 @@ def phrase_parse(value, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
         yield next(generic_parse("ORTH", value, config=config, op=ExtendedOp()))
 
 
-def tag_parse(values, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def tag_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     """
     For generating POS/TAG patterns based on a Regex
     e.g. TAG("^NN|^JJ") for adjectives or nouns
@@ -108,14 +111,14 @@ def tag_parse(values, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
     yield d
 
 
-def nested_parse(values, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     from rita.macros import resolve_value
     results = rules_to_patterns("", [resolve_value(v, config=config)
                                      for v in values], config=config)
     return results["pattern"]
 
 
-def orth_parse(value, config: SessionConfig, op: ExtendedOp) -> SpacyPattern:
+def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = {}
     d["ORTH"] = value
     if not op.empty():
@@ -139,7 +142,7 @@ PARSERS: Mapping[str, ParseFn] = {
 }
 
 
-def rules_to_patterns(label: str, data: Patterns, config: SessionConfig):
+def rules_to_patterns(label: str, data: Patterns, config: "SessionConfig"):
     logger.debug(data)
     return {
         "label": label,
@@ -149,7 +152,7 @@ def rules_to_patterns(label: str, data: Patterns, config: SessionConfig):
     }
 
 
-def compile_rules(rules: Rules, config: SessionConfig, **kwargs):
+def compile_rules(rules: Rules, config: "SessionConfig", **kwargs):
     logger.info("Using spaCy rules implementation")
     return [rules_to_patterns(label, patterns, config=config)
             for (label, patterns) in rules]

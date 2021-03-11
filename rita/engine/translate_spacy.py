@@ -1,14 +1,14 @@
 import logging
 
 from functools import partial
-from typing import Any, TYPE_CHECKING, Mapping, Callable, Generator
+from typing import Any, TYPE_CHECKING, Mapping, Callable, Generator, AnyStr
 
 from rita.utils import ExtendedOp
 from rita.types import Rules, Patterns
 
 logger = logging.getLogger(__name__)
 
-SpacyPattern = Generator[Mapping[str, Any], None, None]
+SpacyPattern = Generator[Mapping[AnyStr, Any], None, None]
 ParseFn = Callable[[Any, "SessionConfig", ExtendedOp], SpacyPattern]
 
 if TYPE_CHECKING:

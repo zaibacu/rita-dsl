@@ -4,15 +4,15 @@ import logging
 from platform import system
 
 from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Tuple, List, AnyStr
 
 from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
 from rita.types import Rules
 
 logger = logging.getLogger(__name__)
 
-field = tuple[str, Any]
-fields = list[field]
+field = Tuple[AnyStr, Any]
+fields = List[field]
 
 if TYPE_CHECKING:
     # We cannot simply import SessionConfig because of cyclic imports

@@ -1,7 +1,7 @@
 import logging
 
 from functools import reduce
-from typing import Any, Mapping, Callable
+from typing import Any, Mapping, Callable, List, AnyStr
 
 from rita.utils import Node, deaccent, ExtendedOp
 from rita.types import RuleGroup, Rules
@@ -133,7 +133,7 @@ def handle_multi_word(rules: Rules, config: SessionConfig):
         yield group_label, list(gen())
 
 
-def is_complex(arg: str) -> bool:
+def is_complex(arg: AnyStr) -> bool:
     # if we want to use `-` as a word
     if arg.strip() == "-":
         return False
@@ -143,7 +143,7 @@ def is_complex(arg: str) -> bool:
                 for s in splitters])
 
 
-def has_complex(args: list[str]) -> bool:
+def has_complex(args: List[AnyStr]) -> bool:
     """
     Tells if any of arguments will be impacted by tokenizer
     """

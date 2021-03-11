@@ -127,14 +127,17 @@ class ExtendedOp(object):
     local_regex_override = False
 
     def __init__(self, op=None):
-        self.op = op
+        if isinstance(op, ExtendedOp):
+            self.op = op.op
+        else:
+            self.op = op
 
     @property
     def value(self):
         return self.op
 
     def empty(self):
-        return self.op is None
+        return self.op is None or self.op.strip() == ""
 
     def ignore_case(self, config):
         if self.case_sensitive_override:
@@ -145,7 +148,7 @@ class ExtendedOp(object):
     def __str__(self):
         if self.op:
             return self.op
-        return "Empty Op"
+        return ""
 
     def __repr__(self):
         return str(self)

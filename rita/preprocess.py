@@ -133,7 +133,7 @@ def handle_multi_word(rules: Rules, config: SessionConfig):
         yield group_label, list(gen())
 
 
-def is_complex(arg: AnyStr) -> bool:
+def is_complex(arg: str) -> bool:
     # if we want to use `-` as a word
     if arg.strip() == "-":
         return False
@@ -143,7 +143,7 @@ def is_complex(arg: AnyStr) -> bool:
                 for s in splitters])
 
 
-def has_complex(args: List[AnyStr]) -> bool:
+def has_complex(args: List[str]) -> bool:
     """
     Tells if any of arguments will be impacted by tokenizer
     """

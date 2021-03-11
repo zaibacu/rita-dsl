@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from unicodedata import normalize, category
 from itertools import cycle, chain
 from time import time
+from json import JSONEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -178,3 +179,10 @@ def timer(title):
     t = Timer(title)
     yield
     t.stop()
+
+
+class RitaJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ExtendedOp):
+            return o.op
+        return o.__dict__

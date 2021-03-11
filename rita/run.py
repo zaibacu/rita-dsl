@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    from rita.utils import RitaJSONEncoder
     parser = argparse.ArgumentParser(
         description="Compile rita -> spaCy patterns"
     )
@@ -33,4 +34,4 @@ def main():
 
     with open(args.out, "w") as f:
         for pattern in patterns:
-            f.write(json.dumps(pattern) + "\n")
+            f.write(json.dumps(pattern, cls=RitaJSONEncoder) + "\n")

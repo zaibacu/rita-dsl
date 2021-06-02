@@ -12,6 +12,7 @@ nav:
   - Extending: extend.md
   - Config: config.md
   - Advanced: advanced.md
+  - Integrating into IDEs: integration.md
 theme: readthedocs
 markdown_extensions:
   - toc:

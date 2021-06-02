@@ -1,0 +1,86 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/syntax.html
+name: Rita
+file_extensions:
+  - rita
+scope: source.rita
+contexts:
+  variables:
+    - match: \b[a-z_]+\b
+      scope: variable.parameter.rita
+  keywords:
+    - match: \b[A-Z_]+\b
+      scope: keyword.control.rita
+
+    - match: \(
+      push: args
+
+    - match: \)
+      scope: invalid.illegal.stray-bracket-end
+
+  main:
+    - include: variables
+    - match: '#'
+      scope: punctuation.definition.comment.rita
+      push: line_comment
+
+    - match: "{"
+      push: pattern
+
+    - match: "}"
+      scope: invalid.illegal.stray-bracket-end
+
+    - match: ->
+      push: mark
+
+    - match: =
+      push: assign_variable
+
+  string:
+    - meta_scope: string.quoted.double.rita
+    - match: \\.
+      scope: constant.character.escape.rita
+    - match: '"'
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.rita
+    - match: $
+      pop: true
+
+  args:
+    - include: variables
+    - match: '"'
+      push: string
+    - match: ','
+      scope: punctuation.separator.comma.rita
+    - match: \)
+      pop: true
+
+  pattern:
+    - include: keywords
+    - match: "}"
+      pop: true
+
+  assign_variable:
+    - match: '"'
+      push: string
+    - match: ','
+      scope: punctuation.separator.comma.rita
+    - match: "{"
+    - match: "}"
+      pop: true
+
+  mark:
+    - match: \bMARK\b
+      scope: keyword.control.rita
+
+    - match: '"'
+      push: string
+
+    - match: \(
+
+    - match: \)
+      pop: true
+

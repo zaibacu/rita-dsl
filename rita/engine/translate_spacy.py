@@ -68,6 +68,13 @@ def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     yield d
 
 
+def any_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
+    d = dict()
+    if not op.empty():
+        d["OP"] = op.value
+    yield d
+
+
 def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     """
     TODO: Does not support operators
@@ -127,6 +134,7 @@ def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 
 PARSERS: Mapping[str, ParseFn] = {
     "any_of": any_of_parse,
+    "any": any_parse,
     "value": partial(generic_parse, "ORTH"),
     "regex": regex_parse,
     "entity": partial(generic_parse, "ENT_TYPE"),

@@ -25,7 +25,7 @@ def resolve_value(obj, config):
 
 
 def ANY(config, op=None):
-    return "regex", r".*", ExtendedOp(op)
+    return "any", None, ExtendedOp(op)
 
 
 def PUNCT(config, op=None):

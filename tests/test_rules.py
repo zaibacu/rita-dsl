@@ -249,7 +249,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "NOT_VALID",
-            "pattern": [{"LOWER": {"REGEX": ".*"}}]
+            "pattern": [{}]
         }
 
     def test_multiple_optionals(self):
@@ -368,6 +368,14 @@ class TestSpacy(object):
 
         print(rules)
         assert len(rules) == 10
+
+    def test_any_tag(self):
+        rules = self.compiler("""
+        ANY -> MARK("ANYTHING_GOES_HERE")
+        """)
+        print(rules)
+        assert len(rules) == 1
+        assert rules == [{"label": "ANYTHING_GOES_HERE", "pattern": [{}]}]
 
 
 class TestStandalone(object):

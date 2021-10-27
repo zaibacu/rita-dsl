@@ -102,8 +102,13 @@ def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> str:
     return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 
+def any_parse(_, config: "SessionConfig", op: ExtendedOp) -> str:
+    return regex_parse(r".*", config, op)
+
+
 PARSERS: Mapping[str, ParseFn] = {
     "any_of": any_of_parse,
+    "any": any_parse,
     "value": word_parse,
     "regex": regex_parse,
     "entity": entity_parse,

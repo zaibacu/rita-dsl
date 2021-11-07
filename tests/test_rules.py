@@ -377,13 +377,21 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules == [{"label": "ANYTHING_GOES_HERE", "pattern": [{}]}]
 
-    def test_entity_tag(self):
+    def test_entity_tag_default(self):
         rules = self.compiler("""
         ENTITY("PERSON")->MARK("PERSON_FOUND")
         """)
         print(rules)
         assert len(rules) == 1
         assert rules == [{"label": "PERSON_FOUND", "pattern": [{"ENT_TYPE": "PERSON", "OP": "+"}]}]
+
+    def test_entity_tag_override(self):
+        rules = self.compiler("""
+        {ENTITY("PERSON")*}->MARK("PERSON_FOUND")
+        """)
+        print(rules)
+        assert len(rules) == 1
+        assert rules == [{"label": "PERSON_FOUND", "pattern": [{"ENT_TYPE": "PERSON", "OP": "*"}]}]
 
 
 class TestStandalone(object):

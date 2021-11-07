@@ -383,7 +383,7 @@ class TestSpacy(object):
         """)
         print(rules)
         assert len(rules) == 1
-        assert rules == [{"label": "PERSON_FOUND", "pattern": [{"ENT_TYPE": "PERSON"}]}]
+        assert rules == [{"label": "PERSON_FOUND", "pattern": [{"ENT_TYPE": "PERSON", "OP": "+"}]}]
 
 
 class TestStandalone(object):

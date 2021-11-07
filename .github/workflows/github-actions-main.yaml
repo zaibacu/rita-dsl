@@ -1,4 +1,5 @@
-name: Tox
+name: Testing
+on:
   push:
     branches:
       - "master"

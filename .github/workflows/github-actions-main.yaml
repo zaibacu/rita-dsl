@@ -15,4 +15,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - run: pip install tox
-      - run: tox
+      - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox

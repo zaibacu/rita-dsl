@@ -1,0 +1,1 @@
+Add "+" operator by default when building spaCy `ENTITY(...)` to make it easier to read and understand.

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rita-dsl"
-version = "0.7.2"
+version = "0.7.3"
 description = "DSL for building language rules"
 authors = [
     "Šarūnas Navickas <sarunas@navickas.info>"

@@ -11,7 +11,7 @@ from rita.utils import timer, Timer
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 7, 2, os.getenv("VERSION_PATCH"))
+__version__ = (0, 7, 3, os.getenv("VERSION_PATCH"))
 
 
 def get_version():

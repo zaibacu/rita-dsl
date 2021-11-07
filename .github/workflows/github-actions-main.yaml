@@ -1,0 +1,7 @@
+name: Tox
+on: [push]
+jobs:
+  Run Tox
+  runs-on: ubuntu-latest
+  steps:
+    run: pip install tox

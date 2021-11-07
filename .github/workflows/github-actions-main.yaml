@@ -16,7 +16,6 @@ jobs:
           architecture: x64
       - run: pip install tox
       - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e py39
-      - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e spacy3
 
   CheckCode:
     runs-on: ubuntu-latest

@@ -1,5 +1,7 @@
 name: Tox
-on: [push]
+  push:
+    branches:
+      - "master"
 jobs:
   Testing:
     runs-on: ubuntu-latest

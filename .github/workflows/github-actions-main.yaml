@@ -1,4 +1,5 @@
 name: Tox
+on:
   push:
     branches:
       - "master"

@@ -60,6 +60,13 @@ def generic_parse(tag, value, config: "SessionConfig", op: ExtendedOp) -> SpacyP
     yield d
 
 
+def entity_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
+    tag = "ENT_TYPE"
+    if op.empty():
+        op.op = "+"
+    return generic_parse(tag, value, config, op)
+
+
 def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = dict()
     d["IS_PUNCT"] = True
@@ -137,7 +144,7 @@ PARSERS: Mapping[str, ParseFn] = {
     "any": any_parse,
     "value": partial(generic_parse, "ORTH"),
     "regex": regex_parse,
-    "entity": partial(generic_parse, "ENT_TYPE"),
+    "entity": entity_parse,
     "lemma": partial(generic_parse, "LEMMA"),
     "pos": partial(generic_parse, "POS"),
     "punct": punct_parse,

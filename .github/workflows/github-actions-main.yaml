@@ -17,6 +17,8 @@ jobs:
       - run: pip install tox
       - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e py39
   build:
+    name: spaCy 3
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2

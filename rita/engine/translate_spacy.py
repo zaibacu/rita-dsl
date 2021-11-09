@@ -20,9 +20,9 @@ def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     if op.ignore_case(config):
         normalized = sorted([item.lower()
                              for item in lst])
-        base = {"LOWER": {"REGEX": r"^({0})$".format("|".join(normalized))}}
+        base = {"LOWER": {"IN": normalized}}
     else:
-        base = {"TEXT": {"REGEX": r"^({0})$".format("|".join(sorted(lst)))}}
+        base = {"LOWER": {"IN": sorted(lst)}}
 
     if not op.empty():
         base["OP"] = op.value

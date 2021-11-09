@@ -1,0 +1,12 @@
+Use "IN" operator when defining ARRAYS in spaCy
+
+Also, from now on, we can define arrays directly inside macro:
+```
+IN_LIST("one", "two", "three")
+```
+
+Which is equals to:
+```
+numbers = {"one", "two", "three"}
+IN_LIST(numbers)
+```

@@ -59,7 +59,7 @@ class TestSpacy(object):
         print(rules)
         assert len(rules) == 1
         assert rules[0] == {
-            "pattern": [{"LOWER": {"REGEX": "^(test1|test2)$"}}],
+            "pattern": [{"LOWER": {"IN": ["test1", "test2"]}}],
             "label": "MULTI_LABEL"
         }
 
@@ -119,7 +119,7 @@ class TestSpacy(object):
         ''')
         print(rules)
         assert len(rules) == 4
-        list_items = {"LOWER": {"REGEX": "^(one|three|two)$"}}
+        list_items = {"LOWER": {"IN": ["one", "three", "two"]}}
         assert rules[0] == {
             "pattern": [{"LOWER": "test1"}, self.punct, list_items, self.punct, {"LOWER": "test3"}],
             "label": "MULTI_SPLIT_LABEL"
@@ -144,7 +144,7 @@ class TestSpacy(object):
         assert len(rules) == 2
         assert rules[0] == {
             "label": "SPLIT_LIST",
-            "pattern": [{"LOWER": {"REGEX": "^(test1|test2|test4)$"}}]
+            "pattern": [{"LOWER": {"IN": ["test1", "test2", "test4"]}}]
         }
         assert rules[1] == {
             "label": "SPLIT_LIST",
@@ -160,7 +160,7 @@ class TestSpacy(object):
         assert len(rules) == 3
         assert rules[0] == {
             "label": "SPLIT_LIST",
-            "pattern": [{"LOWER": {"REGEX": "^(test1|test2|test4)$"}}]
+            "pattern": [{"LOWER": {"IN": ["test1", "test2", "test4"]}}]
         }
         assert rules[1] == {
             "label": "SPLIT_LIST",
@@ -203,7 +203,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "TWO_WORDS",
-            "pattern": [{"LOWER": {"REGEX": "^(sarunas|šarūnas)$"}}]
+            "pattern": [{"LOWER": {"IN": ["sarunas", "šarūnas"]}}]
         }
 
     def test_list_with_accent(self):
@@ -215,7 +215,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "EXTENDED_LIST",
-            "pattern": [{"LOWER": {"REGEX": "^(jonas|jurgis|sarunas|šarūnas)$"}}]
+            "pattern": [{"LOWER": {"IN": ["jonas", "jurgis", "sarunas", "šarūnas"]}}]
         }
 
     def test_prefix_on_word(self):
@@ -238,7 +238,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "META_LIST",
-            "pattern": [{"LOWER": {"REGEX": "^(metamathematics|metaphysics)$"}}]
+            "pattern": [{"LOWER": {"IN": ["metamathematics", "metaphysics"]}}]
         }
 
     def test_prefix_on_unknown_type(self):
@@ -284,7 +284,7 @@ class TestSpacy(object):
         assert len(rules) == 1
         assert rules[0] == {
             "label": "OPTIONAL_LIST",
-            "pattern": [{"LOWER": {"REGEX": "^(one|two)$"}, "OP": "?"}]
+            "pattern": [{"LOWER": {"IN": ["one", "two"]}, "OP": "?"}]
         }
 
     def test_tag_module(self):

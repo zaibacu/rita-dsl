@@ -244,3 +244,49 @@ def test_pattern_with_escaped_characters(config):
     rules = results[1]()
 
     assert {"label": "TEST", "data": [("any_of", ["\"", "*", "-"], ExtendedOp())]} == rules
+
+
+def test_parser_array_as_argument(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        '''
+        special = { '"', "*", "-" }
+        POS(special)->MARK("TEST")
+        '''
+    )
+
+    assert len(results) > 0
+    rules = results[1]()
+    assert {"label": "TEST", "data": [("pos", ["\"", "*", "-"], ExtendedOp())]} == rules
+
+
+def test_parser_inline_array_as_argument(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        '''
+        POS('"', "*", "-")->MARK("TEST")
+        '''
+    )
+
+    assert len(results) > 0
+    rules = results[0]()
+    assert {"label": "TEST", "data": [("pos", ["\"", "*", "-"], ExtendedOp())]} == rules
+
+
+def test_parser_inline_array_as_inlist_argument(config):
+    p = RitaParser(config)
+    p.build(debug=True)
+
+    results = p.parse(
+        '''
+        IN_LIST('one', "two", "three")->MARK("TEST")
+        '''
+    )
+
+    assert len(results) > 0
+    rules = results[0]()
+    assert {"label": "TEST", "data": [("any_of", ["one", "two", "three"], ExtendedOp())]} == rules

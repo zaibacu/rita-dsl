@@ -87,16 +87,22 @@ def NUM(*args, config, op=None):
         return "regex", r"((\d+[\.,]\d+)|(\d+))", ExtendedOp(op)
 
 
-def POS(name, config, op=None):
-    return "pos", resolve_value(name, config=config), ExtendedOp(op)
+def POS(*args, config, op=None):
+    if len(args) == 1:
+        return "pos", resolve_value(args[0], config=config), ExtendedOp(op)
+    else:
+        return "pos", [resolve_value(arg, config=config) for arg in args], ExtendedOp(op)
 
 
 def LEMMA(name, config, op=None):
     return "lemma", resolve_value(name, config=config), ExtendedOp(op)
 
 
-def ENTITY(name, config, op=None):
-    return "entity", resolve_value(name, config=config), ExtendedOp(op)
+def ENTITY(*args, config, op=None):
+    if len(args) == 1:
+        return "entity", resolve_value(args[0], config=config), ExtendedOp(op)
+    else:
+        return "entity", [resolve_value(arg, config=config) for arg in args], ExtendedOp(op)
 
 
 def PREFIX(name, config, op=None):

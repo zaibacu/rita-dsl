@@ -50,6 +50,13 @@ CarModels = LOAD("path/models.txt")
 IN_LIST(CarModels) # Check if token is inside of list of car models we provided
 ```
 
+If using directly inside macro, array can be writen with simple commas
+
+```
+IN_LIST("audi", "toyota", "bmw", "honda", "nissan", "ford")
+```
+
+
 For our declarations to make any sense, we need to build an expression. More on that in next topic.
 
 ## Expressions

@@ -132,13 +132,20 @@ class RitaParser(object):
         p[0] = partial(fn, *p[3])
 
     def p_macro_from_array(self, p):
-        " MACRO : KEYWORD ARRAY "
+        """
+        MACRO : KEYWORD ARRAY
+              | KEYWORD ARG_ARRAY
+        """
         logger.debug("Parsing macro: {0}, args: {1}".format(p[1], p[2]))
         fn = load_macro(p[1], config=self.config)
         p[0] = partial(fn, *p[2])
 
     def p_array(self, p):
         " ARRAY : LBRACKET ARGS RBRACKET "
+        p[0] = p[2]
+
+    def p_arg_array(self, p):
+        " ARG_ARRAY : LPAREN ARGS RPAREN "
         p[0] = p[2]
 
     def p_variable(self, p):

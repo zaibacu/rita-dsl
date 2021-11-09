@@ -534,3 +534,41 @@ def test_invalid_entity(engine):
         engine("""
         ENTITY("ORG")->MARK("ORG_MATCH")
         """)
+
+
+@pytest.mark.parametrize('engine', [spacy_engine])
+def test_multiple_pos(engine):
+    parser = engine("""
+    {POS("VERB", "NOUN")}->MARK("POS_MATCH")
+    """)
+
+    text = """
+    Here we have a verb: doing and noun: stuff
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "POS_MATCH"])
+
+    print(results)
+    assert len(results) == 5
+    assert {"noun", "have", "verb", "doing", "stuff"} == results
+
+
+@pytest.mark.parametrize('engine', [spacy_engine])
+def test_multiple_entities(engine):
+    parser = engine("""
+    {ENTITY("PERSON", "ORG")}->MARK("ENTITY_MATCH")
+    """)
+
+    text = """
+    John has been working at AT&T for the past year
+    """
+
+    results = set([text
+                   for text, label in parser(text)
+                   if label == "ENTITY_MATCH"])
+
+    print(results)
+    assert len(results) == 2
+    assert {"AT&T", "John"} == results

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rita-dsl"
-version = "0.7.3"
+version = "0.7.4"
 description = "DSL for building language rules"
 authors = [
     "Šarūnas Navickas <sarunas@navickas.info>"
@@ -22,6 +22,7 @@ classifiers = [
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
             "Programming Language :: Python :: Implementation :: CPython",
             "Programming Language :: Python :: Implementation :: PyPy",
 ]

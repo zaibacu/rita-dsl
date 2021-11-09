@@ -50,10 +50,10 @@ def fuzzy_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 
 def generic_parse(tag, value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = {}
-    if tag == "ORTH" and op.ignore_case(config):
-        d["LOWER"] = value.lower()
-    else:
-        d[tag] = value
+    if isinstance(value, list) and len(value) > 1:
+        value = {"IN": value}
+
+    d[tag] = value
 
     if not op.empty():
         d["OP"] = op.value
@@ -90,13 +90,13 @@ def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern
                      if s in value), None)
     if splitter:
         buff = value.split(splitter)
-        yield next(generic_parse("ORTH", buff[0], config=config, op=ExtendedOp()))
+        yield next(orth_parse(buff[0], config=config, op=ExtendedOp()))
         for b in buff[1:]:
             if splitter != " ":
-                yield next(generic_parse("ORTH", splitter, config=config, op=ExtendedOp()))
-            yield next(generic_parse("ORTH", b, config=config, op=ExtendedOp()))
+                yield next(orth_parse(splitter, config=config, op=ExtendedOp()))
+            yield next(orth_parse(b, config=config, op=ExtendedOp()))
     else:
-        yield next(generic_parse("ORTH", value, config=config, op=ExtendedOp()))
+        yield next(orth_parse(value, config=config, op=ExtendedOp()))
 
 
 def tag_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
@@ -133,7 +133,12 @@ def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPatter
 
 def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = {}
-    d["ORTH"] = value
+    print(op.case_sensitive_override)
+    if op.ignore_case(config):
+        d["LOWER"] = value.lower()
+    else:
+        d["ORTH"] = value
+
     if not op.empty():
         d["OP"] = op.value
     yield d
@@ -142,7 +147,7 @@ def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 PARSERS: Mapping[str, ParseFn] = {
     "any_of": any_of_parse,
     "any": any_parse,
-    "value": partial(generic_parse, "ORTH"),
+    "value": orth_parse,
     "regex": regex_parse,
     "entity": entity_parse,
     "lemma": partial(generic_parse, "LEMMA"),

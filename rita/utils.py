@@ -123,12 +123,13 @@ def flatten(lst, shallow=False):
 
 
 class ExtendedOp(object):
-    case_sensitive_override = False
-    local_regex_override = False
-
     def __init__(self, op=None):
+        self.case_sensitive_override = False
+        self.local_regex_override = False
         if isinstance(op, ExtendedOp):
             self.op = op.op
+            self.case_sensitive_override = op.case_sensitive_override
+            self.local_regex_override = op.local_regex_override
         else:
             self.op = op
 

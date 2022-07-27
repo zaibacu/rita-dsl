@@ -17,7 +17,6 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 
 ## Links
 - [Website](https://rita-dsl.io/)
-- [Live Demo](https://rita-dsl.io/#demo)
 - [Simple Chat bot example](https://repl.it/talk/share/Simple-chatbot-done-with-Rita/53471)
 - [Documentation](http://rita-dsl.readthedocs.io/)
 - [QuickStart](https://rita-dsl.readthedocs.io/en/latest/quickstart/)
@@ -27,6 +26,8 @@ This is a language, loosely based on language [Apache UIMA RUTA](https://uima.ap
 
 [![reddit](https://img.shields.io/reddit/subreddit-subscribers/ritaDSL?style=social)](https://www.reddit.com/r/ritaDSL/)
 [![Gitter](https://badges.gitter.im/rita-dsl/community.svg)](https://gitter.im/rita-dsl/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+If you need consulting or some custom work done, you can [Contact Us](mailto:info@griaustinis.lt)
 
 ## Install
 

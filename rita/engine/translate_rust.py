@@ -43,7 +43,7 @@ class Result(Structure):
 
 
 class Context(Structure):
-    _fields_: fields = []
+    _fields_ = []
 
 
 def load_lib():

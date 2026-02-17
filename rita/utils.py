@@ -155,7 +155,7 @@ class ExtendedOp(object):
         return str(self)
 
     def __eq__(self, other):
-        if type(other) == str:
+        if isinstance(other, str):
             return self.op == other
 
         return (

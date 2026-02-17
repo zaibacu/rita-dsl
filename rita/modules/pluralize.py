@@ -33,7 +33,7 @@ def PLURALIZE(*args, config, op=None):
     Will work even for regex or if the lemmatizer of spaCy is making an error
     Has dependency to the Python inflect package https://pypi.org/project/inflect/
     """
-    if type(args[0]) == list:
+    if isinstance(args[0], list):
         initial_list = [resolve_value(arg, config=config)
                         for arg in flatten(args)]
     else:

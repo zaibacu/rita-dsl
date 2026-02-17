@@ -1,5 +1,3 @@
-import types
-
 import pytest
 
 from rita.config import SessionConfig

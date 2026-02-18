@@ -5,31 +5,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9' ]
+        python-version: [ '3.13' ]
     name: Testing on Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
       - run: pip install tox
-      - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e py39
+      - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e py$(echo ${{ matrix.python-version }} | tr -d '.')
 
   CheckCode:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ '3.9' ]
     name: CheckCode
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.13'
           architecture: 'x64'
       - run: pip install tox
       - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e lint
       - run: CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} tox -e mypy
-

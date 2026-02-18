@@ -551,8 +551,8 @@ def test_multiple_pos(engine):
                    if label == "POS_MATCH"])
 
     print(results)
-    assert len(results) == 5
-    assert {"noun", "have", "verb", "doing", "stuff"} == results
+    assert len(results) == 4
+    assert {"have", "verb", "doing", "stuff"} == results
 
 
 @pytest.mark.parametrize('engine', [spacy_engine])

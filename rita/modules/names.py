@@ -48,7 +48,7 @@ def generate_names(initial_list):
 
 
 def NAMES(*args, config, op=None):
-    if type(args[0]) == list:
+    if isinstance(args[0], list):
         initial_list = [resolve_value(arg, config=config)
                         for arg in flatten(args)]
     else:

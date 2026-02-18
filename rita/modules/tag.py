@@ -20,7 +20,7 @@ def TAG_WORD(tag, value, config, op=None):
     {TAG_WORD("^VB", words)?}->MARK("LABEL")
     """
     values = {"tag": tag}
-    if type(value) == list:
+    if isinstance(value, list):
         values["list"] = value
     else:
         values["word"] = value

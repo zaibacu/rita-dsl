@@ -107,3 +107,4 @@ venv.bak/
 # yacc-lex
 *.out
 parsetab.py
+output.jsonl

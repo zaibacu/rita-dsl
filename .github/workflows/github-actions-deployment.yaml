@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - master
-    types: 
+    types:
       - ready_for_review
       - review_requested
 
@@ -14,25 +14,18 @@ jobs:
   deployment:
     name: "Deployment"
     runs-on: "ubuntu-latest"
-    strategy:
-      matrix:
-        python-version: [ '3.9' ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.13'
           architecture: x64
-      - name: Install Poetry
-        run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Build
-        run: poetry build
+        run: uv build
 
-      - name: Set Token
-        run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-
-      - name: Poetry Publish
-        run: poetry publish
+      - name: Publish
+        run: uv publish --token ${{ secrets.PYPI_TOKEN }}

@@ -1,4 +1,2 @@
-PYTHON=python
-
 benchmark:
-	${PYTHON} -m pytest --benchmark-only tests/ --benchmark-autosave
+	uv run python -m pytest --benchmark-only tests/ --benchmark-autosave

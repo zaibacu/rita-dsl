@@ -137,3 +137,14 @@ def test_pattern_in_variable():
     )
 
     assert len(tokens) == 14
+
+
+def test_invalid_token_is_skipped():
+    from rita.lexer import RitaLexer
+    lexer = RitaLexer()
+    lexer.build()
+    tokens = list(lexer.tokenize('WORD("a") § -> MARK("X")'))
+    # `§` is not a valid token - it is logged and skipped, the rest tokenizes
+    values = [t.value for t in tokens]
+    assert "§" not in values
+    assert "WORD" in values

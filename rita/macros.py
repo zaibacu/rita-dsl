@@ -1,12 +1,14 @@
 import logging
 import types
 
+from typing import Any
+
 from rita.utils import flatten, ExtendedOp
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_value(obj, config):
+def resolve_value(obj, config) -> Any:
     logger.debug("Resolving value: {0}".format(obj))
 
     if isinstance(obj, str):
@@ -77,6 +79,8 @@ def WORD(*args, config, op=None):
         return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
         return "regex", r"((\w|['_-])+)", ExtendedOp(op)
+    else:
+        raise ValueError("WORD macro accepts at most one argument, got: {}".format(len(args)))
 
 
 def NUM(*args, config, op=None):
@@ -85,6 +89,8 @@ def NUM(*args, config, op=None):
         return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
         return "regex", r"((\d+[\.,]\d+)|(\d+))", ExtendedOp(op)
+    else:
+        raise ValueError("NUM macro accepts at most one argument, got: {}".format(len(args)))
 
 
 def POS(*args, config, op=None):

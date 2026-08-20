@@ -2,7 +2,7 @@ import rita
 
 
 def setup_spacy(model, patterns=None, rules_path=None, rules_string=None, override_ents=True):
-    import spacy
+    import spacy  # type: ignore[import-not-found]
     major, _, _ = spacy.__version__.split(".")
     if major == "2":
         return _spacy_v2(model, patterns, rules_path, rules_string, override_ents)
@@ -13,7 +13,7 @@ def setup_spacy(model, patterns=None, rules_path=None, rules_string=None, overri
 
 
 def _spacy_v2(model, patterns=None, rules_path=None, rules_string=None, override_ents=True):
-    from spacy.pipeline import EntityRuler
+    from spacy.pipeline import EntityRuler  # type: ignore[import-not-found]
     ruler = EntityRuler(model, overwrite_ents=override_ents)
     if not patterns:
         if rules_path:

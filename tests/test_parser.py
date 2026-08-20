@@ -290,3 +290,40 @@ def test_parser_inline_array_as_inlist_argument(config):
     assert len(results) > 0
     rules = results[0]()
     assert {"label": "TEST", "data": [("any_of", ["one", "two", "three"], ExtendedOp())]} == rules
+
+
+def test_parser_syntax_error_raises(config):
+    from rita.parser import RitaParseError
+    p = RitaParser(config)
+    p.build()
+
+    with pytest.raises(RitaParseError):
+        p.parse('{WORD("foo") -> MARK("MISSING_BRACKET")')
+
+
+def test_parser_unexpected_eof_raises(config):
+    from rita.parser import RitaParseError
+    p = RitaParser(config)
+    p.build()
+
+    with pytest.raises(RitaParseError):
+        p.parse('{WORD("foo"),')
+
+
+def test_parse_empty_string_returns_empty(config):
+    p = RitaParser(config)
+    p.build()
+    assert p.parse("") == []
+
+
+def test_parse_without_build_raises(config):
+    p = RitaParser(config)
+    with pytest.raises(RuntimeError, match="build"):
+        p.parse('WORD("a")->MARK("X")')
+
+
+def test_unknown_macro_raises(config):
+    p = RitaParser(config)
+    p.build()
+    with pytest.raises(RuntimeError, match="NO_SUCH_MACRO"):
+        p.parse('NO_SUCH_MACRO("a")->MARK("X")')

@@ -93,3 +93,65 @@ class TestPluralize:
         assert "bicycles" in result[1]
         assert "ship" in result[1]
         assert "ships" in result[1]
+
+
+class TestNames:
+    def test_two_part_name_generates_initial_variant(self, cfg):
+        from rita.modules.names import NAMES
+        (kind, names, op) = NAMES("John Silver", config=cfg)
+        assert kind == "any_of"
+        assert "John Silver" in names
+        assert r"J\. Silver" in names
+        assert op.case_sensitive_override is True
+
+    def test_three_part_name_variants(self, cfg):
+        from rita.modules.names import NAMES
+        (_, names, _) = NAMES("John Ronald Tolkien", config=cfg)
+        assert "John Ronald Tolkien" in names
+        assert r"John R\. Tolkien" in names
+        assert r"J\. R\. Tolkien" in names
+
+    def test_seniority_suffix(self, cfg):
+        from rita.modules.names import NAMES
+        (_, names, _) = NAMES("Roy Jones junior", config=cfg)
+        assert any(r"jr\." in n for n in names)
+
+    def test_stop_names_not_trimmed(self, cfg):
+        from rita.modules.names import generate_names
+        variants = list(generate_names(["Juan van Damme"]))
+        # "van" is a stop name and must never be turned into an initial
+        assert ("Juan", "van", "Damme") not in [tuple(v) for v in variants if r"v\." in " ".join(v)]
+
+    def test_names_match_in_standalone(self, cfg):
+        import rita
+        parser = rita.compile_string(
+            '!IMPORT("rita.modules.names")\n'
+            'NAMES("John Silver")->MARK("PERSON")',
+            use_engine="standalone"
+        )
+        for text in ["John Silver was here", "J. Silver was here"]:
+            results = list(parser.execute(text))
+            assert len(results) == 1, text
+
+
+class TestFuzzy:
+    def test_double_letter_premutations(self, cfg):
+        from rita.modules.fuzzy import premutations
+        variants = list(premutations("hello"))
+        assert "hello" in variants
+        assert "hel{1,2}o" in variants
+
+    def test_slang_variant(self, cfg):
+        from rita.modules.fuzzy import premutations
+        variants = list(premutations("you"))
+        assert any("u" in v for v in variants)
+
+    def test_fuzzy_matches_typo_in_standalone(self, cfg):
+        import rita
+        parser = rita.compile_string(
+            '!IMPORT("rita.modules.fuzzy")\n'
+            '{FUZZY("hello")}->MARK("GREETING")',
+            use_engine="standalone"
+        )
+        assert len(list(parser.execute("helo there"))) == 1
+        assert len(list(parser.execute("hello there"))) == 1

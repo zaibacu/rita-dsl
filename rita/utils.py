@@ -1,6 +1,7 @@
 import logging
 
 from contextlib import contextmanager
+from typing import Any, List, Optional
 from unicodedata import normalize, category
 from itertools import cycle, chain
 from time import time
@@ -47,6 +48,7 @@ class Node(object):
         return self.current
 
     def next_child(self):
+        assert self.children_cycle is not None, "No children added yet"
         self.current = next(self.children_cycle)
 
     def reset_cycle(self):
@@ -70,6 +72,7 @@ class Node(object):
                     result.append(current.data)
                 if len(current.children) > 0:
                     c = current.child
+                    assert c is not None
                     result.append(c.data)
                 current = current.next_node
             yield result
@@ -92,10 +95,10 @@ class Node(object):
 class SingletonMixin(object):
     _instance = None
 
-    def __new__(class_, *args, **kwargs):
-        if not isinstance(class_._instance, class_):
-            class_._instance = object.__new__(class_, *args, **kwargs)
-        return class_._instance
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls, *args, **kwargs)
+        return cls._instance
 
 
 def deaccent(text):
@@ -103,6 +106,13 @@ def deaccent(text):
                      "".join(c
                              for c in normalize("NFD", text)
                              if category(c) != "Mn"))
+
+
+def wrap_str(x: Any) -> List[Any]:
+    if isinstance(x, str):
+        return [x]
+    else:
+        return x
 
 
 def flatten(lst, shallow=False):
@@ -119,7 +129,9 @@ def flatten(lst, shallow=False):
     if shallow:
         return new_lst
     else:
-        return chain(*new_lst)
+        # A plain string must stay a single item -
+        # chaining would explode it into characters
+        return chain(*[wrap_str(v) for v in new_lst])
 
 
 class ExtendedOp(object):
@@ -134,7 +146,7 @@ class ExtendedOp(object):
             self.op = op
 
     @property
-    def value(self):
+    def value(self) -> Optional[str]:
         return self.op
 
     def empty(self):
@@ -172,7 +184,7 @@ class Timer(object):
 
     def stop(self, debug=True):
         now = time()
-        delta = int(now - self.ts) * 1000
+        delta = int((now - self.ts) * 1000)
         msg = "{} took {}ms".format(self.title, delta)
         if debug:
             logger.debug(msg)

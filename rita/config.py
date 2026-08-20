@@ -1,43 +1,45 @@
 import operator
 import logging
 from importlib import import_module
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 try:
     from rita.engine.translate_spacy import compile_rules as spacy_engine
 except ImportError:
-    pass
+    spacy_engine = None  # type: ignore[assignment]
 
 from rita.engine.translate_standalone import compile_rules as standalone_engine
 from rita.engine.translate_rust import compile_rules as rust_engine
 
 from rita.utils import SingletonMixin
-from rita.types import opts, Rules
 
 
 logger = logging.getLogger(__name__)
 
-CompileFN = Callable[[Rules, "Config", opts], Any]
+CompileFN = Callable[..., Any]
 
 
 class Config(SingletonMixin):
     def __init__(self):
+        # Singleton: __init__ runs on every Config() call,
+        # must not wipe already-registered engines
+        if getattr(self, "_initialized", False):
+            return
+        self._initialized = True
+
         self.available_engines = []
         self.engines_by_key = {}
         self.current_engine = None
 
-        try:
+        if spacy_engine is not None:
             self.register_engine(1, "spacy", spacy_engine)
-        except NameError:
-            # spacy_engine is not imported
-            pass
         self.register_engine(2, "standalone", standalone_engine)
         self.register_engine(3, "rust", rust_engine)
 
     def register_engine(self, priority: int, key: str, compile_fn: CompileFN) -> None:
         self.available_engines.append((priority, key, compile_fn))
         self.engines_by_key[key] = compile_fn
-        sorted(self.available_engines, key=operator.itemgetter(0))
+        self.available_engines.sort(key=operator.itemgetter(0))
 
     @property
     def default_engine(self) -> CompileFN:
@@ -62,7 +64,7 @@ class SessionConfig(object):
         self._root = Config()
         self.modules = []
         # Default config
-        self._data = {
+        self._data: Dict[str, Any] = {
             "ignore_case": True,
             "implicit_punct": True,
             "deaccent": True,
@@ -91,10 +93,13 @@ class SessionConfig(object):
         return getattr(self._root, name)
 
     def set_config(self, k, v):
+        # Non-string values (eg. booleans from a deserialized config) are stored as-is
+        if not isinstance(v, str):
+            self._data[k] = v
         # Handle booleans first
-        if v.upper() in ["1", "T", "Y"]:
+        elif v.upper() in ["1", "T", "Y", "TRUE", "YES"]:
             self._data[k] = True
-        elif v.upper() in ["0", "F", "N"]:
+        elif v.upper() in ["0", "F", "N", "FALSE", "NO"]:
             self._data[k] = False
         else:
             self._data[k] = v
@@ -104,7 +109,7 @@ class SessionConfig(object):
         return self._nested_group_count
 
 
-def with_config(fn):
+def with_config(fn) -> Callable[..., Any]:
     def wrapper(*args, **kwargs):
         config = SessionConfig()
         return fn(*args, config=config, **kwargs)

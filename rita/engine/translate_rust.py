@@ -75,7 +75,13 @@ class RustRuleExecutor(RuleExecutor):
         self.config = config
         self.context = None
 
-        self.lib = load_lib()
+        lib = load_lib()
+        if lib is None:
+            raise RuntimeError(
+                "rita-rust shared library is not available - "
+                "cannot use the rust engine"
+            )
+        self.lib = lib
         self.patterns = [self._build_regex_str(label, rules)
                          for label, rules in patterns]
 
@@ -87,7 +93,7 @@ class RustRuleExecutor(RuleExecutor):
                          for i, r in enumerate(rules)]
         return r"(?P<{0}>{1})".format(label, "".join(indexed_rules))
 
-    def compile(self):
+    def compile(self):  # pyright: ignore[reportIncompatibleMethodOverride]
         flag = 0 if self.config.ignore_case else 1
         c_array = (c_char_p * len(self.patterns))(*list([p.encode("UTF-8") for p in self.patterns]))
         self.context = self.lib.compile(c_array, len(c_array), flag)
@@ -131,12 +137,14 @@ class RustRuleExecutor(RuleExecutor):
         self.lib.clean_env(self.context)
 
     @staticmethod
-    def load(path):
+    def load(path, regex_impl=None):  # `regex_impl` is unused, kept for signature compatibility
         from rita.config import SessionConfig
         config = SessionConfig()
         with open(path, "r") as f:
+            # Skip non-rule lines, eg. the config header written by the standalone engine
             patterns = [(obj["label"], obj["rules"])
-                        for obj in map(json.loads, f.readlines())]
+                        for obj in map(json.loads, filter(str.strip, f.readlines()))
+                        if "label" in obj and "rules" in obj]
             return RustRuleExecutor(patterns, config)
 
 

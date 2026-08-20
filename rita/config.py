@@ -1,23 +1,22 @@
 import operator
 import logging
 from importlib import import_module
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 try:
     from rita.engine.translate_spacy import compile_rules as spacy_engine
 except ImportError:
-    pass
+    spacy_engine = None  # type: ignore[assignment]
 
 from rita.engine.translate_standalone import compile_rules as standalone_engine
 from rita.engine.translate_rust import compile_rules as rust_engine
 
 from rita.utils import SingletonMixin
-from rita.types import opts, Rules
 
 
 logger = logging.getLogger(__name__)
 
-CompileFN = Callable[[Rules, "Config", opts], Any]
+CompileFN = Callable[..., Any]
 
 
 class Config(SingletonMixin):
@@ -32,11 +31,8 @@ class Config(SingletonMixin):
         self.engines_by_key = {}
         self.current_engine = None
 
-        try:
+        if spacy_engine is not None:
             self.register_engine(1, "spacy", spacy_engine)
-        except NameError:
-            # spacy_engine is not imported
-            pass
         self.register_engine(2, "standalone", standalone_engine)
         self.register_engine(3, "rust", rust_engine)
 
@@ -68,7 +64,7 @@ class SessionConfig(object):
         self._root = Config()
         self.modules = []
         # Default config
-        self._data = {
+        self._data: Dict[str, Any] = {
             "ignore_case": True,
             "implicit_punct": True,
             "deaccent": True,
@@ -97,8 +93,11 @@ class SessionConfig(object):
         return getattr(self._root, name)
 
     def set_config(self, k, v):
+        # Non-string values (eg. booleans from a deserialized config) are stored as-is
+        if not isinstance(v, str):
+            self._data[k] = v
         # Handle booleans first
-        if v.upper() in ["1", "T", "Y", "TRUE", "YES"]:
+        elif v.upper() in ["1", "T", "Y", "TRUE", "YES"]:
             self._data[k] = True
         elif v.upper() in ["0", "F", "N", "FALSE", "NO"]:
             self._data[k] = False
@@ -110,7 +109,7 @@ class SessionConfig(object):
         return self._nested_group_count
 
 
-def with_config(fn):
+def with_config(fn) -> Callable[..., Any]:
     def wrapper(*args, **kwargs):
         config = SessionConfig()
         return fn(*args, config=config, **kwargs)

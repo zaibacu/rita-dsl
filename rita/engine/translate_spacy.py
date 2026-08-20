@@ -1,7 +1,7 @@
 import logging
 
 from functools import partial
-from typing import Any, TYPE_CHECKING, Mapping, Callable, Generator, AnyStr
+from typing import Any, Dict, TYPE_CHECKING, Mapping, Callable, Generator, AnyStr
 
 from rita.utils import ExtendedOp
 from rita.types import Rules, Patterns
@@ -17,12 +17,13 @@ if TYPE_CHECKING:
 
 
 def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
+    base: Dict[str, Any] = {}
     if op.ignore_case(config):
         normalized = sorted([item.lower()
                              for item in lst])
-        base = {"LOWER": {"IN": normalized}}
+        base["LOWER"] = {"IN": normalized}
     else:
-        base = {"LOWER": {"IN": sorted(lst)}}
+        base["LOWER"] = {"IN": sorted(lst)}
 
     if not op.empty():
         base["OP"] = op.value
@@ -30,10 +31,11 @@ def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 
 
 def regex_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
+    d: Dict[str, Any] = {}
     if op.ignore_case(config):
-        d = {"LOWER": {"REGEX": r.lower()}}
+        d["LOWER"] = {"REGEX": r.lower()}
     else:
-        d = {"TEXT": {"REGEX": r}}
+        d["TEXT"] = {"REGEX": r}
 
     if not op.empty():
         d["OP"] = op.value
@@ -42,14 +44,14 @@ def regex_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 
 def fuzzy_parse(r, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     # TODO: build premutations
-    d = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
+    d: Dict[str, Any] = {"LOWER": {"REGEX": "({0})[.,?;!]?".format("|".join(r))}}
     if not op.empty():
         d["OP"] = op.value
     yield d
 
 
 def generic_parse(tag, value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
-    d = {}
+    d: Dict[str, Any] = {}
     if isinstance(value, list) and len(value) > 1:
         value = {"IN": value}
 
@@ -68,7 +70,7 @@ def entity_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern
 
 
 def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
-    d = dict()
+    d: Dict[str, Any] = dict()
     d["IS_PUNCT"] = True
     if not op.empty():
         d["OP"] = op.value
@@ -76,7 +78,7 @@ def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
 
 
 def any_parse(_, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
-    d = dict()
+    d: Dict[str, Any] = dict()
     if not op.empty():
         d["OP"] = op.value
     yield d
@@ -105,7 +107,7 @@ def tag_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     e.g. TAG("^NN|^JJ") for adjectives or nouns
     also deals with TAG_WORD for tag and word or tag and list
     """
-    d = {"TAG": {"REGEX": values["tag"]}}
+    d: Dict[str, Any] = {"TAG": {"REGEX": values["tag"]}}
     if "word" in values:
         if op.ignore_case(config):
             d["LOWER"] = values["word"].lower()
@@ -132,7 +134,7 @@ def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPatter
 
 
 def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
-    d = {}
+    d: Dict[str, Any] = {}
     if op.ignore_case(config):
         d["LOWER"] = value.lower()
     else:

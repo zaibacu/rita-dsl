@@ -33,3 +33,4 @@ jobs:
       - run: uv sync
       - run: uv run flake8 rita/ tests/
       - run: uv run mypy rita/
+      - run: uv run pyright rita/

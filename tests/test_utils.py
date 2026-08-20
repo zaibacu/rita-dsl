@@ -156,6 +156,11 @@ class TestFlatten:
         assert "x" in result
         assert "y" in result
 
+    def test_single_string_stays_whole(self):
+        # A lone string must not be exploded into characters
+        result = list(flatten(["a.b"]))
+        assert result == ["a.b"]
+
     def test_shallow(self):
         result = list(flatten(["a", "b"], shallow=True))
         assert "a" in result

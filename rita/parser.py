@@ -205,4 +205,7 @@ class RitaParser(object):
         if data.strip() == "":
             return []
 
+        if self.parser is None:
+            raise RuntimeError("Parser is not built - call `build()` first")
+
         return self.parser.parse(r"{}".format(data), lexer=self.lexer, debug=logger)

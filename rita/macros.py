@@ -1,12 +1,14 @@
 import logging
 import types
 
+from typing import Any
+
 from rita.utils import flatten, ExtendedOp
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_value(obj, config):
+def resolve_value(obj, config) -> Any:
     logger.debug("Resolving value: {0}".format(obj))
 
     if isinstance(obj, str):

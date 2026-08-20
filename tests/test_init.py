@@ -5,8 +5,9 @@ import rita
 from rita import get_version, compile_string, compile
 
 
-def test_get_version_without_patch():
+def test_get_version():
     version = get_version()
+    assert version == rita.__version__
     parts = version.split(".")
     assert len(parts) == 3
     # Each part should be numeric
@@ -14,10 +15,12 @@ def test_get_version_without_patch():
         assert p.isdigit()
 
 
-def test_get_version_with_patch(monkeypatch):
-    monkeypatch.setattr(rita, "__version__", (0, 7, 4, "beta1"))
-    version = get_version()
-    assert version == "0.7.4-beta1"
+def test_version_matches_package_metadata():
+    from importlib.metadata import version, PackageNotFoundError
+    try:
+        assert version("rita-dsl") == rita.__version__
+    except PackageNotFoundError:
+        pass  # running from a source checkout without an installed package
 
 
 def test_compile_string_standalone():

@@ -1,5 +1,3 @@
-import os
-
 import logging
 from types import GeneratorType
 
@@ -11,15 +9,13 @@ from rita.utils import timer, Timer
 
 logger = logging.getLogger(__name__)
 
-__version__ = (0, 7, 4, os.getenv("VERSION_PATCH"))
+# Single source of truth for the package version:
+# pyproject.toml declares `version` as dynamic and extracts it from here at build time
+__version__ = "0.7.5"
 
 
-def get_version():
-    normalized = list([i for i in __version__ if i is not None])
-    if len(normalized) == 4:
-        return "{0}.{1}.{2}-{3}".format(*normalized)
-    else:
-        return "{0}.{1}.{2}".format(*normalized)
+def get_version() -> str:
+    return __version__
 
 
 @with_config

@@ -10,6 +10,10 @@ from rita import macros
 logger = logging.getLogger(__name__)
 
 
+class RitaParseError(RuntimeError):
+    pass
+
+
 def stub(*args, **kwargs):
     return None
 
@@ -20,20 +24,16 @@ def either(a, b):
 
 
 def load_macro(name, config):
-    try:
-        return partial(getattr(macros, name), config=config)
-    except Exception:
-        pass
+    fn = getattr(macros, name, None)
+    if fn is not None:
+        return partial(fn, config=config)
 
     def lazy_load(*args, **kwargs):
-        logger.info(config.modules)
+        logger.debug("Loaded modules: {}".format(config.modules))
         for mod in config.modules:
-            try:
-                fn = getattr(mod, name)
+            fn = getattr(mod, name, None)
+            if fn is not None:
                 return fn(*args, **kwargs)
-            except Exception as ex:
-                logger.error(ex)
-                continue
 
         raise RuntimeError("MACRO {} not loaded".format(name))
 
@@ -191,9 +191,11 @@ class RitaParser(object):
 
     def p_error(self, p):
         if p:
-            logger.error("Syntax error at '{}'".format(p.value))
+            raise RitaParseError(
+                "Syntax error at line {0}, near '{1}'".format(p.lineno, p.value)
+            )
         else:
-            logger.error("p is null")
+            raise RitaParseError("Syntax error: unexpected end of input")
 
     def build(self, **kwargs):
         self.lexer = RitaLexer().build(**kwargs)

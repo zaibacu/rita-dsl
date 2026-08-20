@@ -133,7 +133,6 @@ def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> SpacyPatter
 
 def orth_parse(value, config: "SessionConfig", op: ExtendedOp) -> SpacyPattern:
     d = {}
-    print(op.case_sensitive_override)
     if op.ignore_case(config):
         d["LOWER"] = value.lower()
     else:

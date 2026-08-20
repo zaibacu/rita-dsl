@@ -46,17 +46,34 @@ def test_register_module(cfg):
 
 
 def test_set_config_true_values(cfg):
-    for v in ["1", "T", "Y"]:
+    for v in ["1", "T", "Y", "true", "TRUE", "yes", "Yes"]:
         cfg.set_config("ignore_case", "F")
         cfg.set_config("ignore_case", v)
         assert cfg.ignore_case is True
 
 
 def test_set_config_false_values(cfg):
-    for v in ["0", "F", "N"]:
+    for v in ["0", "F", "N", "false", "FALSE", "no", "No"]:
         cfg.set_config("ignore_case", "T")
         cfg.set_config("ignore_case", v)
         assert cfg.ignore_case is False
+
+
+def test_registered_engine_survives_new_session(cfg):
+    def custom_engine(rules, config, **kwargs):
+        return "custom"
+
+    cfg.register_engine(0, "custom", custom_engine)
+    try:
+        fresh = SessionConfig()
+        assert "custom" in fresh.engines_by_key
+        # Priority 0 beats built-in engines, so it becomes the default
+        assert fresh.available_engines[0][1] == "custom"
+    finally:
+        # Config is a singleton — clean up so other tests see built-in defaults
+        cfg._root.available_engines = [e for e in cfg.available_engines
+                                       if e[1] != "custom"]
+        del cfg._root.engines_by_key["custom"]
 
 
 def test_set_config_string_value(cfg):

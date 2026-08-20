@@ -196,3 +196,13 @@ class TestImport:
     def test_registers_module(self, cfg):
         IMPORT("rita.modules.fuzzy", config=cfg)
         assert len(cfg.modules) == 1
+
+
+class TestArgumentValidation:
+    def test_word_too_many_args(self, cfg):
+        with pytest.raises(ValueError):
+            WORD("one", "two", config=cfg)
+
+    def test_num_too_many_args(self, cfg):
+        with pytest.raises(ValueError):
+            NUM("1", "2", config=cfg)

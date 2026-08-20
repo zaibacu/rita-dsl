@@ -77,6 +77,8 @@ def WORD(*args, config, op=None):
         return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
         return "regex", r"((\w|['_-])+)", ExtendedOp(op)
+    else:
+        raise ValueError("WORD macro accepts at most one argument, got: {}".format(len(args)))
 
 
 def NUM(*args, config, op=None):
@@ -85,6 +87,8 @@ def NUM(*args, config, op=None):
         return "value", literal, ExtendedOp(op)
     elif len(args) == 0:
         return "regex", r"((\d+[\.,]\d+)|(\d+))", ExtendedOp(op)
+    else:
+        raise ValueError("NUM macro accepts at most one argument, got: {}".format(len(args)))
 
 
 def POS(*args, config, op=None):

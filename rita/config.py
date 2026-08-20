@@ -22,6 +22,12 @@ CompileFN = Callable[[Rules, "Config", opts], Any]
 
 class Config(SingletonMixin):
     def __init__(self):
+        # Singleton: __init__ runs on every Config() call,
+        # must not wipe already-registered engines
+        if getattr(self, "_initialized", False):
+            return
+        self._initialized = True
+
         self.available_engines = []
         self.engines_by_key = {}
         self.current_engine = None
@@ -37,7 +43,7 @@ class Config(SingletonMixin):
     def register_engine(self, priority: int, key: str, compile_fn: CompileFN) -> None:
         self.available_engines.append((priority, key, compile_fn))
         self.engines_by_key[key] = compile_fn
-        sorted(self.available_engines, key=operator.itemgetter(0))
+        self.available_engines.sort(key=operator.itemgetter(0))
 
     @property
     def default_engine(self) -> CompileFN:
@@ -92,9 +98,9 @@ class SessionConfig(object):
 
     def set_config(self, k, v):
         # Handle booleans first
-        if v.upper() in ["1", "T", "Y"]:
+        if v.upper() in ["1", "T", "Y", "TRUE", "YES"]:
             self._data[k] = True
-        elif v.upper() in ["0", "F", "N"]:
+        elif v.upper() in ["0", "F", "N", "FALSE", "NO"]:
             self._data[k] = False
         else:
             self._data[k] = v

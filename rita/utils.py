@@ -172,7 +172,7 @@ class Timer(object):
 
     def stop(self, debug=True):
         now = time()
-        delta = int(now - self.ts) * 1000
+        delta = int((now - self.ts) * 1000)
         msg = "{} took {}ms".format(self.title, delta)
         if debug:
             logger.debug(msg)

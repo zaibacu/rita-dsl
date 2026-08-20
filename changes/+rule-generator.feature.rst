@@ -1,1 +1,0 @@
-New ``rita-generate`` CLI - generates a minimal ruleset from a CSV of annotated examples (columns: text, span to mark, label). Spans with the same label and token shape merge into one rule (``IN_LIST`` for varying words, generic ``NUM`` for varying numbers, optional slots for one-token differences), and the result is validated against every input row with the standalone engine.

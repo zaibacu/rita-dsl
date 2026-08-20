@@ -1,3 +1,68 @@
+rita 0.8.0 (2026-08-20)
+
+Features
+--------
+
+- Type Hints for core to improve robustness. Extra CI step to check for errors is added as well
+  #110
+- Add spaCy wildcard instead of REGEX when using ANY
+  #114
+- Add "+" operator by default when building spaCy `ENTITY(...)` to make it easier to read and understand.
+  #116
+- Use "IN" operator when defining ARRAYS in spaCy
+
+  Also, from now on, we can define arrays directly inside macro:
+  ```
+  IN_LIST("one", "two", "three")
+  ```
+
+  Which is equals to:
+  ```
+  numbers = {"one", "two", "three"}
+  IN_LIST(numbers)
+  ```
+  #118
+- New ``ANCHOR`` macro - anchor tokens: required context the rule depends on, excluded from the match result.
+
+  .. code-block::
+
+      {ANCHOR(WORD("price")), NUM}->MARK("VALUE")
+
+  matches ``"price 42"`` but reports just ``42``. Position decides the role: anchors at the start of a pattern are context before the match, anchors at the end are context after it. ``&`` works as a shortcut: ``{&WORD("price"), NUM}`` is equivalent. Supported by the standalone and rust engines.
+  
+- New ``rita-generate`` CLI - generates a minimal ruleset from a CSV of annotated examples (columns: text, span to mark, label). Spans with the same label and token shape merge into one rule (``IN_LIST`` for varying words, generic ``NUM`` for varying numbers, optional slots for one-token differences), and the result is validated against every input row with the standalone engine.
+  
+- Pyright static type checking added to the development toolchain and CI (``uv run pyright rita/``), alongside existing mypy and flake8 checks
+  
+
+Fix
+---
+
+- Package version is now defined once, in ``rita.__version__`` (a plain string), and extracted at build time via hatchling's dynamic version - previously ``pyproject.toml`` and ``rita/__init__.py`` each carried their own copy which could disagree.
+
+  The unused ``VERSION_PATCH`` environment variable suffix (which only ever affected the runtime string, never the built package metadata) was removed, and ``__version__`` changed from a tuple to the conventional string form.
+  
+- Rust engine bindings overhaul (paired with the rita-rust-engine rewrite onto the pure-Rust ``regex`` crate - no more RE2/CRE2 system dependencies):
+
+  - ``RITA_RUST_LIB`` environment variable can point directly at the built shared library
+  - Unicode texts now report correct character offsets (the engine works in UTF-8 bytes; offsets are converted on the Python side)
+  - Result memory is freed after every ``execute()`` call and the context is released when the executor is garbage collected - previously both leaked
+  - ``save()``/``__iter__`` work on ``RustRuleExecutor`` (``raw_patterns`` was never set)
+  - Null results from the native library raise clear errors instead of crashing
+  
+- Standalone engine robustness overhaul:
+
+  - Regex metacharacters in ``WORD``, ``IN_LIST`` and phrase literals are now escaped, so values like ``C++`` or ``a.b`` match literally instead of being interpreted as regex
+  - Negation (``!``) on ``IN_LIST`` now works correctly (previously it required the listed words instead of rejecting them)
+  - Invalid rules and labels raise ``RuleCompileError`` at compile time instead of failing later during ``execute()`` with an obscure ``AttributeError``
+  - ``save()``/``load()`` round-trip now preserves the ``ignore_case`` setting via a config header line (old headerless files still load)
+  - Matching runs sequentially instead of via a thread pool: deterministic results, less overhead
+  - New ``match_timeout`` option (requires the third-party ``regex`` module as ``regex_impl``) guards against catastrophic backtracking
+  - Single-item lists are no longer exploded into individual characters
+  - Word literals are now anchored with word boundaries: ``WORD("a")`` no longer matches the ``a`` inside ``alone``, matching spaCy engine token semantics
+  - Rule types unsupported by the standalone engine (eg. ``TAG``, ``ORTH``) now raise a clear ``RuntimeError`` instead of a bare ``KeyError``
+  
+
 0.7.0 (2021-02-02)
 ****************************
 

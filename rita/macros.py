@@ -57,6 +57,30 @@ def IN_LIST(*args, config, op=None):
                       for arg in flatten(args)], ExtendedOp(op)
 
 
+def ANCHOR(*args, config, op=None):
+    """
+    Anchor token: the rule depends on it, but it is excluded from the result.
+    Position decides the role - anchors at the start of a pattern are
+    required context BEFORE the match, anchors at the end are context AFTER it.
+    """
+    if len(args) != 1:
+        raise ValueError("ANCHOR macro accepts exactly one argument, got: {}".format(len(args)))
+
+    inner = resolve_value(args[0], config=config)
+    if not isinstance(inner, tuple) or len(inner) != 3:
+        raise ValueError("ANCHOR must wrap another macro, eg. ANCHOR(WORD(\"price\"))")
+
+    (t, d, inner_op) = inner
+    if t == "nested":
+        raise ValueError("ANCHOR cannot wrap PATTERN")
+
+    new_op = ExtendedOp(inner_op)
+    if op is not None and not isinstance(op, ExtendedOp):
+        new_op.op = op
+    new_op.anchor = True
+    return t, d, new_op
+
+
 def PATTERN(*args, config, op=None):
     context = []
     for arg in args:

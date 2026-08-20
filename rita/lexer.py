@@ -21,9 +21,10 @@ class RitaLexer(object):
         "ASSIGN",
         "EXEC",
         "PIPE",
+        "AMP",
     ]
 
-    literals = ["{", "}", "(", ")", '"', ",", "=", "!", "|"]
+    literals = ["{", "}", "(", ")", '"', ",", "=", "!", "|", "&"]
 
     t_ignore = " \t"
     t_ignore_COMMENT = r"\#.*"
@@ -39,6 +40,7 @@ class RitaLexer(object):
     t_EXEC = r"!"
     t_ASSIGN = r"="
     t_PIPE = r"\|"
+    t_AMP = r"\&"
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):

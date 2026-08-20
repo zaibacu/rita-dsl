@@ -164,6 +164,11 @@ PARSERS: Mapping[str, ParseFn] = {
 
 def rules_to_patterns(label: str, data: Patterns, config: "SessionConfig"):
     logger.debug(data)
+    if any(isinstance(op, ExtendedOp) and op.anchor for (_, _, op) in data):
+        raise RuntimeError(
+            "Rule '{0}': ANCHOR tokens are not supported in the spacy engine - "
+            "spaCy entity spans cannot exclude context tokens".format(label)
+        )
     return {
         "label": label,
         "pattern": [p

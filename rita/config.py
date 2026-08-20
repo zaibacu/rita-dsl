@@ -72,6 +72,7 @@ class SessionConfig(object):
         }
         self.variables = {}
         self._nested_group_count = 0
+        self._anchor_group_count = 0
 
     def register_module(self, mod_name: str) -> None:
         logger.debug("Importing module: {}".format(mod_name))
@@ -107,6 +108,10 @@ class SessionConfig(object):
     def new_nested_group_id(self):
         self._nested_group_count += 1
         return self._nested_group_count
+
+    def new_anchor_group_id(self):
+        self._anchor_group_count += 1
+        return self._anchor_group_count
 
 
 def with_config(fn) -> Callable[..., Any]:

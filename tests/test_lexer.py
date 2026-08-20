@@ -148,3 +148,13 @@ def test_invalid_token_is_skipped():
     values = [t.value for t in tokens]
     assert "§" not in values
     assert "WORD" in values
+
+
+def test_tokenize_amp_shortcut():
+    from rita.lexer import RitaLexer
+    lexer = RitaLexer()
+    lexer.build()
+    tokens = list(lexer.tokenize('{&WORD("price"), NUM}'))
+    types = [t.type for t in tokens]
+    assert "AMP" in types
+    assert types.index("AMP") + 1 == types.index("KEYWORD")

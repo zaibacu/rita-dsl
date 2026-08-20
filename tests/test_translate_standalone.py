@@ -294,6 +294,121 @@ class TestMatchSemantics:
         assert list(parser.execute("any text at all")) == []
 
 
+class TestAnchor:
+    def test_before_anchor_required_but_excluded(self):
+        parser = compile_rules('{ANCHOR(WORD("price")), NUM}->MARK("VALUE")')
+        (result,) = parser.execute("the price 42 is fine")
+        assert result["text"] == "42"
+        assert "price" not in result["text"]
+        # anchor is required context
+        assert list(parser.execute("just 42 here")) == []
+
+    def test_after_anchor(self):
+        parser = compile_rules('cur = {"eur", "usd"}\n'
+                               '{NUM, ANCHOR(IN_LIST(cur))}->MARK("AMOUNT")')
+        (result,) = parser.execute("it costs 42 eur now")
+        assert result["text"] == "42"
+        assert list(parser.execute("42 bananas")) == []
+
+    def test_anchors_on_both_sides(self):
+        parser = compile_rules('{ANCHOR(WORD("from")), NUM, ANCHOR(WORD("to"))}->MARK("X")')
+        (result,) = parser.execute("go from 5 to 9")
+        assert result["text"] == "5"
+
+    def test_span_points_into_text(self):
+        text = "price: 42"
+        parser = compile_rules('{ANCHOR(WORD("price")), NUM}->MARK("VALUE")')
+        (result,) = parser.execute(text)
+        assert text[result["start"]:result["end"]].strip() == "42"
+
+    def test_submatches_exclude_anchor_groups(self):
+        parser = compile_rules('{ANCHOR(WORD("price")), NUM}->MARK("VALUE")')
+        (result,) = parser.execute("price 42")
+        for sub in result["submatches"]:
+            assert not sub["key"].startswith("a")
+
+    def test_multiple_leading_anchors(self):
+        parser = compile_rules('{ANCHOR(WORD("total")), ANCHOR(WORD("price")), NUM}->MARK("X")')
+        (result,) = parser.execute("total price 42")
+        assert result["text"] == "42"
+        assert list(parser.execute("price 42")) == []
+
+    def test_anchor_with_operator(self):
+        parser = compile_rules('{ANCHOR(WORD("price")?), NUM, ANCHOR(WORD("eur"))}->MARK("X")')
+        assert [r["text"] for r in parser.execute("price 42 eur")] == ["42"]
+        assert [r["text"] for r in parser.execute("42 eur")] == ["42"]
+
+    def test_amp_shortcut_equivalent_to_anchor_macro(self):
+        import re as _re
+        explicit = compile_rules('{ANCHOR(WORD("price")), NUM}->MARK("X")')
+        shortcut = compile_rules('{&WORD("price"), NUM}->MARK("X")')
+
+        def norm(pattern):
+            # anchor group ids come from a session-wide counter
+            return _re.sub(r"a\d+", "aN", pattern)
+
+        assert norm(explicit.patterns[0].pattern) == norm(shortcut.patterns[0].pattern)
+
+    def test_amp_shortcut_before_and_after(self):
+        parser = compile_rules('{&WORD("from"), NUM, &WORD("to")}->MARK("X")')
+        (result,) = parser.execute("go from 5 to 9")
+        assert result["text"] == "5"
+        assert list(parser.execute("just 5 here")) == []
+
+    def test_amp_shortcut_with_modifier(self):
+        parser = compile_rules('{&WORD("price")?, NUM, &WORD("eur")}->MARK("X")')
+        assert [r["text"] for r in parser.execute("price 42 eur")] == ["42"]
+        assert [r["text"] for r in parser.execute("42 eur")] == ["42"]
+
+    def test_amp_shortcut_with_list(self):
+        parser = compile_rules('cur = {"eur", "usd"}\n{NUM, &IN_LIST(cur)}->MARK("A")')
+        assert [r["text"] for r in parser.execute("worth 42 usd")] == ["42"]
+
+    def test_mid_pattern_anchor_raises(self):
+        with pytest.raises(RuleCompileError, match="start or"):
+            compile_rules('{WORD("a"), ANCHOR(WORD("b")), WORD("c")}->MARK("X")')
+
+    def test_anchor_only_rule_raises(self):
+        with pytest.raises(RuleCompileError, match="only of ANCHOR"):
+            compile_rules('{ANCHOR(WORD("a"))}->MARK("X")')
+
+    def test_anchor_inside_pattern_raises(self):
+        with pytest.raises((RuleCompileError, ValueError)):
+            compile_rules('p = {ANCHOR(WORD("a")), WORD("b")}\n'
+                          '{PATTERN(p), WORD("c")}->MARK("X")')
+
+    def test_save_load_round_trip_keeps_anchors(self):
+        parser = compile_rules('{ANCHOR(WORD("price")), NUM}->MARK("VALUE")')
+        path = tempfile.mktemp(suffix=".jsonl")
+        try:
+            parser.save(path)
+            loaded = RuleExecutor.load(path)
+            (result,) = loaded.execute("price 42")
+            assert result["text"] == "42"
+            assert list(loaded.execute("42")) == []
+        finally:
+            os.unlink(path)
+
+
+class TestAnchorRustEngine:
+    @pytest.fixture(autouse=True)
+    def _require_lib(self):
+        from rita.engine.translate_rust import load_lib
+        if load_lib() is None:
+            pytest.skip("Missing rita-rust dynamic lib")
+
+    def test_before_and_after_anchor(self):
+        import rita
+        parser = rita.compile_string(
+            '{ANCHOR(WORD("price")), NUM, ANCHOR(WORD("eur"))}->MARK("X")',
+            use_engine="rust")
+        (result,) = parser.execute("price 42 eur")
+        assert result["text"] == "42"
+        assert list(parser.execute("42 eur")) == []
+        for sub in result["submatches"]:
+            assert not sub["key"].startswith("a")
+
+
 class TestRuleExecutorAPI:
     def test_iter_yields_labeled_rules(self):
         parser = compile_rules('{WORD("a")}->MARK("X")\n{WORD("b")}->MARK("Y")')

@@ -7,7 +7,8 @@ from platform import system
 from ctypes import (c_char_p, c_int, c_uint, c_long, Structure, cdll, POINTER)
 from typing import Any, TYPE_CHECKING, Tuple, List, AnyStr
 
-from rita.engine.translate_standalone import rules_to_patterns, RuleExecutor
+from rita.engine.translate_standalone import (rules_to_patterns, RuleExecutor,
+                                              ANCHOR_GROUP, BODY_GROUP)
 from rita.types import Rules
 
 logger = logging.getLogger(__name__)
@@ -147,9 +148,6 @@ class RustRuleExecutor(RuleExecutor):
                 if not match_ptr:
                     continue
                 match = match_ptr[0]
-                start = conv(match.start)
-                end = conv(match.end)
-                matched_text = text[start:end].strip()
 
                 def parse_subs():
                     k = match.sub_count
@@ -172,12 +170,26 @@ class RustRuleExecutor(RuleExecutor):
                             "key": s.name.decode("UTF-8"),
                         }
 
+                subs = list(parse_subs())
+                if any(ANCHOR_GROUP.match(s["key"]) for s in subs):
+                    # Anchor tokens are required context, excluded from
+                    # the result - report the span of the body groups only
+                    body = [s for s in subs if BODY_GROUP.match(s["key"])]
+                    if len(body) == 0:
+                        continue
+                    start = min(s["start"] for s in body)
+                    end = max(s["end"] for s in body)
+                else:
+                    start = conv(match.start)
+                    end = conv(match.end)
+
                 yield {
                     "start": start,
                     "end": end,
-                    "text": matched_text,
+                    "text": text[start:end].strip(),
                     "label": match.label.decode("UTF-8"),
-                    "submatches": list(parse_subs()) if include_submatches else []
+                    "submatches": [s for s in subs
+                                   if not ANCHOR_GROUP.match(s["key"])] if include_submatches else []
                 }
         finally:
             self.lib.clean_result(result_ptr)

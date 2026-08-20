@@ -33,6 +33,7 @@ Documentation = "https://rita-dsl.readthedocs.io/en/latest/"
 
 [project.scripts]
 rita = "rita.run:main"
+rita-generate = "rita.generate:main"
 
 [dependency-groups]
 dev = [

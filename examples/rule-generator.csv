@@ -1,0 +1,20 @@
+text,span,label
+I really like apples,apples,FRUIT
+She likes oranges a lot,oranges,FRUIT
+Do you like bananas?,bananas,FRUIT
+We bought fresh plums yesterday,plums,FRUIT
+The price is 42 eur today,42 eur,AMOUNT
+It costs 7 usd,7 usd,AMOUNT
+The fee was 3.50 eur in total,3.50 eur,AMOUNT
+Refund of 120 gbp was issued,120 gbp,AMOUNT
+He drives a big red car,big red car,VEHICLE
+She has a red car,red car,VEHICLE
+They rented a big blue van,big blue van,VEHICLE
+I saw a blue van outside,blue van,VEHICLE
+The meeting is on May 5,May 5,DATE
+Deadline moved to June 12,June 12,DATE
+Born on October 30,October 30,DATE
+Version 2.0 was released,Version 2.0,RELEASE
+Version 3.5 is coming soon,Version 3.5,RELEASE
+Say hello to knee-length skirts,knee-length,STYLE
+She wore an ankle-length dress,ankle-length,STYLE

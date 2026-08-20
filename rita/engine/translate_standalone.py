@@ -40,6 +40,21 @@ def escape_literal(value: str) -> str:
     return BARE_METACHAR.sub(r"\\\1", value)
 
 
+def bound_literal(value: str) -> str:
+    """
+    Escape a literal and anchor it with word boundaries,
+    so eg. WORD("a") cannot match the "a" inside "alone".
+    A boundary is only added next to a word character -
+    `\\b` can never match next to values like "-" or "J\\."
+    """
+    escaped = escape_literal(value)
+    if value and (value[0].isalnum() or value[0] == "_"):
+        escaped = r"\b" + escaped
+    if value and (value[-1].isalnum() or value[-1] == "_"):
+        escaped = escaped + r"\b"
+    return escaped
+
+
 def apply_operator(syntax, op: ExtendedOp) -> str:
     if op.empty():
         return syntax
@@ -52,13 +67,13 @@ def apply_operator(syntax, op: ExtendedOp) -> str:
 
 
 def any_of_parse(lst, config: "SessionConfig", op: ExtendedOp) -> str:
-    alts = "|".join(sorted([escape_literal(item) for item in lst],
+    alts = "|".join(sorted([bound_literal(item) for item in lst],
                            key=lambda x: (-len(x), x)))
     if str(op) == "!":
         # Negation has to be built from the raw alternatives:
         # the `(^|\s)` prefix used below can never match mid-pattern
         # and would make the lookahead pass for any word
-        return r"((?!(?:{0})\b)\w+)".format(alts)
+        return r"((?!(?:{0}))\w+)".format(alts)
     clause = r"((^|\s)(({0})\s?))".format(alts)
     return apply_operator(clause, op)
 
@@ -111,7 +126,7 @@ def punct_parse(_, config: "SessionConfig", op: ExtendedOp) -> str:
 
 
 def word_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
-    initial = r"({}\s?)".format(escape_literal(value))
+    initial = r"({}\s?)".format(bound_literal(value))
     return apply_operator(initial, op)
 
 
@@ -121,7 +136,7 @@ def fuzzy_parse(r, config: "SessionConfig", op: ExtendedOp) -> str:
 
 
 def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
-    return apply_operator(r"({}\s?)".format(escape_literal(value)), op)
+    return apply_operator(r"({}\s?)".format(bound_literal(value)), op)
 
 
 def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> str:
@@ -152,9 +167,15 @@ PARSERS: Mapping[str, ParseFn] = {
 
 def rules_to_patterns(label: str, data: Patterns, config: "SessionConfig"):
     logger.debug("data: {}".format(data))
+
+    def parse(t, d, op):
+        if t not in PARSERS:
+            return not_supported(t.upper())
+        return PARSERS[t](d, config, op)
+
     return (
         label,
-        [PARSERS[t](d, config, op) for (t, d, op) in data],
+        [parse(t, d, op) for (t, d, op) in data],
     )
 
 

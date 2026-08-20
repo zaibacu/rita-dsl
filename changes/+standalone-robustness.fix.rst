@@ -7,3 +7,5 @@ Standalone engine robustness overhaul:
 - Matching runs sequentially instead of via a thread pool: deterministic results, less overhead
 - New ``match_timeout`` option (requires the third-party ``regex`` module as ``regex_impl``) guards against catastrophic backtracking
 - Single-item lists are no longer exploded into individual characters
+- Word literals are now anchored with word boundaries: ``WORD("a")`` no longer matches the ``a`` inside ``alone``, matching spaCy engine token semantics
+- Rule types unsupported by the standalone engine (eg. ``TAG``, ``ORTH``) now raise a clear ``RuntimeError`` instead of a bare ``KeyError``

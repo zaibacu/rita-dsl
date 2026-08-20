@@ -206,3 +206,36 @@ class TestArgumentValidation:
     def test_num_too_many_args(self, cfg):
         with pytest.raises(ValueError):
             NUM("1", "2", config=cfg)
+
+
+class TestLoad:
+    def test_load_reads_lines_from_file(self, cfg):
+        import tempfile
+        import os
+        from rita.macros import LOAD
+        path = tempfile.mktemp(suffix=".txt")
+        try:
+            with open(path, "w") as f:
+                f.write("one\ntwo\nthree\n")
+            result = LOAD(path, config=cfg)
+            assert result == ["one", "two", "three"]
+        finally:
+            os.unlink(path)
+
+    def test_load_used_in_list(self, cfg):
+        import tempfile
+        import os
+        import rita
+        path = tempfile.mktemp(suffix=".txt")
+        try:
+            with open(path, "w") as f:
+                f.write("cat\ndog\n")
+            parser = rita.compile_string(
+                'animals = LOAD("{0}")\n'
+                '{{IN_LIST(animals)}}->MARK("ANIMAL")'.format(path),
+                use_engine="standalone"
+            )
+            results = list(parser.execute("a dog appears"))
+            assert [r["text"] for r in results] == ["dog"]
+        finally:
+            os.unlink(path)

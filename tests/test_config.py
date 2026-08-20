@@ -107,3 +107,22 @@ def test_session_config_getattr_delegation(cfg):
     # available_engines is on root Config, not SessionConfig
     assert hasattr(cfg, "available_engines")
     assert len(cfg.available_engines) > 0
+
+
+def test_default_engine_selects_highest_priority(cfg):
+    engine = cfg.default_engine
+    assert engine is not None
+    (_, expected_key, _) = cfg.available_engines[0]
+    assert cfg.current_engine == expected_key
+
+
+def test_set_config_non_string_value_stored_as_is(cfg):
+    cfg.set_config("ignore_case", False)
+    assert cfg.ignore_case is False
+    cfg.set_config("some_number", 42)
+    assert cfg._data["some_number"] == 42
+
+
+def test_get_unknown_variable_raises(cfg):
+    with pytest.raises(KeyError):
+        cfg.get_variable("nope")

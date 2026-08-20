@@ -45,6 +45,7 @@ dev = [
     "pyright",
     "inflect",
     "regex",
+    "pre-commit",
 ]
 
 [build-system]

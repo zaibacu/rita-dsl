@@ -308,3 +308,22 @@ def test_parser_unexpected_eof_raises(config):
 
     with pytest.raises(RitaParseError):
         p.parse('{WORD("foo"),')
+
+
+def test_parse_empty_string_returns_empty(config):
+    p = RitaParser(config)
+    p.build()
+    assert p.parse("") == []
+
+
+def test_parse_without_build_raises(config):
+    p = RitaParser(config)
+    with pytest.raises(RuntimeError, match="build"):
+        p.parse('WORD("a")->MARK("X")')
+
+
+def test_unknown_macro_raises(config):
+    p = RitaParser(config)
+    p.build()
+    with pytest.raises(RuntimeError, match="NO_SUCH_MACRO"):
+        p.parse('NO_SUCH_MACRO("a")->MARK("X")')

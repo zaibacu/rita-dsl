@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Single source of truth for the package version:
 # pyproject.toml declares `version` as dynamic and extracts it from here at build time
-__version__ = "0.7.5"
+__version__ = "0.7.6"
 
 
 def get_version() -> str:

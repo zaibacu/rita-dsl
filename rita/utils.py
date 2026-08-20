@@ -138,10 +138,12 @@ class ExtendedOp(object):
     def __init__(self, op=None):
         self.case_sensitive_override = False
         self.local_regex_override = False
+        self.anchor = False
         if isinstance(op, ExtendedOp):
             self.op = op.op
             self.case_sensitive_override = op.case_sensitive_override
             self.local_regex_override = op.local_regex_override
+            self.anchor = op.anchor
         else:
             self.op = op
 
@@ -173,7 +175,8 @@ class ExtendedOp(object):
         return (
             self.op == other.op and
             self.case_sensitive_override == other.case_sensitive_override and
-            self.local_regex_override == other.local_regex_override
+            self.local_regex_override == other.local_regex_override and
+            self.anchor == other.anchor
         )
 
 

@@ -76,6 +76,25 @@ def handle_deaccent(rules: Rules, config: SessionConfig):
         yield group_label, list(gen())
 
 
+def _implicit_filler_op(prev, following) -> ExtendedOp:
+    """
+    Implicitly inserted tokens sitting next to an anchor token
+    are part of the required context, not of the result -
+    they inherit the anchor flag
+    """
+    op = ExtendedOp("?")
+    if is_anchor(prev) or is_anchor(following):
+        op.anchor = True
+    return op
+
+
+def is_anchor(p) -> bool:
+    if not isinstance(p, tuple) or len(p) != 3:
+        return False
+    op = p[2]
+    return isinstance(op, ExtendedOp) and op.anchor
+
+
 def add_implicit_punct(rules: Rules, config: SessionConfig):
     """
     When writing rule,
@@ -84,14 +103,15 @@ def add_implicit_punct(rules: Rules, config: SessionConfig):
     """
     for group_label, pattern in rules:
         def gen():
-            for p in pattern:
-                yield p
-                yield "punct", None, ExtendedOp("?")
+            for prev, following in zip(pattern, pattern[1:]):
+                yield prev
+                yield "punct", None, _implicit_filler_op(prev, following)
+            yield pattern[-1]
 
         if len(pattern) == 1:
             yield group_label, pattern
         else:
-            yield group_label, list(gen())[:-1]
+            yield group_label, list(gen())
 
 
 def add_implicit_hyphon(rules: Rules, config: SessionConfig):
@@ -101,14 +121,15 @@ def add_implicit_hyphon(rules: Rules, config: SessionConfig):
     """
     for group_label, pattern in rules:
         def gen():
-            for p in pattern:
-                yield p
-                yield "value", "-", ExtendedOp("?")
+            for prev, following in zip(pattern, pattern[1:]):
+                yield prev
+                yield "value", "-", _implicit_filler_op(prev, following)
+            yield pattern[-1]
 
         if len(pattern) == 1:
             yield group_label, pattern
         else:
-            yield group_label, list(gen())[:-1]
+            yield group_label, list(gen())
 
 
 def handle_multi_word(rules: Rules, config: SessionConfig):

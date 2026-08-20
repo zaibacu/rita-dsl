@@ -141,8 +141,10 @@ def phrase_parse(value, config: "SessionConfig", op: ExtendedOp) -> str:
 
 def nested_parse(values, config: "SessionConfig", op: ExtendedOp) -> str:
     from rita.macros import resolve_value
-    (_, patterns) = rules_to_patterns("", [resolve_value(v, config=config)
-                                           for v in values], config=config)
+    children = [resolve_value(v, config=config) for v in values]
+    if any(isinstance(c_op, ExtendedOp) and c_op.anchor for (_, _, c_op) in children):
+        raise RuleCompileError("ANCHOR is not supported inside PATTERN")
+    (_, patterns) = rules_to_patterns("", children, config=config)
     return r"(?P<g{}>{})".format(config.new_nested_group_id(), "".join(patterns))
 
 
@@ -165,13 +167,39 @@ PARSERS: Mapping[str, ParseFn] = {
 }
 
 
+BODY_GROUP = re.compile(r"^[sg]\d+$")
+ANCHOR_GROUP = re.compile(r"^a\d+$")
+
+
+def validate_anchor_positions(label: str, data: Patterns) -> None:
+    flags = [isinstance(op, ExtendedOp) and op.anchor for (_, _, op) in data]
+    if not any(flags):
+        return
+    if all(flags):
+        raise RuleCompileError(
+            "Rule '{0}' consists only of ANCHOR tokens - "
+            "at least one regular token is required".format(label)
+        )
+    first_body = flags.index(False)
+    last_body = len(flags) - 1 - flags[::-1].index(False)
+    if any(flags[first_body:last_body + 1]):
+        raise RuleCompileError(
+            "Rule '{0}': ANCHOR tokens are only allowed at the start or "
+            "the end of a pattern - the match result must stay contiguous".format(label)
+        )
+
+
 def rules_to_patterns(label: str, data: Patterns, config: "SessionConfig"):
     logger.debug("data: {}".format(data))
+    validate_anchor_positions(label, data)
 
     def parse(t, d, op):
         if t not in PARSERS:
             return not_supported(t.upper())
-        return PARSERS[t](d, config, op)
+        syntax = PARSERS[t](d, config, op)
+        if isinstance(op, ExtendedOp) and op.anchor:
+            return r"(?P<a{}>{})".format(config.new_anchor_group_id(), syntax)
+        return syntax
 
     return (
         label,
@@ -226,11 +254,31 @@ class RuleExecutor(object):
         return pattern.finditer(text)
 
     def _match_task(self, pattern, text, include_submatches):
+        # Custom regex_impl pattern objects may not expose `groupindex`
+        has_anchors = any(ANCHOR_GROUP.match(k)
+                          for k in getattr(pattern, "groupindex", {}))
+
         def gen():
             for match in self._finditer(pattern, text):
+                if has_anchors:
+                    # Anchor tokens are required context, excluded from
+                    # the result - report the span of the body groups only
+                    body_spans = [(match.start(k), match.end(k))
+                                  for k, v in match.groupdict().items()
+                                  if BODY_GROUP.match(k) and v and v.strip()]
+                    if len(body_spans) == 0:
+                        continue
+                    start = min(s for (s, _) in body_spans)
+                    end = max(e for (_, e) in body_spans)
+                else:
+                    start = match.start()
+                    end = match.end()
+
                 def submatches():
                     for k, v in match.groupdict().items():
                         if not v or v.strip() == "":
+                            continue
+                        if ANCHOR_GROUP.match(k):
                             continue
                         yield {
                             "key": k,
@@ -240,9 +288,9 @@ class RuleExecutor(object):
                         }
 
                 yield {
-                    "start": match.start(),
-                    "end": match.end(),
-                    "text": match.group().strip(),
+                    "start": start,
+                    "end": end,
+                    "text": text[start:end].strip(),
                     "label": match.lastgroup,
                     "submatches": sorted(list(submatches()), key=lambda x: x["start"]) if include_submatches else []
                 }

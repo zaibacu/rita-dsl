@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 from platform import system
 
@@ -48,13 +49,17 @@ class Context(Structure):
 
 def load_lib():
     try:
-        os_name = system()
-        if os_name == "Windows":
-            lib = cdll.LoadLibrary("rita_rust.dll")
-        elif os_name == "Darwin":
-            lib = cdll.LoadLibrary("librita_rust.dylib")
+        lib_path = os.environ.get("RITA_RUST_LIB")
+        if lib_path:
+            lib = cdll.LoadLibrary(lib_path)
         else:
-            lib = cdll.LoadLibrary("librita_rust.so")
+            os_name = system()
+            if os_name == "Windows":
+                lib = cdll.LoadLibrary("rita_rust.dll")
+            elif os_name == "Darwin":
+                lib = cdll.LoadLibrary("librita_rust.dylib")
+            else:
+                lib = cdll.LoadLibrary("librita_rust.so")
         lib.compile.restype = POINTER(Context)
         lib.execute.argtypes = [POINTER(Context), c_char_p]
         lib.execute.restype = POINTER(Result)
@@ -67,7 +72,25 @@ def load_lib():
         return lib
     except Exception as ex:
         logger.error("Failed to load rita-rust library, reason: {}\n\n"
-                     "Most likely you don't have required shared library to use it".format(ex))
+                     "Most likely you don't have required shared library to use it. "
+                     "Set RITA_RUST_LIB to the full path of the built library, "
+                     "or install it into a standard library location".format(ex))
+
+
+def _byte_to_char_offsets(encoded: bytes):
+    """
+    The rust engine works on UTF-8 bytes, so all offsets it reports
+    are byte offsets. Build a byte-offset -> char-offset mapping so
+    results can index into the original Python string.
+    """
+    decoded = encoded.decode("UTF-8")
+    mapping = {}
+    byte_idx = 0
+    for char_idx, ch in enumerate(decoded):
+        mapping[byte_idx] = char_idx
+        byte_idx += len(ch.encode("UTF-8"))
+    mapping[byte_idx] = len(decoded)
+    return mapping
 
 
 class RustRuleExecutor(RuleExecutor):
@@ -82,6 +105,7 @@ class RustRuleExecutor(RuleExecutor):
                 "cannot use the rust engine"
             )
         self.lib = lib
+        self.raw_patterns = patterns
         self.patterns = [self._build_regex_str(label, rules)
                          for label, rules in patterns]
 
@@ -97,44 +121,77 @@ class RustRuleExecutor(RuleExecutor):
         flag = 0 if self.config.ignore_case else 1
         c_array = (c_char_p * len(self.patterns))(*list([p.encode("UTF-8") for p in self.patterns]))
         self.context = self.lib.compile(c_array, len(c_array), flag)
+        if not self.context:
+            raise RuntimeError("rita-rust failed to compile the given rules")
         return self.context
 
     def execute(self, text, include_submatches=True):
-        result_ptr = self.lib.execute(self.context, text.encode("UTF-8"))
-        count = result_ptr[0].count
-        for i in range(0, count):
-            match_ptr = self.lib.read_result(result_ptr, i)
-            match = match_ptr[0]
-            matched_text = text[match.start:match.end].strip()
+        encoded = text.encode("UTF-8")
+        result_ptr = self.lib.execute(self.context, encoded)
+        if not result_ptr:
+            raise RuntimeError("rita-rust failed to execute rules on the given text")
 
-            def parse_subs():
-                k = match.sub_count
-                for j in range(0, k):
-                    s = self.lib.read_submatch(match_ptr, j)[0]
-                    start = s.start
-                    end = s.end
-                    sub_text = text[start:end]
+        if len(encoded) != len(text):
+            offsets = _byte_to_char_offsets(encoded)
 
-                    if sub_text.strip() == "":
-                        continue
+            def conv(idx):
+                return offsets[idx]
+        else:
+            def conv(idx):
+                return idx
 
-                    yield {
-                        "text": sub_text.strip(),
-                        "start": start,
-                        "end": end,
-                        "key": s.name.decode("UTF-8"),
-                    }
+        try:
+            count = result_ptr[0].count
+            for i in range(0, count):
+                match_ptr = self.lib.read_result(result_ptr, i)
+                if not match_ptr:
+                    continue
+                match = match_ptr[0]
+                start = conv(match.start)
+                end = conv(match.end)
+                matched_text = text[start:end].strip()
 
-            yield {
-                "start": match.start,
-                "end": match.end,
-                "text": matched_text,
-                "label": match.label.decode("UTF-8"),
-                "submatches": list(parse_subs()) if include_submatches else []
-            }
+                def parse_subs():
+                    k = match.sub_count
+                    for j in range(0, k):
+                        sub_ptr = self.lib.read_submatch(match_ptr, j)
+                        if not sub_ptr:
+                            continue
+                        s = sub_ptr[0]
+                        sub_start = conv(s.start)
+                        sub_end = conv(s.end)
+                        sub_text = text[sub_start:sub_end]
+
+                        if sub_text.strip() == "":
+                            continue
+
+                        yield {
+                            "text": sub_text.strip(),
+                            "start": sub_start,
+                            "end": sub_end,
+                            "key": s.name.decode("UTF-8"),
+                        }
+
+                yield {
+                    "start": start,
+                    "end": end,
+                    "text": matched_text,
+                    "label": match.label.decode("UTF-8"),
+                    "submatches": list(parse_subs()) if include_submatches else []
+                }
+        finally:
+            self.lib.clean_result(result_ptr)
 
     def clean_context(self):
-        self.lib.clean_env(self.context)
+        if self.context is not None and self.lib is not None:
+            self.lib.clean_env(self.context)
+            self.context = None
+
+    def __del__(self):
+        try:
+            self.clean_context()
+        except Exception:
+            pass
 
     @staticmethod
     def load(path, regex_impl=None):  # `regex_impl` is unused, kept for signature compatibility
